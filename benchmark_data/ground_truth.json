@@ -1,6 +1,7 @@
 {
   "benchmark_suite_version": "1.0.0",
-  "measurement_tool": "Leica DISTO D2 Laser Distance Measurer (ISO 16331-1 certified, ±1.5mm precision)",
+  "measurement_tool": "Synthetic benchmark reference fixture (nominal architectural specifications)",
+  "note": "Reference dimensions configured for evaluating pipeline gate tolerances; not certified field laser measurements.",
   "date_measured": "2026-09-28",
   "rooms": {
     "room_01_kitchen_suite": {

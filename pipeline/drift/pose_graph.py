@@ -100,16 +100,17 @@ class PoseGraphOptimizer:
 
         if not enable_correction:
             # Ablation: Poses used as-is (shows drift accumulation)
+            uncorrected_gap = float(np.linalg.norm(poses[loop_edges[0].source_idx].t - poses[loop_edges[0].target_idx].t)) if loop_edges else accumulated_drift
             return DriftCorrectionResult(
                 corrected_poses=poses,
                 drift_correction_enabled=False,
                 accumulated_drift_m=round(accumulated_drift, 3),
-                residual_drift_m=round(accumulated_drift, 3),
+                residual_drift_m=round(uncorrected_gap, 3),
                 num_loop_closures=len(loop_edges),
                 ablation_stats={
                     "mode": "drift_correction_OFF",
-                    "closing_gap_error_m": round(accumulated_drift, 3),
-                    "wall_overlap_penalty_m": round(accumulated_drift * 0.42, 3),
+                    "closing_gap_error_m": round(uncorrected_gap, 3),
+                    "wall_overlap_penalty_m": round(uncorrected_gap * 0.42, 3),
                     "status": "FAIL_IF_SUBMITTED_AS_IS"
                 }
             )
@@ -142,7 +143,10 @@ class PoseGraphOptimizer:
                     t=corr_t,
                     quat=p.quat
                 ))
-            residual_drift = 0.012  # 1.2 cm residual after plane-anchored closure
+            # Dynamic residual: remaining gap between corrected loop poses plus angular drift residual
+            gap_pos = float(np.linalg.norm(corrected_poses[edge.source_idx].t - corrected_poses[edge.target_idx].t))
+            gap_rot = float(np.linalg.norm(poses[edge.source_idx].quat - poses[edge.target_idx].quat))
+            residual_drift = max(0.005, gap_pos + 0.015 * gap_rot)
         else:
             # Trajectory without closed loop: apply plane-anchored coordinate drift dampening
             for p in poses:
@@ -152,7 +156,7 @@ class PoseGraphOptimizer:
                     t=p.t.copy(),
                     quat=p.quat
                 ))
-            residual_drift = 0.020
+            residual_drift = float(np.linalg.norm(corrected_poses[-1].t - corrected_poses[0].t)) * 0.05
 
         return DriftCorrectionResult(
             corrected_poses=corrected_poses,

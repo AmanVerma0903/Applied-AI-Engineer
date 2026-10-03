@@ -34,10 +34,11 @@ class OpeningDetector:
         ceiling_height: float,
         wall_points_3d: np.ndarray,
         floor_elev: float,
-        bin_width_m: float = 0.02,     # 2 cm binning for gate compliance
-        min_door_width_m: float = 0.65,
+        bin_width_m: float = 0.05,     # 5 cm coarse binning, refined via edge kernel
+        min_door_width_m: float = 0.50,
         max_door_width_m: float = 1.30,
-        door_lintel_height_m: float = 2.05
+        door_lintel_height_m: float = 2.05,
+        use_refinement: bool = True
     ) -> List[DetectedOpening]:
         """
         Projects 3D points near the wall into 2D wall coordinates (s: along wall, h: height from floor).
@@ -54,37 +55,43 @@ class OpeningDetector:
         if v_norm < 1e-4:
             return []
         u_dir = v / v_norm
+        n_dir = np.array([-u_dir[1], u_dir[0]])
 
-        # Project 3D points to (s, h)
+        # Project 3D points to (s: along wall, d_perp: distance from wall)
         pts_2d = wall_points_3d[:, [0, 2]]
-        s_coords = (pts_2d - p0) @ u_dir
+        diff = pts_2d - p0
+        s_coords = diff @ u_dir
+        d_perp = np.abs(diff @ n_dir)
         h_coords = wall_points_3d[:, 1] - floor_elev
 
-        # Filter points within wall span and height
+        # Filter points within wall span, wall proximity, and height
         in_bounds = (
-            (s_coords >= 0.15) & (s_coords <= wall_length - 0.15) &
+            (d_perp <= 0.20) &
+            (s_coords >= 0.10) & (s_coords <= wall_length - 0.10) &
             (h_coords >= 0.20) & (h_coords <= min(ceiling_height, 2.30))
         )
         s_in = s_coords[in_bounds]
         h_in = h_coords[in_bounds]
 
-        if len(s_in) < 100:
+        if len(s_in) < 40:
             return []
 
         # Create 1D histogram along wall length for door height zone (0.3m to 1.8m)
-        door_zone = (h_in >= 0.35) & (h_in <= 1.80)
+        door_zone = (h_in >= 0.30) & (h_in <= 1.80)
         s_door = s_in[door_zone]
+
+        if len(s_door) < 20:
+            return []
 
         num_bins = int(np.ceil(wall_length / bin_width_m))
         hist, bin_edges = np.histogram(s_door, bins=num_bins, range=(0, wall_length))
-        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2.0
 
         # Background solid wall density (median of populated bins)
         populated = hist[hist > 5]
-        if len(populated) < 5:
+        if len(populated) < 3:
             return []
         solid_density = np.median(populated)
-        gap_threshold = solid_density * 0.18  # bins with <18% density count as opening
+        gap_threshold = max(3, solid_density * 0.18)
 
         # Find contiguous gap runs
         is_gap = hist < gap_threshold
@@ -105,20 +112,23 @@ class OpeningDetector:
                 raw_width = raw_end - raw_start
 
                 if min_door_width_m <= raw_width <= max_door_width_m:
-                    # Refine left and right jamb edges using local point distribution
-                    refined_start = OpeningDetector._refine_jamb_edge(s_door, raw_start, direction="left")
-                    refined_end = OpeningDetector._refine_jamb_edge(s_door, raw_end, direction="right")
+                    if use_refinement:
+                        refined_start = OpeningDetector._refine_jamb_edge(s_door, raw_start, direction="left")
+                        refined_end = OpeningDetector._refine_jamb_edge(s_door, raw_end, direction="right")
+                    else:
+                        refined_start = raw_start
+                        refined_end = raw_end
+
                     refined_width = refined_end - refined_start
 
-                    # Check upper lintel presence (points should exist above door at lintel)
-                    above_door = (s_in >= refined_start) & (s_in <= refined_end) & (h_in > 2.0)
-                    has_lintel = np.sum(above_door) > 5
+                    # Verify lintel or upper framing points exist above door
+                    above_door = (s_in >= refined_start) & (s_in <= refined_end) & (h_in > 1.90)
+                    has_lintel = np.sum(above_door) > 0
 
-                    # Door confidence
-                    conf = 0.92 if has_lintel else 0.85
+                    conf = 0.90 if has_lintel else 0.75
 
                     openings.append(DetectedOpening(
-                        opening_id=f"opening_{wall_id}_{len(openings)+1}",
+                        opening_id=f"op_{wall_id}_{len(openings)+1}",
                         wall_id=wall_id,
                         opening_type="door",
                         offset_along_wall_m=float(round(refined_start, 3)),
@@ -126,7 +136,7 @@ class OpeningDetector:
                         height_m=float(round(door_lintel_height_m, 3)),
                         elevation_m=0.0,
                         confidence=conf,
-                        ci95_width_m=0.012  # 1.2 cm 95% CI, satisfies <= 2.0 cm gate
+                        ci95_width_m=0.024
                     ))
 
         return openings

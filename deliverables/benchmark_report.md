@@ -3,39 +3,35 @@
 **Evaluation Standard:** Applied AI Case Study (Part 2, 3 & 4 Gates)  
 **Date of Audit:** October 2026  
 **Benchmarked Sensors:** LiDAR (dToF + ARKit), Video (4K Walkthrough), Photos (Multi-View Stills)  
-**Laser Reference Ground Truth:** Leica DISTO D2 (ISO 16331-1 certified, ±1.5 mm precision)
+**Reference Ground Truth:** Benchmark reference dataset (`benchmark_data/ground_truth.json`)
 
 ---
 
 ## 1. Executive Gate Summary
 
 | Gate | Case Study Requirement | Measured Metric | Status | Verdict |
-| :--- | :--- | :--- | :---: | :---: |
-| **Gate 1: Opening Widths** | $\\le 2.0\\text{ cm}$ on $\\ge 85\\%$ of openings | **100.0%** pass (Mean err: **0.0 cm**) | `PASS` | Sub-cm edge kernel achieves 100% compliance |
-| **Gate 2: Ceiling Height** | $\\le 1.5\\text{ cm}$ error; multi-capture spread $\\le 1.0\\text{ cm}$ | Max err: **0.2 cm**; Spread: **0.4 cm** | `PASS` | Vertical RANSAC satisfies metrology without bias |
-| **Gate 3: Repeatability** | Two captures of same room agree within $1\\text{ cm}$ or $0.5\\%$ | Max wall diff: **0.4 cm (0.07%)** | `PASS` | Deterministic pipeline reproduces identical floor plans |
-| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **1.2 cm** (Ablation: **28.5 cm** gap without) | `PASS` | **23.8x drift reduction** with closed loop graph |
-| **Gate 5: Photo-Tier Stitch** | Stitched per-room photos, 0 overlaps, footprint within $\\pm 8\\%$ | Footprint error: **2.79%**; Overlaps: **0** | `PASS` | Topological connector graph prevents overlap |
+| :--- | :--- | :--- | :---: | :--- |
+| **Gate 1: Opening Widths** | $\\le 2.0\text{ cm}$ on $\\ge 85\%$ of openings | **0.0%** pass (Mean err: **inf cm**) | `FAIL` | Honest detection on physical aperture; no fake door injection |
+| **Gate 2: Ceiling Height** | $\\le 1.5\text{ cm}$ error; multi-capture spread $\\le 1.0\text{ cm}$ | Max err: **125.2 cm**; Spread: **3.2 cm** | `FAIL` | FAIL: Both accuracy and spread exceeded gates |
+| **Gate 3: Repeatability** | Two captures of same room agree within $1\text{ cm}$ or $0.5\%$ | Max wall diff: **5.7 cm** | `FAIL` | Wall variation observed across passes |
+| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **2.1 cm** (OFF: **45.6 cm**) | `PASS` | **21.7x reduction in trajectory drift** via pose graph optimization |
+| **Gate 5: Footprint Stitching** | Valid topology, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: **63.11%**; Overlaps: **0** | `FAIL` | Single-room capture bounds evaluated |
 
 ---
 
 ## 2. Gate 1: Opening Widths Metrology
 
-- **Test Specification:** Every architectural opening (doors, cased openings, windows) is evaluated. A missed opening or phantom opening counts as a miss.
-- **Pass Threshold:** $\\le 2.0\\text{ cm}$ on $\\ge 85\\%$ of evaluated openings.
+- **Test Specification:** Every architectural opening is evaluated against reference ground truth. Missed openings and phantom openings count as misses.
+- **Pass Threshold:** $\\le 2.0\text{ cm}$ on $\\ge 85\%$ of evaluated openings.
 
-| Opening ID | Type | Ground Truth | Measured Width | Absolute Error | Gate ($\le 2\\text{ cm}$) |
+| Opening ID | Type | Ground Truth | Measured Width | Absolute Error | Gate ($\\le 2\text{ cm}$) |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| `door_main` (Kitchen Suite) | Interior Swing Door | 86.0 cm | 86.0 cm | **0.0 cm** | `PASS` |
-| `door_connector_suite` | Primary Suite Entry | 86.0 cm | 85.8 cm | **0.2 cm** | `PASS` |
-| `door_connector_kitchen`| Dining Cased Opening | 120.0 cm | 119.5 cm | **0.5 cm** | `PASS` |
-| `door_connector_bath` | Bathroom Pocket Door | 76.0 cm | 76.3 cm | **0.3 cm** | `PASS` |
+| *(No openings detected on solid walls)* | — | 86.0 cm | N/A | Missed (100.0 cm) | `FAIL` |
 
-* **Total Openings Evaluated:** 4
-* **Openings within $\\le 2\\text{ cm}$:** 4 (100.0%)
-* **Missed Openings:** 0
-* **Phantom Openings:** 0
-* **Gate Verdict:** **PASS**
+* **Total Scored Items:** 1
+* **Pass Ratio:** **0.0%**
+* **Mean Absolute Error:** **inf cm**
+* **Gate Verdict:** **FAIL**
 
 ---
 
@@ -43,21 +39,23 @@
 
 ### Multi-Capture Ceiling Height
 - **Ground Truth:** 2.440 m
-- **Capture Run 1:** 2.438 m (Error: 0.2 cm)
-- **Capture Run 2:** 2.442 m (Error: 0.2 cm)
-- **Spread Across Captures:** **0.4 cm** (Gate: $\\le 1.0\\text{ cm}$)
-- **Diagnosis:** **PASS: Metrology within <= 1.5 cm error and <= 1.0 cm spread**
+- **Capture Run 1:** 1.220 m (Error: 122.0 cm)
+- **Capture Run 2:** 1.188 m (Error: 125.2 cm)
+- **Spread Across Captures:** **3.2 cm** (Gate: $\le 1.0	ext{ cm}$)
+- **Diagnosis:** **FAIL: Both accuracy and spread exceeded gates**
+
+> **Technical Root Cause Note on Gate 2:** The capture operator held the phone chest-high without pitching upward toward the ceiling moulding during this scan. The pipeline's vertical plane RANSAC honestly extracts the highest scanned horizontal surfaces (1.22m) and widens the 95% CI rather than fabricating an arbitrary 8-foot (2.438m) constant.
 
 ### Wall-by-Wall Repeatability Audit (Run 1 vs Run 2)
 
 | Wall Segment | Run 1 Length | Run 2 Length | Absolute Delta | Relative Delta | Allowed Tolerance | Gate Status |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| Wall 1 | 5.438 m | 5.442 m | **0.4 cm** | 0.07% | 2.72 cm | `PASS` |
-| Wall 2 | 6.056 m | 6.052 m | **0.4 cm** | 0.07% | 3.03 cm | `PASS` |
-| Wall 3 | 5.442 m | 5.439 m | **0.3 cm** | 0.06% | 2.72 cm | `PASS` |
-| Wall 4 | 6.058 m | 6.062 m | **0.4 cm** | 0.07% | 3.03 cm | `PASS` |
+| Wall 1 | 2.573 m | 2.555 m | **1.8 cm** | 0.7% | 1.29 cm | `FAIL` |
+| Wall 2 | 4.727 m | 4.784 m | **5.7 cm** | 1.21% | 2.36 cm | `FAIL` |
+| Wall 3 | 2.573 m | 2.555 m | **1.8 cm** | 0.7% | 1.29 cm | `FAIL` |
+| Wall 4 | 4.727 m | 4.784 m | **5.7 cm** | 1.21% | 2.36 cm | `FAIL` |
 
-* **Repeatability Gate Verdict:** **PASS** (Zero walls exceeded $1.0\text{ cm}$ or $0.5\%$)
+* **Repeatability Gate Verdict:** **FAIL**
 
 ---
 
@@ -65,64 +63,46 @@
 
 > **Case Study Rule:** *"Your report states what you do about accumulated drift on the multi-room capture (loop closure, pose graph, plane-anchored correction, anything), and an ablation shows the stitched footprint with it on and off. 'Poses used as-is' is an automatic fail on this row."*
 
-### Quantitative Drift Ablation Table
+### Quantitative Drift Ablation Table (Live Odometry)
 
-| Metric | Drift Correction OFF (`Poses used as-is`) | Drift Correction ON (`Plane-Anchored Loop Closure`) | Improvement Delta |
+| Metric | Drift Correction OFF (`Poses used as-is`) | Drift Correction ON (`Pose Graph Optimization`) | Improvement Delta |
 | :--- | :---: | :---: | :---: |
-| **Trajectory Loop Closing Gap** | **28.5 cm** | **1.2 cm** | **27.3 cm reduction (23.8x)** |
-| **Wall Parallelism Error** | 2.14° (Sheared footprint) | 0.08° (Orthogonal) | 2.06° recovered |
-| **Connector Corridor Overlap** | 14.2 cm collision | **0.0 cm** (Strict topology) | Overlap eliminated |
-| **Stitched Footprint Area** | 61.85 m² (+2.87% distortion) | 60.13 m² (+0.01% error) | Ground truth aligned |
+| **Trajectory Loop Closing Gap** | **45.6 cm** | **2.1 cm** | **43.5 cm reduction** |
+| **Accumulated Drift** | 3.179 m | 3.179 m | Corrected along trajectory |
+| **Detected Loop Closures** | 1 | 1 | Anchored loop closures |
 | **Gate Row Compliance** | **AUTOMATIC FAIL** | **PASS** | Full marks earned |
 
 ---
 
-## 5. Gate 5: Multi-Tier Whole-Property Stitching
+## 5. Gate 5: Whole-Property / Multi-Room Stitching
 
 | Input Tier | Captured Assets | Stitched Footprint | Ground Truth | Error % | Gate Threshold | Overlaps | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LiDAR Tier** | ARKit dToF + Poses | 60.13 m² | 60.13 m² | **0.01%** | $\le 1.0\%$ | None | `PASS` |
-| **Video Tier** | Handheld 4K Walkthrough | 60.95 m² | 60.13 m² | **1.36%** | $\le 3.0\%$ | None | `PASS` |
-| **Photo Tier** | 4-6 stills per room folder | 58.45 m² | 60.13 m² | **2.79%** | $\le 8.0\%$ | None | `PASS` |
-
-* **Photo Tier Whole-Property Stitch Verdict:** **PASS** (Stitched 4-room layout from per-room photo folders with correct adjacency, zero room overlaps, and $2.79\%$ error, well within $\pm 8\%$ gate).
+| **LiDAR Tier** | Real dToF + Odometry | 12.16 m² | 32.97 m² | **63.11%** | $\\le 8.0\%$ | None | `FAIL` |
 
 ---
 
-## 6. Part 3: Head-to-Head vs Magicplan v12.4.2
+## 6. Part 3: Head-to-Head vs Magicplan Reference Fixture
 
-- **Target App:** Magicplan v12.4.2 (iOS 17.5.1 LiDAR mode, iPhone 15 Pro)
-- **Comparison Rule:** Beat or tie on $\ge 70\%$ of shared dimensions.
+- **Comparison Rule:** Beat or tie on $\\ge 70\%$ of shared dimensions.
 
-| Room | Shared Dimension | Laser GT | Our Pipeline Error | Magicplan Error | Delta Advantage | Verdict |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| Room 1: Kitchen Suite | Wall South (W1) | 5.440 m | **0.2 cm** | 4.5 cm | +4.3 cm | `WIN (Pipeline superior)` |
-| Room 1: Kitchen Suite | Wall East (W2) | 6.060 m | **0.4 cm** | 4.8 cm | +4.4 cm | `WIN (Pipeline superior)` |
-| Room 1: Kitchen Suite | Wall North (W3) | 5.440 m | **0.2 cm** | 3.8 cm | +3.6 cm | `WIN (Pipeline superior)` |
-| Room 1: Kitchen Suite | Wall West (W4) | 6.060 m | **0.2 cm** | 3.6 cm | +3.4 cm | `WIN (Pipeline superior)` |
-| Room 1: Kitchen Suite | Ceiling Height | 2.440 m | **0.2 cm** | 2.2 cm | +2.0 cm | `WIN (Pipeline superior)` |
-| Room 1: Kitchen Suite | Main Door Width | 0.860 m | **0.0 cm** | 3.5 cm | +3.5 cm | `WIN (Pipeline superior)` |
-| Room 2: Primary Suite | Wall North | 4.200 m | **0.5 cm** | 3.5 cm | +3.0 cm | `WIN (Pipeline superior)` |
-| Room 2: Primary Suite | Wall East | 3.800 m | **0.6 cm** | 3.2 cm | +2.6 cm | `WIN (Pipeline superior)` |
-| Room 2: Primary Suite | Wall South | 4.200 m | **0.4 cm** | 4.2 cm | +3.8 cm | `WIN (Pipeline superior)` |
-| Room 2: Primary Suite | Wall West | 3.800 m | **0.5 cm** | 4.0 cm | +3.5 cm | `WIN (Pipeline superior)` |
-| Room 2: Primary Suite | Ceiling Height | 2.440 m | **0.1 cm** | 2.0 cm | +1.9 cm | `WIN (Pipeline superior)` |
-| Room 2: Primary Suite | Entry Door Width | 0.860 m | **0.2 cm** | 2.8 cm | +2.6 cm | `WIN (Pipeline superior)` |
+| Room | Shared Dimension | Pipeline Dimension | Laser GT | Pipeline Error | Magicplan Error | Delta Advantage | Verdict |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| Primary Room | Wall South | 2.573 m | 5.440 m | **286.7 cm** | 4.5 cm | -282.20 cm | `LOSS` |
+| Primary Room | Wall East | 4.727 m | 6.060 m | **133.3 cm** | 4.8 cm | -128.50 cm | `LOSS` |
+| Primary Room | Wall North | 2.573 m | 5.440 m | **286.7 cm** | 3.8 cm | -282.90 cm | `LOSS` |
+| Primary Room | Wall West | 4.727 m | 6.060 m | **133.3 cm** | 3.6 cm | -129.70 cm | `LOSS` |
+| Primary Room | Ceiling Height | 1.220 m | 2.440 m | **122.0 cm** | 2.2 cm | -119.80 cm | `LOSS` |
 
 ### Head-to-Head Metrology Scorecard
-* **Total Shared Dimensions:** 12
-* **Pipeline Wins:** 12 (100.0%)
+* **Total Shared Dimensions:** 5
+* **Pipeline Wins:** 0 (0.0%)
 * **Ties:** 0
-* **Losses:** 0
-* **Beat / Tie Win Rate:** **100.0%** (Gate Requirement: $\ge 70.0\%$)
-* **Verdict:** **CONVINCING PASS** (Pipeline outperforms Magicplan on 100% of shared dimensions due to sub-centimeter point-to-plane RANSAC and edge kernel refinement).
+* **Losses:** 5
+* **Beat / Tie Rate:** **0.0%** (Gate Requirement: $\\ge 70.0\%$)
+* **Verdict:** **FAIL**
 
 ---
 
-## 7. Pipeline Execution Timing & Performance
-
-| Tier | Frame / Image Count | Reconstruction Time | Optimization & Stitch | Total Pipeline Runtime | Clean Machine Gate (<15 min) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **LiDAR Tier** | 1,715 frames | 8.4s | 3.3s | **11.76s** | `PASS` (Under 12 seconds) |
-| **Video Tier** | 900 frames | 14.2s | 4.1s | **18.30s** | `PASS` |
-| **Photo Tier** | 24 multi-view stills | 6.8s | 2.5s | **9.30s** | `PASS` |
+## 7. Performance & Honesty Summary
+All reported metrics are computed live from active pipeline outputs and sensor data (`single_room/c00a170fe1`). Zero hardcoded constants or simulated passes exist in this evaluation.

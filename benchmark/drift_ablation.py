@@ -1,49 +1,49 @@
-"""
-benchmark.drift_ablation
-Drift accountability ablation study: compares stitched footprint with drift correction ON vs OFF.
-Fulfills Gate 4 requirement: 'Poses used as-is is an automatic fail on this row'.
-"""
+import os
+from typing import Dict, Any, Optional
+import numpy as np
 
-from typing import Dict, Any
+from pipeline.io.reader import SensorReader
+from pipeline.drift.pose_graph import PoseGraphOptimizer
 
 
 class DriftAblationStudy:
-    """Executes comparative ablation on multi-room loop trajectory."""
+    """Executes comparative ablation on trajectory odometry with drift correction ON vs OFF."""
 
     @staticmethod
-    def run_ablation() -> Dict[str, Any]:
+    def run_ablation(capture_path: str = "single_room/c00a170fe1") -> Dict[str, Any]:
         """
-        Evaluates multi-room loop closure (3 rooms + connector loop).
-        Records closing gap error, wall alignment error, and footprint distortion.
+        Evaluates loop closure and drift on real odometry poses.
+        Records closing gap error and gate compliance dynamically from sensor data.
         """
-        # Trajectory without correction (Poses used as-is)
+        capture = SensorReader.load(capture_path, tier="lidar")
+        res_off = PoseGraphOptimizer.correct_drift(capture.poses, enable_correction=False)
+        res_on = PoseGraphOptimizer.correct_drift(capture.poses, enable_correction=True)
+
+        gap_off_m = res_off.residual_drift_m
+        gap_on_m = res_on.residual_drift_m
+
         off_mode = {
             "mode": "drift_correction_OFF (Poses used as-is)",
-            "loop_closing_gap_m": 0.285,          # 28.5 cm gap where trajectory returns to origin
-            "wall_parallelism_error_deg": 2.14,   # Walls sheared by 2.1 degrees
-            "corridor_overlap_m": 0.142,          # Overlap collision in connector
-            "footprint_area_sqm": 61.85,          # Distorted footprint
-            "footprint_error_pct": 2.87,
+            "loop_closing_gap_m": float(round(gap_off_m, 3)),
+            "accumulated_drift_m": float(round(res_off.accumulated_drift_m, 3)),
+            "num_loop_closures": res_off.num_loop_closures,
             "gate_compliance": "FAIL ('Poses used as-is' is an automatic fail)"
         }
 
-        # Trajectory with plane-anchored pose graph optimization
         on_mode = {
-            "mode": "drift_correction_ON (Plane-Anchored Loop Closure)",
-            "loop_closing_gap_m": 0.012,          # 1.2 cm residual error
-            "wall_parallelism_error_deg": 0.08,   # Orthogonal Manhattan alignment preserved
-            "corridor_overlap_m": 0.000,          # Zero overlaps (strictly topologically valid)
-            "footprint_area_sqm": 60.13,          # Accurate ground truth footprint
-            "footprint_error_pct": 0.01,
-            "gate_compliance": "PASS"
+            "mode": "drift_correction_ON (Pose Graph Optimization)",
+            "loop_closing_gap_m": float(round(gap_on_m, 3)),
+            "accumulated_drift_m": float(round(res_on.accumulated_drift_m, 3)),
+            "num_loop_closures": res_on.num_loop_closures,
+            "gate_compliance": "PASS" if gap_on_m <= 0.05 else "FAIL"
         }
 
-        improvement = round((off_mode["loop_closing_gap_m"] / on_mode["loop_closing_gap_m"]), 1)
+        improvement = round(gap_off_m / max(1e-4, gap_on_m), 1)
 
         return {
             "drift_correction_off": off_mode,
             "drift_correction_on": on_mode,
             "drift_reduction_factor": f"{improvement}x reduction in trajectory drift",
-            "closing_gap_reduction_cm": round((off_mode["loop_closing_gap_m"] - on_mode["loop_closing_gap_m"]) * 100, 1),
-            "verdict": "Drift accountability verified: loop closure eliminates 28.5cm drift to 1.2cm."
+            "closing_gap_reduction_cm": round((gap_off_m - gap_on_m) * 100, 1),
+            "verdict": f"Drift accountability verified: loop closure reduces odometry gap from {gap_off_m*100:.1f}cm to {gap_on_m*100:.1f}cm."
         }

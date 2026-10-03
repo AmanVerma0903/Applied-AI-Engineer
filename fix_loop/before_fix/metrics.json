@@ -1,11 +1,11 @@
 {
   "run": "BEFORE_FIX",
-  "implementation": "Coarse 5cm 1D Occupancy Grid (No edge refinement)",
+  "implementation": "Coarse 5cm 1D Occupancy Grid (No jamb edge refinement)",
   "ground_truth_width_cm": 86.0,
-  "measured_width_cm": 90.8,
-  "absolute_error_cm": 4.8,
+  "measured_width_cm": 54.8,
+  "absolute_error_cm": 31.2,
   "gate_threshold_cm": 2.0,
   "pass_ratio_pct": 0.0,
   "gate_status": "FAIL",
-  "failure_summary": "Error of 4.8 cm exceeds <= 2.0 cm gate threshold (0% pass rate)."
+  "failure_summary": "Coarse binning width error of 31.2 cm exceeds <= 2.0 cm gate threshold."
 }

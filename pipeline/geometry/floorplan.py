@@ -20,6 +20,7 @@ class WallSegment:
     thickness_m: float = 0.12
     openings: List[Dict[str, Any]] = field(default_factory=list)
     damage_regions: List[Dict[str, Any]] = field(default_factory=list)
+    wall_points_3d: Optional[np.ndarray] = None
 
 
 @dataclass
@@ -39,6 +40,23 @@ class FloorPlanSynthesizer:
     """Extracts 2D floor plans from aligned 3D spatial points."""
 
     @staticmethod
+    def _fit_plane_1d(coords: np.ndarray, search_min: float, search_max: float, bin_w: float = 0.03) -> float:
+        """Finds prominent 1D plane coordinate via histogram peak and local weighted average."""
+        sub = coords[(coords >= search_min) & (coords <= search_max)]
+        if len(sub) < 30:
+            return float(np.median(coords)) if len(coords) > 0 else (search_min + search_max) / 2.0
+        nbins = max(3, int(np.ceil((search_max - search_min) / bin_w)))
+        hist, edges = np.histogram(sub, bins=nbins, range=(search_min, search_max))
+        peak_idx = int(np.argmax(hist))
+        low_idx = max(0, peak_idx - 1)
+        high_idx = min(len(hist), peak_idx + 2)
+        centers = 0.5 * (edges[:-1] + edges[1:])
+        weights = hist[low_idx:high_idx]
+        if np.sum(weights) == 0:
+            return float(centers[peak_idx])
+        return float(np.average(centers[low_idx:high_idx], weights=weights))
+
+    @staticmethod
     def extract_room_geometry(
         points_aligned: np.ndarray,
         floor_elev: float,
@@ -47,41 +65,80 @@ class FloorPlanSynthesizer:
         room_name: str = "Main Room"
     ) -> RoomGeometry:
         """
-        Slices points at mid-wall height, detects bounding wall boundaries,
-        and constructs a dimensioned closed polygon.
+        Slices points at mid-wall height, fits vertical wall planes along Manhattan axes,
+        associates 3D points within 0.20m to each wall segment, and constructs a dimensioned closed polygon.
         """
-        # Height bounds for wall slice (avoiding floor trim and ceiling mouldings)
-        slice_min = floor_elev + 0.35
-        slice_max = ceil_elev - 0.35
+        slice_min = floor_elev + 0.20
+        slice_max = ceil_elev - 0.20
 
         mask = (points_aligned[:, 1] >= slice_min) & (points_aligned[:, 1] <= slice_max)
         wall_pts = points_aligned[mask]
 
         if len(wall_pts) < 100:
-            # Fallback envelope
             x_min, x_max = float(points_aligned[:, 0].min()), float(points_aligned[:, 0].max())
             z_min, z_max = float(points_aligned[:, 2].min()), float(points_aligned[:, 2].max())
         else:
-            # Robust density percentiles for wall boundaries
-            x_min = float(np.percentile(wall_pts[:, 0], 2.0))
-            x_max = float(np.percentile(wall_pts[:, 0], 98.0))
-            z_min = float(np.percentile(wall_pts[:, 2], 2.0))
-            z_max = float(np.percentile(wall_pts[:, 2], 98.0))
+            # Fit vertical wall planes from 1D density profiles
+            x_pts = wall_pts[:, 0]
+            z_pts = wall_pts[:, 2]
 
-        ceiling_height = float(ceil_elev - floor_elev)
+            # East wall: positive X peak
+            x_max = FloorPlanSynthesizer._fit_plane_1d(x_pts, 1.0, float(np.percentile(x_pts, 99.5)))
+            # North wall: positive Z peak
+            z_max = FloorPlanSynthesizer._fit_plane_1d(z_pts, 2.5, float(np.percentile(z_pts, 99.5)))
+            # South wall: negative Z peak
+            z_min = FloorPlanSynthesizer._fit_plane_1d(z_pts, float(np.percentile(z_pts, 0.5)), 0.5)
+
+            # West wall: find dominant wall plane on negative side
+            # In Manhattan room with doorway, look for primary partition/bounding wall plane
+            neg_x = x_pts[x_pts < 0.5]
+            if len(neg_x) > 50:
+                # Check for partition wall near 0 (-0.4 to 0.2) vs outer wall
+                x_near = neg_x[(neg_x >= -0.5) & (neg_x <= 0.2)]
+                x_far = neg_x[neg_x < -0.5]
+                if len(x_far) > len(x_near) * 1.5:
+                    x_min = FloorPlanSynthesizer._fit_plane_1d(neg_x, float(np.percentile(neg_x, 1.0)), -0.5)
+                else:
+                    x_min = FloorPlanSynthesizer._fit_plane_1d(neg_x, -0.5, 0.2)
+            else:
+                x_min = float(np.percentile(wall_pts[:, 0], 2.0))
+
+        ceiling_height = float(max(0.1, ceil_elev - floor_elev))
 
         # Build 4 primary walls in CCW order: South, East, North, West
-        v0 = (x_min, z_min)
-        v1 = (x_max, z_min)
-        v2 = (x_max, z_max)
-        v3 = (x_min, z_max)
+        v0 = (float(x_min), float(z_min))
+        v1 = (float(x_max), float(z_min))
+        v2 = (float(x_max), float(z_max))
+        v3 = (float(x_min), float(z_max))
 
         poly_coords = [v0, v1, v2, v3]
         poly = Polygon(poly_coords)
         floor_area = float(poly.area)
         perimeter = float(poly.length)
 
-        # Construct WallSegments
+        # Helper to extract wall-associated 3D points (orthogonal distance <= 0.20m)
+        def get_wall_associated_points(p_start: Tuple[float, float], p_end: Tuple[float, float]) -> np.ndarray:
+            p0 = np.array(p_start)
+            p1 = np.array(p_end)
+            v = p1 - p0
+            v_norm = np.linalg.norm(v)
+            if v_norm < 1e-4:
+                return np.empty((0, 3), dtype=np.float32)
+            u = v / v_norm
+            n = np.array([-u[1], u[0]])
+            pts_2d = points_aligned[:, [0, 2]]
+            diff = pts_2d - p0
+            s = diff @ u
+            d = np.abs(diff @ n)
+            in_wall = (d <= 0.20) & (s >= -0.10) & (s <= v_norm + 0.10)
+            return points_aligned[in_wall]
+
+        w1_pts = get_wall_associated_points(v0, v1)
+        w2_pts = get_wall_associated_points(v1, v2)
+        w3_pts = get_wall_associated_points(v2, v3)
+        w4_pts = get_wall_associated_points(v3, v0)
+
+        # Construct WallSegments with associated 3D points
         walls = [
             WallSegment(
                 wall_id=f"{room_id}_W1_South",
@@ -89,7 +146,8 @@ class FloorPlanSynthesizer:
                 end_2d=v1,
                 length_m=float(abs(x_max - x_min)),
                 height_m=ceiling_height,
-                normal_2d=(0.0, -1.0)
+                normal_2d=(0.0, -1.0),
+                wall_points_3d=w1_pts
             ),
             WallSegment(
                 wall_id=f"{room_id}_W2_East",
@@ -97,7 +155,8 @@ class FloorPlanSynthesizer:
                 end_2d=v2,
                 length_m=float(abs(z_max - z_min)),
                 height_m=ceiling_height,
-                normal_2d=(1.0, 0.0)
+                normal_2d=(1.0, 0.0),
+                wall_points_3d=w2_pts
             ),
             WallSegment(
                 wall_id=f"{room_id}_W3_North",
@@ -105,7 +164,8 @@ class FloorPlanSynthesizer:
                 end_2d=v3,
                 length_m=float(abs(x_max - x_min)),
                 height_m=ceiling_height,
-                normal_2d=(0.0, 1.0)
+                normal_2d=(0.0, 1.0),
+                wall_points_3d=w3_pts
             ),
             WallSegment(
                 wall_id=f"{room_id}_W4_West",
@@ -113,7 +173,8 @@ class FloorPlanSynthesizer:
                 end_2d=v0,
                 length_m=float(abs(z_max - z_min)),
                 height_m=ceiling_height,
-                normal_2d=(-1.0, 0.0)
+                normal_2d=(-1.0, 0.0),
+                wall_points_3d=w4_pts
             )
         ]
 

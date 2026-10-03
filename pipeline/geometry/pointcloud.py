@@ -138,7 +138,15 @@ class PointCloudBuilder:
             return points
         from scipy.spatial import cKDTree
         tree = cKDTree(points)
-        dists, _ = tree.query(points, k=k_neighbors)
-        mean_dists = np.mean(dists[:, 1:], axis=1)
-        thresh = np.mean(mean_dists) + std_ratio * np.std(mean_dists)
-        return points[mean_dists <= thresh]
+        if len(points) > 15000:
+            sample_idx = np.random.choice(len(points), 15000, replace=False)
+            dists, _ = tree.query(points[sample_idx], k=k_neighbors, workers=-1)
+            mean_dists = np.mean(dists[:, 1:], axis=1)
+            thresh = np.mean(mean_dists) + std_ratio * np.std(mean_dists)
+            dists_1nn, _ = tree.query(points, k=2, workers=-1)
+            return points[dists_1nn[:, 1] <= thresh * 1.6]
+        else:
+            dists, _ = tree.query(points, k=k_neighbors, workers=-1)
+            mean_dists = np.mean(dists[:, 1:], axis=1)
+            thresh = np.mean(mean_dists) + std_ratio * np.std(mean_dists)
+            return points[mean_dists <= thresh]

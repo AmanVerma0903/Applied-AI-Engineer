@@ -48,7 +48,7 @@ def main():
 
     # 3. Run full benchmark suite & gate audit
     print("\n[Step 3/4] Running full benchmark suite across all 5 gates & Head-to-Head...")
-    bench_results = run_full_benchmark_suite()
+    bench_results = run_full_benchmark_suite(contract_path=contract_path)
 
     # 4. Run Part 4 Fix Loop verification
     print("\n[Step 4/4] Reproducing Part 4 Fix Loop (before/after delta)...")

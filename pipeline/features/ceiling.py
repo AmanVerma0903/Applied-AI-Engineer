@@ -29,23 +29,19 @@ class CeilingEstimator:
         num_ceiling_inliers: int = 1500
     ) -> CeilingMeasurement:
         """Computes ceiling height and 95% confidence interval."""
-        raw_height = ceil_elev - floor_elev
+        raw_height = max(0.1, ceil_elev - floor_elev)
+        measured_height = raw_height
 
-        # Residential ceiling prior validation: if un-scanned ceiling tops out low,
-        # flag or calibrate using standard 8ft (2.438m) or 9ft (2.743m) architectural framing
+        # If scan pitch was low and ceiling points are sparse/low elevation, widen CI and lower confidence honestly
         if raw_height < 1.80:
-            # Low scan pitch: camera didn't aim up, use upper wall header
-            calibrated_height = 2.438  # 8ft standard
-            ci95 = 0.035
-            conf = 0.70
+            ci95 = 0.150  # Honest wide uncertainty interval due to truncated upper scan
+            conf = 0.40
         else:
-            calibrated_height = raw_height
-            # Precision depends on inlier density: 8mm - 12mm at 95% CI
             ci95 = max(0.008, 0.020 / np.sqrt(max(1, num_ceiling_inliers / 200)))
             conf = 0.95
 
         return CeilingMeasurement(
-            height_m=float(round(calibrated_height, 3)),
+            height_m=float(round(measured_height, 3)),
             ci95_m=float(round(ci95, 3)),
             floor_elev_m=float(round(floor_elev, 3)),
             ceil_elev_m=float(round(ceil_elev, 3)),

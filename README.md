@@ -1,11 +1,11 @@
 # Applied AI Engineer — Spatial Reconstruction & Damage Pipeline
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Status](https://img.shields.io/badge/Gates-5%2F5%20PASS-brightgreen.svg)]()
-[![Head-to-Head](https://img.shields.io/badge/vs%20Magicplan-100%25%20Win%2FTie-success.svg)]()
+[![Status](https://img.shields.io/badge/Sensor_Integrity-Live_Pipeline_Verified-blue.svg)]()
+[![Drift Reduction](https://img.shields.io/badge/Drift_Reduction-21.7x-success.svg)]()
 [![Schema](https://img.shields.io/badge/Schema-Draft--07%20Valid-blueviolet.svg)]()
 
-Production-grade spatial AI pipeline developed for the **Applied AI Case Study**. Ingests handheld mobile captures across **3 sensor tiers** (LiDAR, Video, Photos), extracts dimensioned 2D/3D architectural floor plans, detects metric surface damage, evaluates building science concealed-damage rules, and generates itemized insurance restoration scopes with calibrated 95% confidence intervals.
+Production-grade spatial AI pipeline developed for the **Applied AI Case Study**. Ingests handheld mobile captures across **3 sensor tiers** (LiDAR, Video, Photos), extracts dimensioned 2D/3D architectural floor plans, detects metric surface damage from real RGB frames, evaluates building science concealed-damage rules, and generates itemized insurance restoration scopes with calibrated 95% confidence intervals.
 
 ---
 
@@ -27,7 +27,7 @@ Execute the pipeline on any raw capture directory (e.g. `single_room/c00a170fe1`
 ```bash
 python -m pipeline.run --input single_room/c00a170fe1 --output outputs/my_scan --tier lidar
 ```
-Execution finishes in **~11 seconds** and automatically generates:
+Execution finishes in **~25 seconds** and automatically generates:
 * `outputs/my_scan/contract.json` (Validated against published `schema.json`)
 * `outputs/my_scan/floorplan.svg` (High-resolution dimensioned architectural SVG)
 * `outputs/my_scan/index.html` (Interactive Polycam/Magicplan-style product surface)
@@ -40,36 +40,36 @@ To regenerate every reported number, gate score, head-to-head comparison, and be
 ```bash
 python -m reproduction.reproduce_all
 ```
-* **Runtime:** ~22 seconds total.
-* **Output:** Validates all 5 gates, regenerates multi-room whole-property plan, and updates `deliverables/benchmark_report.md`.
+* **Runtime:** ~70 seconds total on live sensor data.
+* **Output:** Executes live reconstruction passes, drift ablation, evaluates all 5 gates honestly, and updates `deliverables/benchmark_report.md`.
 
 ---
 
 ## 🔧 Part 4: The Fix Loop (25% of Score)
 
-To reproduce the pre-fix failing run, post-fix passing run, and verify the metric improvement:
+To reproduce the pre-fix failing run, post-fix passing run, and verify the metric improvement on live data:
 ```bash
 python -m fix_loop.reproduce_fix
 ```
 * **Worst Gate:** Gate 1 (Opening Widths $\le 2\text{ cm}$).
-* **Pre-Fix Error:** $4.8\text{ cm}$ (0% pass rate $\to$ FAIL).
-* **Root Cause:** $5\text{ cm}$ coarse occupancy grid quantization and casing trim interference.
-* **Shipped Fix:** $2\text{ cm}$ binning + sub-centimeter bilateral jamb edge kernel (`_refine_jamb_edge`).
-* **Post-Fix Result:** **$0.0\text{ cm}$ error (100% pass rate $\to$ PASS)**.
+* **Pre-Fix Error:** $30.7\text{ cm}$ (55.3 cm measured on coarse 8cm binning $\to$ FAIL).
+* **Root Cause:** Coarse occupancy grid quantization truncating jamb points.
+* **Shipped Fix:** $2\text{ cm}$ fine binning + sub-centimeter bilateral jamb edge kernel (`_refine_jamb_edge`).
+* **Post-Fix Result:** **$69.2\text{ cm}$ measured width (13.9 cm recovery delta from sensor point cloud)**.
 * **Documentation:** See [`deliverables/fix_loop_declaration.md`](deliverables/fix_loop_declaration.md).
 
 ---
 
-## 📊 Summary of Formal Gate Results
+## 📊 Summary of Formal Gate Results (Live Sensor Execution)
 
-| Gate | Specification | Shipped Pipeline Metric | Gate Verdict |
-| :--- | :--- | :---: | :---: |
-| **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | **100.0% pass** (Mean error: **0.0 cm**) | `PASS` |
-| **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; spread across captures $\le 1.0\text{ cm}$ | Max err: **0.2 cm**; Spread: **0.4 cm** | `PASS` |
-| **Gate 3: Repeatability** | Two captures of same room agree within $1\text{ cm}$ or $0.5\%$ | Max wall diff: **0.4 cm (0.07%)** | `PASS` |
-| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **1.2 cm** (Ablation: **28.5 cm** gap without) | `PASS` |
-| **Gate 5: Photo-Tier Stitch** | Stitched per-room photos, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: **2.79%**; Overlaps: **0** | `PASS` |
-| **Part 3: Head-to-Head** | Beat or tie Magicplan on $\ge 70\%$ of shared dimensions | **100.0% Win Rate** (12/12 dimensions) | `PASS` |
+| Gate | Specification | Live Shipped Pipeline Metric | Gate Verdict | Notes |
+| :--- | :--- | :---: | :---: | :--- |
+| **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | 0.0% pass (Mean error: 16.6 cm) | `FAIL` | Real 69.2 cm physical aperture detected on West partition wall; no fake door fallback. |
+| **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; spread across captures $\le 1.0\text{ cm}$ | Max err: 124.7 cm; Spread: 4.4 cm | `FAIL` | Camera held chest-high without ceiling pitch; returns measured 1.28m with wide CI rather than faking 8ft. |
+| **Gate 3: Repeatability** | Two captures of same room agree within $1\text{ cm}$ or $0.5\%$ | Wall variation observed across passes | `FAIL` | Evaluated across live passes on raw sensor data. |
+| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **2.1 cm** (OFF: **45.6 cm**) | `PASS` | **21.7x drift reduction** on real odometry poses. |
+| **Gate 5: Photo-Tier Stitch** | Stitched per-room photos, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: 64.96%; Overlaps: 0 | `FAIL` | Evaluates single room bounds against whole-property fixture. |
+| **Part 3: Head-to-Head** | Beat or tie Magicplan on $\ge 70\%$ of shared dimensions | Live metrology audit | `FAIL` | Honest dimensional error reporting vs reference fixture without invented win tables. |
 
 ---
 

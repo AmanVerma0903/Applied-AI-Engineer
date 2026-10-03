@@ -59,9 +59,18 @@ def run_pipeline(
     if tier == "lidar" and len(capture.depth_frames) > 0:
         pcd = PointCloudBuilder.from_capture(capture, input_path, frame_stride=20, voxel_size=0.03)
         pts = pcd.points
+    elif tier == "video":
+        rgb_path = os.path.join(input_path, "rgb.mp4")
+        if not os.path.exists(rgb_path):
+            raise ValueError(f"Video tier requested but no rgb.mp4 found in {input_path}")
+        if len(capture.poses) > 0:
+            pts = np.array([p.t for p in capture.poses], dtype=np.float32)
+        else:
+            raise ValueError("Insufficient odometry to reconstruct 3D points for video tier.")
+    elif tier == "photos":
+        raise ValueError(f"Photo tier whole-property stitch requires multi-room photo directories in {input_path}")
     else:
-        # Synthetic / video / photo fallback point projection
-        pts = np.random.uniform(-2.5, 2.5, (10000, 3)).astype(np.float32)
+        raise ValueError(f"LiDAR tier requested but no depth frames found in {input_path}. Falling back to random points is prohibited.")
 
     print(f"       Extracted {len(pts):,} filtered spatial 3D points.")
 
@@ -98,18 +107,25 @@ def run_pipeline(
     rooms_contract = []
     all_rooms_geo = [room_geo]
 
-    # For multi-room testing, add adjacent rooms if requested
+    # For multi-room testing, add adjacent rooms if real subdirectories exist
     if is_multi_room:
-        # Create standard multi-room test suite: Hallway, Primary Suite, Kitchen, Bathroom
-        r_suite = FloorPlanSynthesizer.extract_room_geometry(
-            aligned_pts * 0.9 + 0.2, floor_elev, floor_elev + ceiling_meas.height_m,
-            room_id="room_suite", room_name="Primary Bedroom"
-        )
-        r_bath = FloorPlanSynthesizer.extract_room_geometry(
-            aligned_pts * 0.6 - 0.5, floor_elev, floor_elev + ceiling_meas.height_m,
-            room_id="room_bath", room_name="Full Bathroom"
-        )
-        all_rooms_geo = [room_geo, r_suite, r_bath]
+        sub_rooms = [
+            os.path.join(input_path, d) for d in os.listdir(input_path)
+            if os.path.isdir(os.path.join(input_path, d)) and ("room" in d.lower() or "suite" in d.lower())
+        ]
+        if len(sub_rooms) > 1:
+            all_rooms_geo = []
+            for s_idx, s_dir in enumerate(sub_rooms):
+                s_cap = SensorReader.load(s_dir, tier=tier)
+                s_pcd = PointCloudBuilder.from_capture(s_cap, s_dir, frame_stride=30, voxel_size=0.04)
+                s_yaw = ManhattanAligner.find_dominant_yaw(s_pcd.points[:, [0, 2]])
+                s_aligned, _ = ManhattanAligner.align_to_manhattan(s_pcd.points, s_yaw)
+                s_geo = FloorPlanSynthesizer.extract_room_geometry(s_aligned, floor_elev, ceil_elev, room_id=f"room_{s_idx+1}")
+                all_rooms_geo.append(s_geo)
+        else:
+            all_rooms_geo = [room_geo]
+    else:
+        all_rooms_geo = [room_geo]
 
     for r_idx, r in enumerate(all_rooms_geo):
         walls_contract = []
@@ -117,38 +133,27 @@ def run_pipeline(
         room_scope_items = []
 
         for w_idx, w in enumerate(r.walls):
-            # Openings detection along wall
+            # Openings detection along wall using wall-associated points
+            wall_pts_for_detector = w.wall_points_3d if hasattr(w, "wall_points_3d") and w.wall_points_3d is not None and len(w.wall_points_3d) > 0 else aligned_pts
             openings = OpeningDetector.detect_openings_on_wall(
                 wall_id=w.wall_id,
                 start_2d=w.start_2d,
                 end_2d=w.end_2d,
                 wall_length=w.length_m,
                 ceiling_height=r.ceiling_height_m,
-                wall_points_3d=aligned_pts,
-                floor_elev=floor_elev
+                wall_points_3d=wall_pts_for_detector,
+                floor_elev=floor_elev,
+                use_refinement=True
             )
-            # Ensure at least one primary entrance door per room
-            if w_idx == 0 and not openings:
-                from pipeline.features.openings import DetectedOpening
-                openings = [DetectedOpening(
-                    opening_id=f"op_{w.wall_id}_01",
-                    wall_id=w.wall_id,
-                    opening_type="door",
-                    offset_along_wall_m=round(w.length_m * 0.35, 3),
-                    width_m=0.860,
-                    height_m=2.050,
-                    elevation_m=0.0,
-                    confidence=0.96,
-                    ci95_width_m=0.012
-                )]
 
-            # Surface damage detection (staged damage on Wall 2 / Plumbing Wall)
-            has_damage = (w_idx == 1)
+            # Surface damage detection from real RGB video frames (clean walls return [])
+            rgb_video_path = os.path.join(input_path, "rgb.mp4")
             damages = DamageDetector.detect_surface_damage(
                 surface_id=w.wall_id,
                 wall_length=w.length_m,
                 wall_height=w.height_m,
-                has_staged_damage=has_damage
+                rgb_video_path=rgb_video_path,
+                wall_points_3d=w.wall_points_3d if hasattr(w, "wall_points_3d") else None
             )
 
             # Concealed damage rules
@@ -238,7 +243,12 @@ def run_pipeline(
     # 7. Multi-room stitching & drift correction
     print(" [7/8] Stitching whole-property plan & applying pose graph loop closure...")
     drift_res = PoseGraphOptimizer.correct_drift(capture.poses, enable_correction=enable_drift_correction)
-    stitched_plan = MultiRoomStitcher.stitch_rooms(all_rooms_geo, tier=tier, drift_correction_enabled=enable_drift_correction)
+    stitched_plan = MultiRoomStitcher.stitch_rooms(
+        all_rooms_geo,
+        tier=tier,
+        drift_correction_enabled=enable_drift_correction,
+        drift_residual_m=drift_res.residual_drift_m
+    )
 
     runtime_sec = round(time.time() - start_time, 2)
 
