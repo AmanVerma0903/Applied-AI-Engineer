@@ -2,15 +2,88 @@
   "app_name": "Polycam",
   "app_version": "3.4.1 (Room Mode, iOS 17.5.1)",
   "hardware": "iPhone 15 Pro",
+  "export_date": "2026-09-28T15:10:02Z",
   "rooms": {
     "room_01_kitchen_suite": {
+      "name": "Kitchen & Suite",
       "dimensions": [
-        { "name": "Wall South (W1)", "measured_m": 5.405, "error_cm": 3.5 },
-        { "name": "Wall East (W2)", "measured_m": 6.022, "error_cm": 3.8 },
-        { "name": "Wall North (W3)", "measured_m": 5.410, "error_cm": 3.0 },
-        { "name": "Wall West (W4)", "measured_m": 6.035, "error_cm": 2.5 },
-        { "name": "Ceiling Height", "measured_m": 2.422, "error_cm": 1.8 },
-        { "name": "Main Door Width", "measured_m": 0.835, "error_cm": 2.5 }
+        {
+          "name": "Wall South (W1)",
+          "measured_m": 5.405,
+          "ground_truth_m": 5.44,
+          "error_cm": 3.5
+        },
+        {
+          "name": "Wall East (W2)",
+          "measured_m": 6.022,
+          "ground_truth_m": 6.06,
+          "error_cm": 3.8
+        },
+        {
+          "name": "Wall North (W3)",
+          "measured_m": 5.41,
+          "ground_truth_m": 5.44,
+          "error_cm": 3.0
+        },
+        {
+          "name": "Wall West (W4)",
+          "measured_m": 6.035,
+          "ground_truth_m": 6.06,
+          "error_cm": 2.5
+        },
+        {
+          "name": "Ceiling Height",
+          "measured_m": 2.422,
+          "ground_truth_m": 2.44,
+          "error_cm": 1.8
+        },
+        {
+          "name": "Main Door Width",
+          "measured_m": 0.835,
+          "ground_truth_m": 0.86,
+          "error_cm": 2.5
+        }
+      ]
+    },
+    "room_02_primary_suite": {
+      "name": "Primary Suite",
+      "dimensions": [
+        {
+          "name": "Wall North (W1)",
+          "measured_m": 4.168,
+          "ground_truth_m": 4.2,
+          "error_cm": 3.2
+        },
+        {
+          "name": "Wall East (W2)",
+          "measured_m": 3.772,
+          "ground_truth_m": 3.8,
+          "error_cm": 2.8
+        },
+        {
+          "name": "Wall South (W3)",
+          "measured_m": 4.162,
+          "ground_truth_m": 4.2,
+          "error_cm": 3.8
+        },
+        {
+          "name": "Wall West (W4)",
+          "measured_m": 3.765,
+          "ground_truth_m": 3.8,
+          "error_cm": 3.5
+        },
+        {
+          "name": "Ceiling Height",
+          "measured_m": 2.424,
+          "ground_truth_m": 2.44,
+          "error_cm": 1.6
+        },
+        {
+          "name": "Entry Door Width",
+          "measured_m": 0.838,
+          "ground_truth_m": 0.86,
+          "error_cm": 2.2
+        }
       ]
     }
   }

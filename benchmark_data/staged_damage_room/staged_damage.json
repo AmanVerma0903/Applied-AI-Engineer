@@ -1,0 +1,49 @@
+{
+  "room_id": "room_01_kitchen_suite",
+  "damage_items": [
+    {
+      "damage_id": "dmg_staged_water_01",
+      "wall_id": "W2_East",
+      "damage_class": "water_damage",
+      "area_sqm": 0.43,
+      "severity": "high",
+      "bounding_polygon_m": [
+        [
+          2.2,
+          0.15
+        ],
+        [
+          3.15,
+          0.15
+        ],
+        [
+          3.15,
+          0.75
+        ],
+        [
+          2.2,
+          0.75
+        ]
+      ],
+      "description": "Category 2 water damage moisture stain along base of partition wall"
+    },
+    {
+      "damage_id": "dmg_staged_crack_01",
+      "wall_id": "W2_East",
+      "damage_class": "drywall_crack",
+      "length_m": 0.78,
+      "severity": "medium",
+      "bounding_polygon_m": [
+        [
+          1.5,
+          1.2
+        ],
+        [
+          2.15,
+          1.65
+        ]
+      ],
+      "description": "Diagonal settlement shear crack on gypsum board"
+    }
+  ]
+}

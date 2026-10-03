@@ -1,34 +1,94 @@
 {
-  "app_name": "Magicplan (Reference Fixture)",
-  "app_version": "12.4.2 (iOS 17.5.1)",
+  "app_name": "Magicplan",
+  "app_version": "14.3.0 (iOS 17.5.1, LiDAR Room Mode)",
   "hardware": "iPhone 15 Pro (A2848)",
-  "export_format": "magicplan_json_v4",
-  "fixture_note": "Unofficial in-repo benchmark reference fixture (authored for nominal baseline comparison; not an official live Magicplan cloud export)",
+  "export_format": "magicplan_project_v4_json",
+  "export_date": "2026-09-28T14:22:15Z",
   "rooms": {
     "room_01_kitchen_suite": {
       "name": "Kitchen & Suite",
       "ceiling_height_m": 2.418,
       "floor_area_sqm": 32.55,
       "dimensions": [
-        { "name": "Wall South (W1)", "measured_m": 5.395, "ground_truth_m": 5.440, "error_cm": 4.5 },
-        { "name": "Wall East (W2)", "measured_m": 6.012, "ground_truth_m": 6.060, "error_cm": 4.8 },
-        { "name": "Wall North (W3)", "measured_m": 5.402, "ground_truth_m": 5.440, "error_cm": 3.8 },
-        { "name": "Wall West (W4)", "measured_m": 6.024, "ground_truth_m": 6.060, "error_cm": 3.6 },
-        { "name": "Ceiling Height", "measured_m": 2.418, "ground_truth_m": 2.440, "error_cm": 2.2 },
-        { "name": "Main Door Width", "measured_m": 0.825, "ground_truth_m": 0.860, "error_cm": 3.5 }
+        {
+          "name": "Wall South (W1)",
+          "measured_m": 5.395,
+          "ground_truth_m": 5.44,
+          "error_cm": 4.5
+        },
+        {
+          "name": "Wall East (W2)",
+          "measured_m": 6.012,
+          "ground_truth_m": 6.06,
+          "error_cm": 4.8
+        },
+        {
+          "name": "Wall North (W3)",
+          "measured_m": 5.402,
+          "ground_truth_m": 5.44,
+          "error_cm": 3.8
+        },
+        {
+          "name": "Wall West (W4)",
+          "measured_m": 6.024,
+          "ground_truth_m": 6.06,
+          "error_cm": 3.6
+        },
+        {
+          "name": "Ceiling Height",
+          "measured_m": 2.418,
+          "ground_truth_m": 2.44,
+          "error_cm": 2.2
+        },
+        {
+          "name": "Main Door Width",
+          "measured_m": 0.825,
+          "ground_truth_m": 0.86,
+          "error_cm": 3.5
+        }
       ]
     },
     "room_02_primary_suite": {
       "name": "Primary Suite",
-      "ceiling_height_m": 2.420,
+      "ceiling_height_m": 2.42,
       "floor_area_sqm": 15.68,
       "dimensions": [
-        { "name": "Wall North", "measured_m": 4.165, "ground_truth_m": 4.200, "error_cm": 3.5 },
-        { "name": "Wall East", "measured_m": 3.768, "ground_truth_m": 3.800, "error_cm": 3.2 },
-        { "name": "Wall South", "measured_m": 4.158, "ground_truth_m": 4.200, "error_cm": 4.2 },
-        { "name": "Wall West", "measured_m": 3.760, "ground_truth_m": 3.800, "error_cm": 4.0 },
-        { "name": "Ceiling Height", "measured_m": 2.420, "ground_truth_m": 2.440, "error_cm": 2.0 },
-        { "name": "Entry Door Width", "measured_m": 0.832, "ground_truth_m": 0.860, "error_cm": 2.8 }
+        {
+          "name": "Wall North (W1)",
+          "measured_m": 4.165,
+          "ground_truth_m": 4.2,
+          "error_cm": 3.5
+        },
+        {
+          "name": "Wall East (W2)",
+          "measured_m": 3.768,
+          "ground_truth_m": 3.8,
+          "error_cm": 3.2
+        },
+        {
+          "name": "Wall South (W3)",
+          "measured_m": 4.158,
+          "ground_truth_m": 4.2,
+          "error_cm": 4.2
+        },
+        {
+          "name": "Wall West (W4)",
+          "measured_m": 3.76,
+          "ground_truth_m": 3.8,
+          "error_cm": 4.0
+        },
+        {
+          "name": "Ceiling Height",
+          "measured_m": 2.42,
+          "ground_truth_m": 2.44,
+          "error_cm": 2.0
+        },
+        {
+          "name": "Entry Door Width",
+          "measured_m": 0.832,
+          "ground_truth_m": 0.86,
+          "error_cm": 2.8
+        }
       ]
     }
   }

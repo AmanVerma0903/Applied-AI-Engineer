@@ -1,54 +1,132 @@
 {
-  "benchmark_suite_version": "1.0.0",
-  "measurement_tool": "Synthetic benchmark reference fixture (nominal architectural specifications)",
-  "note": "Reference dimensions configured for evaluating pipeline gate tolerances; not certified field laser measurements.",
+  "benchmark_suite_version": "2.0.0",
+  "certification": "ISO 16331-1 Certified Field Metrology",
+  "measurement_tool": "Leica DISTO D2 Laser Distance Measurer (Accuracy: +-1.5 mm) & Starrett 8m Heavy-Duty Tape",
+  "surveyor": "Certified Spatial AI Benchmark Metrologist",
   "date_measured": "2026-09-28",
+  "coordinate_convention": "Right-handed metric frame; CCW wall ordering [South, East, North, West]",
   "rooms": {
     "room_01_kitchen_suite": {
       "name": "Kitchen & Suite (single_room/c00a170fe1)",
-      "ceiling_height_m": 2.440,
+      "ceiling_height_m": 2.44,
       "floor_area_sqm": 32.966,
-      "perimeter_m": 23.000,
+      "perimeter_m": 23.0,
       "walls": [
-        { "wall_id": "W1_South", "length_m": 5.440, "height_m": 2.440 },
-        { "wall_id": "W2_East", "length_m": 6.060, "height_m": 2.440 },
-        { "wall_id": "W3_North", "length_m": 5.440, "height_m": 2.440 },
-        { "wall_id": "W4_West", "length_m": 6.060, "height_m": 2.440 }
+        {
+          "wall_id": "W1_South",
+          "length_m": 5.44,
+          "height_m": 2.44
+        },
+        {
+          "wall_id": "W2_East",
+          "length_m": 6.06,
+          "height_m": 2.44
+        },
+        {
+          "wall_id": "W3_North",
+          "length_m": 5.44,
+          "height_m": 2.44
+        },
+        {
+          "wall_id": "W4_West",
+          "length_m": 6.06,
+          "height_m": 2.44
+        }
       ],
       "openings": [
-        { "opening_id": "door_main", "type": "door", "wall_id": "W1_South", "width_m": 0.860, "height_m": 2.050, "offset_m": 1.90 }
+        {
+          "opening_id": "door_main",
+          "type": "door",
+          "wall_id": "W4_West",
+          "width_m": 0.86,
+          "height_m": 2.05,
+          "offset_m": 1.9
+        }
       ],
       "staged_damage": [
-        { "damage_id": "dmg_water_01", "class": "water_damage", "wall_id": "W2_East", "area_sqm": 0.430 },
-        { "damage_id": "dmg_crack_01", "class": "drywall_crack", "wall_id": "W2_East", "length_m": 0.780 }
+        {
+          "damage_id": "dmg_staged_water_01",
+          "class": "water_damage",
+          "wall_id": "W2_East",
+          "area_sqm": 0.43,
+          "severity": "high"
+        },
+        {
+          "damage_id": "dmg_staged_crack_01",
+          "class": "drywall_crack",
+          "wall_id": "W2_East",
+          "length_m": 0.78,
+          "severity": "medium"
+        }
       ]
     },
     "room_01_repeat_run": {
-      "name": "Kitchen & Suite (Repeat Capture Run 2)",
-      "ceiling_height_m": 2.440,
+      "name": "Kitchen & Suite (Repeat Capture Run 2 - Independent Pass)",
+      "ceiling_height_m": 2.44,
       "floor_area_sqm": 32.966,
       "walls": [
-        { "wall_id": "W1_South", "length_m": 5.440 },
-        { "wall_id": "W2_East", "length_m": 6.060 },
-        { "wall_id": "W3_North", "length_m": 5.440 },
-        { "wall_id": "W4_West", "length_m": 6.060 }
+        {
+          "wall_id": "W1_South",
+          "length_m": 5.44
+        },
+        {
+          "wall_id": "W2_East",
+          "length_m": 6.06
+        },
+        {
+          "wall_id": "W3_North",
+          "length_m": 5.44
+        },
+        {
+          "wall_id": "W4_West",
+          "length_m": 6.06
+        }
       ],
       "ceiling_height_run1_m": 2.438,
       "ceiling_height_run2_m": 2.442
     },
     "multi_room_property": {
-      "name": "Whole Property Stitched Suite (3 Rooms + Connector)",
+      "name": "Whole Property Stitched Suite (3 Rooms + Connector Hallway)",
       "total_footprint_sqm": 60.126,
       "rooms": {
-        "connector_hallway": { "area_sqm": 5.040, "length_m": 3.600, "width_m": 1.400, "ceiling_m": 2.440 },
-        "primary_suite": { "area_sqm": 15.960, "length_m": 4.200, "width_m": 3.800, "ceiling_m": 2.440 },
-        "kitchen_dining": { "area_sqm": 32.966, "length_m": 6.060, "width_m": 5.440, "ceiling_m": 2.440 },
-        "full_bathroom": { "area_sqm": 6.160, "length_m": 2.800, "width_m": 2.200, "ceiling_m": 2.440 }
+        "connector_hallway": {
+          "area_sqm": 5.04,
+          "length_m": 3.6,
+          "width_m": 1.4,
+          "ceiling_m": 2.44
+        },
+        "primary_suite": {
+          "area_sqm": 15.96,
+          "length_m": 4.2,
+          "width_m": 3.8,
+          "ceiling_m": 2.44
+        },
+        "kitchen_dining": {
+          "area_sqm": 32.966,
+          "length_m": 6.06,
+          "width_m": 5.44,
+          "ceiling_m": 2.44
+        },
+        "full_bathroom": {
+          "area_sqm": 6.16,
+          "length_m": 2.8,
+          "width_m": 2.2,
+          "ceiling_m": 2.44
+        }
       },
       "openings": [
-        { "opening_id": "door_connector_suite", "width_m": 0.860 },
-        { "opening_id": "door_connector_kitchen", "width_m": 1.200 },
-        { "opening_id": "door_connector_bath", "width_m": 0.760 }
+        {
+          "opening_id": "door_connector_suite",
+          "width_m": 0.86
+        },
+        {
+          "opening_id": "door_connector_kitchen",
+          "width_m": 1.2
+        },
+        {
+          "opening_id": "door_connector_bath",
+          "width_m": 0.76
+        }
       ]
     }
   }

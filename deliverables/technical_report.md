@@ -149,9 +149,8 @@ We designed and shipped a two-stage edge localization algorithm in `pipeline.fea
 
 ### 4. Verification & Delta
 Running live `python -m fix_loop.reproduce_fix` on `single_room/c00a170fe1`:
-* **Shipped Post-Fix Measured Width:** **$87.9\text{ cm}$**
-* **Absolute Error vs GT:** **$1.9\text{ cm}$** ($\le 2.0\text{ cm} \to$ **PASS**)
-* **Improvement Delta:** **$9.7\text{ cm}$ recovery** toward physical aperture
+* **Shipped measured width:** **82.9 cm** on the walked-room west wall
+* **Absolute error vs the 86.0 cm reference:** **3.1 cm** (Gate 1 threshold is 2.0 cm, so this opening **FAILS**)
 * **Honest Evaluation:** The aperture measurement comes entirely from live LiDAR density gaps without artificial snapping to 86.0 cm.
 
 ---

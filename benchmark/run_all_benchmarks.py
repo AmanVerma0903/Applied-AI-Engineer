@@ -47,6 +47,8 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
     # 2. Gate 2 & 3: Run 2 Live capture for repeatability
     print("\n[Gate 2 & 3/5] Executing Live Repeatability Pass on Sensor Data...")
     capture_path = "single_room/c00a170fe1"
+    # Second pass of the same full capture (different frame stride). The partial
+    # repeat_run folder does not cover the same room envelope.
     capture = SensorReader.load(capture_path, tier="lidar")
     pcd2 = PointCloudBuilder.from_capture(capture, capture_path, frame_stride=25, voxel_size=0.03)
     fp2, cp2 = RansacPlaneDetector.extract_horizontal_planes(pcd2.points)
@@ -86,21 +88,23 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
 
     # 4. Gate 4: Drift Accountability & Loop Closure Ablation (live odometry)
     print("\n[Gate 4/5] Evaluating Drift Accountability & Ablation on Sensor Odometry...")
-    ablation_res = DriftAblationStudy.run_ablation(capture_path=capture_path)
+    ablation_res = DriftAblationStudy.run_ablation(capture_path="single_room/c00a170fe1")
     print(f"  Drift OFF: {ablation_res['drift_correction_off']['loop_closing_gap_m']*100:.1f} cm gap ({ablation_res['drift_correction_off']['gate_compliance']})")
     print(f"  Drift ON:  {ablation_res['drift_correction_on']['loop_closing_gap_m']*100:.1f} cm residual ({ablation_res['drift_correction_on']['gate_compliance']})")
     print(f"  Factor:    {ablation_res['drift_reduction_factor']}")
 
     # 5. Gate 5: Footprint Stitching Gate
     print("\n[Gate 5/5] Evaluating Whole-Property Stitch Gate...")
+    photo_root = "benchmark_data/multi_room/photos"
     measured_footprint = contract["stitched_plan"]["total_area_sqm"]["value"] if isinstance(contract["stitched_plan"].get("total_area_sqm"), dict) else float(contract["stitched_plan"]["total_area_sqm"])
-    num_rooms = len(contract.get("rooms", []))
-    if num_rooms <= 1:
-        gt_footprint = gt_r1.get("floor_area_sqm", 32.966)
-        gate5_context = "Single-room capture evaluated against matching room GT (photo-tier multi-room capture not run due to missing photo folders)"
-    else:
+    gt_footprint = gt_r1.get("floor_area_sqm", 32.966)
+    gate5_context = "Single-room LiDAR footprint versus the surveyed room area"
+    if os.path.isdir(photo_root):
+        from pipeline.stitching.photo_tier import PhotoRoomReconstructor
+        photo_rooms, photo_plan = PhotoRoomReconstructor.reconstruct_property_from_photos(photo_root)
+        measured_footprint = photo_plan.total_floor_area_sqm
         gt_footprint = gt_data["rooms"]["multi_room_property"]["total_footprint_sqm"]
-        gate5_context = "Whole-property multi-room stitch"
+        gate5_context = f"Photo-tier stitch of {len(photo_rooms)} rooms from stills (door-scale prior 0.813 m, no ground-truth lookup)"
 
     gate5_res = evaluator.evaluate_photo_stitching_gate(measured_footprint, gt_footprint_sqm=gt_footprint)
     gate5_res["context"] = gate5_context
@@ -180,9 +184,8 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 
     md += f"""
 ### Gate 1 Metrology Breakdown
-* **Physical Door Accuracy:** On the modeled interior door (`door_main`), the pipeline achieved an absolute error of **{g1['mean_error_cm']} cm** (Measured: **{matched_op_w} cm** vs GT: **86.0 cm**), proving sub-2cm physical metrology capability.
-* **Gate 1 Scoring Rule Accounting:** Under Part 2 scoring rules (*"a missed opening and a phantom opening each count as a miss"*), 1 passing opening out of {g1.get('total_scored_items', 3)} total evaluated items yields **{g1['pass_ratio']}% compliance** (Gate requires $\\ge 85\%$). Therefore, Gate 1 is reported as an **Honest FAIL**.
-* **Fix-Loop Relation (Part 4):** Part 4 fix loop focuses specifically on repairing the metrological edge detector on the physical interior door (coarse 5cm binning error reduced to sub-2cm, an honest 10.0 cm improvement), demonstrating detector repair, while the overall multi-opening room evaluation honestly reports {g1['pass_ratio']}% compliance due to unmodeled openings.
+* **Physical Door Accuracy:** The closest detected opening is **{matched_op_w} cm** versus the 86.0 cm reference (absolute error **{g1['mean_error_cm']} cm**).
+* **Gate 1 Scoring:** Pass ratio **{g1['pass_ratio']}%** (requirement $\\ge 85\%$). Status: **{g1['status']}**.
 
 ---
 
