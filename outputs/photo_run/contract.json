@@ -1,0 +1,679 @@
+{
+  "capture_id": "photos",
+  "tier": "photos",
+  "timestamp": "2026-10-04T04:10:54.283142",
+  "units": "meters",
+  "rooms": [
+    {
+      "room_id": "room_connector_hallway",
+      "name": "Connector Hallway",
+      "ceiling_height_m": {
+        "value": 2.1,
+        "ci95": 0.058,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 3.26,
+        "ci95": 0.59,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          2.069,
+          0.0
+        ],
+        [
+          2.069,
+          1.578
+        ],
+        [
+          0.0,
+          1.578
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_connector_hallway_W1_South",
+          "start_m": [
+            0.0,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            0.0
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_connector_hallway_W2_East",
+          "start_m": [
+            2.069,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            1.578
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_connector_hallway_W3_North",
+          "start_m": [
+            2.069,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            1.578
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_connector_hallway_W4_West",
+          "start_m": [
+            0.0,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            0.0
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_connector_hallway_door",
+              "type": "door",
+              "offset_m": 0.382,
+              "width_m": {
+                "value": 0.813,
+                "ci95": 0.12,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.03,
+                "ci95": 0.15,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.45
+            }
+          ],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [],
+      "scope_line_items": []
+    },
+    {
+      "room_id": "room_room_02_suite",
+      "name": "Room 02 Suite",
+      "ceiling_height_m": {
+        "value": 2.1,
+        "ci95": 0.058,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 3.26,
+        "ci95": 0.59,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          2.069,
+          0.0
+        ],
+        [
+          2.069,
+          1.578
+        ],
+        [
+          0.0,
+          1.578
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_room_02_suite_W1_South",
+          "start_m": [
+            0.0,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            0.0
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_02_suite_W2_East",
+          "start_m": [
+            2.069,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            1.578
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_02_suite_W3_North",
+          "start_m": [
+            2.069,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            1.578
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_02_suite_W4_West",
+          "start_m": [
+            0.0,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            0.0
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_room_02_suite_door",
+              "type": "door",
+              "offset_m": 0.388,
+              "width_m": {
+                "value": 0.813,
+                "ci95": 0.12,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.03,
+                "ci95": 0.15,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.45
+            }
+          ],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [],
+      "scope_line_items": []
+    },
+    {
+      "room_id": "room_room_01_kitchen",
+      "name": "Room 01 Kitchen",
+      "ceiling_height_m": {
+        "value": 2.1,
+        "ci95": 0.058,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 3.26,
+        "ci95": 0.59,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          2.069,
+          0.0
+        ],
+        [
+          2.069,
+          1.578
+        ],
+        [
+          0.0,
+          1.578
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_room_01_kitchen_W1_South",
+          "start_m": [
+            0.0,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            0.0
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_01_kitchen_W2_East",
+          "start_m": [
+            2.069,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            1.578
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_01_kitchen_W3_North",
+          "start_m": [
+            2.069,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            1.578
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_01_kitchen_W4_West",
+          "start_m": [
+            0.0,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            0.0
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_room_01_kitchen_door",
+              "type": "door",
+              "offset_m": 0.388,
+              "width_m": {
+                "value": 0.813,
+                "ci95": 0.12,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.03,
+                "ci95": 0.15,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.45
+            }
+          ],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [],
+      "scope_line_items": []
+    },
+    {
+      "room_id": "room_room_03_bath",
+      "name": "Room 03 Bath",
+      "ceiling_height_m": {
+        "value": 2.1,
+        "ci95": 0.058,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 3.26,
+        "ci95": 0.59,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          2.069,
+          0.0
+        ],
+        [
+          2.069,
+          1.578
+        ],
+        [
+          0.0,
+          1.578
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_room_03_bath_W1_South",
+          "start_m": [
+            0.0,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            0.0
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_03_bath_W2_East",
+          "start_m": [
+            2.069,
+            0.0
+          ],
+          "end_m": [
+            2.069,
+            1.578
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_03_bath_W3_North",
+          "start_m": [
+            2.069,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            1.578
+          ],
+          "length_m": {
+            "value": 2.069,
+            "ci95": 0.179,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_room_03_bath_W4_West",
+          "start_m": [
+            0.0,
+            1.578
+          ],
+          "end_m": [
+            0.0,
+            0.0
+          ],
+          "length_m": {
+            "value": 1.578,
+            "ci95": 0.175,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.1,
+            "ci95": 0.058,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_room_03_bath_door",
+              "type": "door",
+              "offset_m": 0.382,
+              "width_m": {
+                "value": 0.813,
+                "ci95": 0.12,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.03,
+                "ci95": 0.15,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.45
+            }
+          ],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [],
+      "scope_line_items": []
+    }
+  ],
+  "stitched_plan": {
+    "total_area_sqm": {
+      "value": 13.04,
+      "ci95": 0.72,
+      "unit": "sqm"
+    },
+    "rooms": [
+      {
+        "room_id": "room_connector_hallway",
+        "position_m": [
+          0.0,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      },
+      {
+        "room_id": "room_room_02_suite",
+        "position_m": [
+          0.0,
+          1.698
+        ],
+        "rotation_deg": 0.0
+      },
+      {
+        "room_id": "room_room_01_kitchen",
+        "position_m": [
+          2.189,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      },
+      {
+        "room_id": "room_room_03_bath",
+        "position_m": [
+          -2.189,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      }
+    ],
+    "adjacencies": [
+      {
+        "room_a": "room_connector_hallway",
+        "room_b": "room_room_02_suite",
+        "connector_type": "door",
+        "opening_width_m": 0.813
+      },
+      {
+        "room_a": "room_connector_hallway",
+        "room_b": "room_room_01_kitchen",
+        "connector_type": "cased_opening",
+        "opening_width_m": 0.813
+      },
+      {
+        "room_a": "room_connector_hallway",
+        "room_b": "room_room_03_bath",
+        "connector_type": "door",
+        "opening_width_m": 0.813
+      }
+    ],
+    "drift_correction_applied": false,
+    "drift_residual_m": 0.0
+  },
+  "metadata": {
+    "pipeline_version": "1.0.0",
+    "device_model": "iPhone 15 Pro",
+    "runtime_seconds": 1.6,
+    "hardware_tier": "PHOTOS Pro Sensor Fusion",
+    "scale_source": "residential_door_prior_0.813m",
+    "scale_quality": "approximate"
+  }
+}
