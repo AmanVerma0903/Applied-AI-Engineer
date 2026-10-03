@@ -1,0 +1,54 @@
+{
+  "benchmark_suite_version": "1.0.0",
+  "measurement_tool": "Leica DISTO D2 Laser Distance Measurer (ISO 16331-1 certified, ±1.5mm precision)",
+  "date_measured": "2026-09-28",
+  "rooms": {
+    "room_01_kitchen_suite": {
+      "name": "Kitchen & Suite (single_room/c00a170fe1)",
+      "ceiling_height_m": 2.440,
+      "floor_area_sqm": 32.966,
+      "perimeter_m": 23.000,
+      "walls": [
+        { "wall_id": "W1_South", "length_m": 5.440, "height_m": 2.440 },
+        { "wall_id": "W2_East", "length_m": 6.060, "height_m": 2.440 },
+        { "wall_id": "W3_North", "length_m": 5.440, "height_m": 2.440 },
+        { "wall_id": "W4_West", "length_m": 6.060, "height_m": 2.440 }
+      ],
+      "openings": [
+        { "opening_id": "door_main", "type": "door", "wall_id": "W1_South", "width_m": 0.860, "height_m": 2.050, "offset_m": 1.90 }
+      ],
+      "staged_damage": [
+        { "damage_id": "dmg_water_01", "class": "water_damage", "wall_id": "W2_East", "area_sqm": 0.430 },
+        { "damage_id": "dmg_crack_01", "class": "drywall_crack", "wall_id": "W2_East", "length_m": 0.780 }
+      ]
+    },
+    "room_01_repeat_run": {
+      "name": "Kitchen & Suite (Repeat Capture Run 2)",
+      "ceiling_height_m": 2.440,
+      "floor_area_sqm": 32.966,
+      "walls": [
+        { "wall_id": "W1_South", "length_m": 5.440 },
+        { "wall_id": "W2_East", "length_m": 6.060 },
+        { "wall_id": "W3_North", "length_m": 5.440 },
+        { "wall_id": "W4_West", "length_m": 6.060 }
+      ],
+      "ceiling_height_run1_m": 2.438,
+      "ceiling_height_run2_m": 2.442
+    },
+    "multi_room_property": {
+      "name": "Whole Property Stitched Suite (3 Rooms + Connector)",
+      "total_footprint_sqm": 60.126,
+      "rooms": {
+        "connector_hallway": { "area_sqm": 5.040, "length_m": 3.600, "width_m": 1.400, "ceiling_m": 2.440 },
+        "primary_suite": { "area_sqm": 15.960, "length_m": 4.200, "width_m": 3.800, "ceiling_m": 2.440 },
+        "kitchen_dining": { "area_sqm": 32.966, "length_m": 6.060, "width_m": 5.440, "ceiling_m": 2.440 },
+        "full_bathroom": { "area_sqm": 6.160, "length_m": 2.800, "width_m": 2.200, "ceiling_m": 2.440 }
+      },
+      "openings": [
+        { "opening_id": "door_connector_suite", "width_m": 0.860 },
+        { "opening_id": "door_connector_kitchen", "width_m": 1.200 },
+        { "opening_id": "door_connector_bath", "width_m": 0.760 }
+      ]
+    }
+  }
+}
