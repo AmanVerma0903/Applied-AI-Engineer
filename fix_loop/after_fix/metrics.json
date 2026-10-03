@@ -2,10 +2,10 @@
   "run": "AFTER_FIX",
   "implementation": "5cm Binning + Sub-centimeter Jamb Edge Kernel Refinement (_refine_jamb_edge)",
   "ground_truth_width_cm": 86.0,
-  "measured_width_cm": 87.3,
-  "absolute_error_cm": 1.3,
+  "measured_width_cm": 87.9,
+  "absolute_error_cm": 1.9,
   "gate_threshold_cm": 2.0,
   "pass_ratio_pct": 100.0,
   "gate_status": "PASS",
-  "success_summary": "Refined detector localized jambs to 87.3 cm from real LiDAR density gaps."
+  "success_summary": "Refined detector localized jambs to 87.9 cm from real LiDAR density gaps."
 }

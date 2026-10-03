@@ -30,7 +30,8 @@ class RansacPlaneDetector:
         distance_threshold: float = 0.025,
         max_iterations: int = 400,
         expected_normal: Optional[np.ndarray] = None,
-        normal_angle_tol_deg: float = 20.0
+        normal_angle_tol_deg: float = 20.0,
+        seed: Optional[int] = 42
     ) -> Optional[Tuple[np.ndarray, float, np.ndarray]]:
         """
         Fits a 3D plane using RANSAC.
@@ -43,9 +44,10 @@ class RansacPlaneDetector:
         best_inliers = np.array([], dtype=int)
         best_normal = None
         best_d = 0.0
+        rng = np.random.default_rng(seed)
 
         for _ in range(max_iterations):
-            idx = np.random.choice(num_points, 3, replace=False)
+            idx = rng.choice(num_points, 3, replace=False)
             p1, p2, p3 = points[idx]
 
             v1 = p2 - p1

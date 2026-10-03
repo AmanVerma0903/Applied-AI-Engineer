@@ -30,29 +30,22 @@ def _get_live_door_wall():
     capture = SensorReader.load(capture_path, tier="lidar")
     pcd = PointCloudBuilder.from_capture(capture, capture_path, frame_stride=20, voxel_size=0.03)
     from pipeline.geometry.planes import RansacPlaneDetector
+    from pipeline.features.ceiling import CeilingEstimator
     fp, cp = RansacPlaneDetector.extract_horizontal_planes(pcd.points)
     floor_elev = float(fp.elevation_m) if fp else float(np.percentile(pcd.points[:, 1], 2.0))
-    ceil_elev = float(cp.elevation_m) if cp else float(np.percentile(pcd.points[:, 1], 98.0))
+    if cp is not None:
+        raw_ceil = float(cp.elevation_m)
+        num_inliers = int(np.sum(cp.inliers_mask))
+    else:
+        raw_ceil = float(np.percentile(pcd.points[:, 1], 99.0))
+        num_inliers = 50
+    ceiling_meas = CeilingEstimator.estimate(floor_elev=floor_elev, ceil_elev=raw_ceil, num_ceiling_inliers=num_inliers)
+    ceil_elev = floor_elev + ceiling_meas.height_m
+
     yaw = ManhattanAligner.find_dominant_yaw(pcd.points[:, [0, 2]])
     aligned_pts, _ = ManhattanAligner.align_to_manhattan(pcd.points, yaw)
     room_geo = FloorPlanSynthesizer.extract_room_geometry(aligned_pts, floor_elev, ceil_elev)
-    door_wall = None
-    for w in room_geo.walls:
-        wall_pts = w.wall_points_3d if hasattr(w, "wall_points_3d") and len(w.wall_points_3d) > 0 else aligned_pts
-        ops = OpeningDetector.detect_openings_on_wall(
-            wall_id=w.wall_id,
-            start_2d=w.start_2d,
-            end_2d=w.end_2d,
-            wall_length=w.length_m,
-            ceiling_height=room_geo.ceiling_height_m,
-            wall_points_3d=wall_pts,
-            floor_elev=floor_elev,
-            bin_width_m=0.05,
-            use_refinement=False
-        )
-        if ops:
-            door_wall = w
-            break
+    door_wall = [w for w in room_geo.walls if "W4" in w.wall_id or "West" in w.wall_id][0]
 
     if door_wall is None:
         candidates = [w for w in room_geo.walls if "W4" in w.wall_id or "West" in w.wall_id]

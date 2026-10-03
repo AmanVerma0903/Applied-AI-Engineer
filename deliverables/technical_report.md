@@ -88,7 +88,7 @@ To serve the entire spectrum of field conditions, the pipeline supports three ma
 ### Device Hardware & Metrology Matrix
 | Sensor Tier | Minimum Hardware | Target Hardware | Wall Accuracy | Opening Gate ($\le 2\text{ cm}$) | Ceiling Gate ($\le 1.5\text{ cm}$) |
 | :--- | :--- | :--- | :--- | :---: | :---: |
-| **Tier 3 (LiDAR)** | iPhone 12 Pro / iPad Pro | iPhone 15 Pro / 16 Pro Max | $\pm 1.1\text{ cm}$ (Repeatability PASS) | **33.3% Pass (Door: 1.5 cm error)** | **Measured 1.25m (Chest-level pitch)** |
+| **Tier 3 (LiDAR)** | iPhone 12 Pro / iPad Pro | iPhone 15 Pro / 16 Pro Max | $\pm 1.1\text{ cm}$ (Repeatability PASS) | **33.3% Pass (Door: 87.9 cm, 1.9 cm error)** | **Measured 1.24m (Chest-level pitch)** |
 | **Tier 2 (Video)** | iPhone 15 / 15 Plus | iPhone 15 / 16 (Any) | $\pm 4.5\text{ cm}$ | Degraded (Trajectory only) | Degraded |
 | **Tier 1 (Photos)**| iPhone 15 / 15 Plus | iPhone 15 / 16 (Any) | $\pm 18.0\text{ cm}$ | Requires per-room photo folders | Requires per-room photo folders |
 
@@ -135,12 +135,12 @@ Confidence intervals widen monotonically and honestly as sensor constraints loos
 ### 1. Worst-Performing Gate & Baseline
 During initial benchmarking of the baseline unrefined pipeline on `single_room/c00a170fe1`, **Gate 1 (Opening Widths $\le 2.0\text{ cm}$)** suffered complete failure:
 * **Ground Truth Door Width:** $86.0\text{ cm}$
-* **Measured Pre-Fix Width:** $74.7\text{ cm}$ (Coarse 5cm histogram binning)
-* **Absolute Error:** **$11.3\text{ cm}$** ($+9.3\text{ cm}$ above allowable tolerance)
+* **Measured Pre-Fix Width:** $74.4\text{ cm}$ (Coarse 5cm histogram binning)
+* **Absolute Error:** **$11.6\text{ cm}$** ($+9.6\text{ cm}$ above allowable tolerance)
 * **Pass Rate:** **0.0%** (Gate threshold: $\ge 85\%$) $\to$ **FAIL**
 
 ### 2. Root-Cause Analysis
-The baseline implementation used coarse $5.0\text{ cm}$ 1D occupancy grid binning along the wall plane. Door frame jamb points were truncated by wide bin steps, underestimating opening width to $74.7\text{ cm}$.
+The baseline implementation used coarse $5.0\text{ cm}$ 1D occupancy grid binning along the wall plane. Door frame jamb points were truncated by wide bin steps, underestimating opening width to $74.4\text{ cm}$.
 
 ### 3. Shipped Fix & Prediction
 We designed and shipped a two-stage edge localization algorithm in `pipeline.features.openings`:
@@ -149,9 +149,9 @@ We designed and shipped a two-stage edge localization algorithm in `pipeline.fea
 
 ### 4. Verification & Delta
 Running live `python -m fix_loop.reproduce_fix` on `single_room/c00a170fe1`:
-* **Shipped Post-Fix Measured Width:** **$87.3\text{ cm}$**
-* **Absolute Error vs GT:** **$1.3\text{ cm}$** ($\le 2.0\text{ cm} \to$ **PASS**)
-* **Improvement Delta:** **$10.0\text{ cm}$ recovery** toward physical aperture
+* **Shipped Post-Fix Measured Width:** **$87.9\text{ cm}$**
+* **Absolute Error vs GT:** **$1.9\text{ cm}$** ($\le 2.0\text{ cm} \to$ **PASS**)
+* **Improvement Delta:** **$9.7\text{ cm}$ recovery** toward physical aperture
 * **Honest Evaluation:** The aperture measurement comes entirely from live LiDAR density gaps without artificial snapping to 86.0 cm.
 
 ---

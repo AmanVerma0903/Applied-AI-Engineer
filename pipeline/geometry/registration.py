@@ -19,9 +19,9 @@ class ManhattanAligner:
         if len(points_2d) < 50:
             return 0.0
 
-        # Subsample for blazing fast sub-second execution
+        rng = np.random.default_rng(42)
         if len(points_2d) > 3000:
-            indices = np.random.choice(len(points_2d), 3000, replace=False)
+            indices = rng.choice(len(points_2d), 3000, replace=False)
             pts = points_2d[indices]
         else:
             pts = points_2d
@@ -37,7 +37,7 @@ class ManhattanAligner:
 
         # Limit pairs for instant processing
         if len(pairs) > 10000:
-            pair_idx = np.random.choice(len(pairs), 10000, replace=False)
+            pair_idx = rng.choice(len(pairs), 10000, replace=False)
             pairs = pairs[pair_idx]
 
         diffs = pts[pairs[:, 1]] - pts[pairs[:, 0]]

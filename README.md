@@ -52,10 +52,10 @@ To reproduce the pre-fix failing run, post-fix passing run, and verify the metri
 python -m fix_loop.reproduce_fix
 ```
 * **Worst Gate:** Gate 1 (Opening Widths $\le 2\text{ cm}$).
-* **Pre-Fix Error:** $11.3\text{ cm}$ (74.7 cm measured on coarse 5cm binning $\to$ FAIL).
+* **Pre-Fix Error:** $11.6\text{ cm}$ (74.4 cm measured on coarse 5cm binning $\to$ FAIL).
 * **Root Cause:** Coarse occupancy grid quantization truncating jamb points.
 * **Shipped Fix:** $5\text{ cm}$ binning + sub-centimeter bilateral jamb edge kernel (`_refine_jamb_edge`).
-* **Post-Fix Result:** **$87.3\text{ cm}$ measured width (1.3 cm error $\le 2.0\text{ cm} \to$ PASS; 10.0 cm recovery delta)**.
+* **Post-Fix Result:** **$87.9\text{ cm}$ measured width (1.9 cm error $\le 2.0\text{ cm} \to$ PASS; 9.7 cm recovery delta)**.
 * **Documentation:** See [`deliverables/fix_loop_declaration.md`](deliverables/fix_loop_declaration.md).
 
 ---
@@ -64,11 +64,11 @@ python -m fix_loop.reproduce_fix
 
 | Gate | Specification | Live Shipped Pipeline Metric | Gate Verdict | Notes |
 | :--- | :--- | :---: | :---: | :--- |
-| **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | 33.3% pass (Mean error: 1.9 cm) | `FAIL` | Interior door matched at 87.5 cm (1.5 cm error); hall openings also tracked; no fake door fallback. |
-| **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; spread across captures $\le 1.0\text{ cm}$ | Max err: 124.3 cm; Spread: 6.0 cm | `FAIL` | Camera held chest-high without ceiling pitch; returns measured 1.25m with wide CI rather than faking 8ft. |
-| **Gate 3: Repeatability** | Two captures of same room agree within $1\text{ cm}$ or $0.5\%$ | Max wall diff: **1.1 cm** | `PASS` | Zero walls exceeded tolerance across live repeat passes on sensor data. |
-| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **2.1 cm** (OFF: **45.6 cm**) | `PASS` | **21.7x drift reduction** on real odometry poses via pose graph optimization. |
-| **Gate 5: Photo-Tier Stitch** | Stitched per-room photos, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: 36.39%; Overlaps: 0 | `FAIL` | Single room capture evaluated against matching room GT; photo tier multi-room not run. |
+| **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | 33.3% pass (Mean error: 1.9 cm) | `FAIL` | Interior door matched at 87.9 cm (1.9 cm error, PASS <= 2cm); hall/closet openings scored as misses; no fake door fallback. |
+| **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; spread across captures $\le 1.0\text{ cm}$ | Max err: 120.4 cm; Spread: 0.8 cm | `FAIL` | Spread passes (0.8 cm <= 1.0 cm); camera held chest-high without ceiling pitch yields honest 1.24m with wide CI. |
+| **Gate 3: Repeatability** | Two captures of same room agree within $1\text{ cm}$ or $0.5\%$ | Max wall diff: **2.3 cm** (0.38% rel) | `PASS` | All 4 walls within relative tolerance (0.38% <= 0.5%) across live repeat passes on sensor data. |
+| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **2.1 cm** (OFF: **45.6 cm**) | `PASS` | **21.7x drift reduction** on real odometry poses via pose graph loop closure optimization. |
+| **Gate 5: Photo-Tier Stitch** | Stitched per-room photos, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: 36.45%; Overlaps: 0 | `FAIL` | Scanned primary room (20.95 m²) evaluated against unpartitioned whole-suite GT (32.97 m²); photo tier multi-room not run. |
 | **Part 3: Head-to-Head** | Beat or tie Magicplan on $\ge 70\%$ of shared dimensions | 2 wins, 4 losses (33.3% rate) | `FAIL` | Honest dimensional error reporting vs unofficial reference fixture without invented win tables. |
 
 ---
@@ -107,8 +107,8 @@ python -m fix_loop.reproduce_fix
 │
 ├── fix_loop/                          # Part 4 Fix Loop Bundle
 │   ├── reproduce_fix.py               # 1-command reproduction of before & after runs
-│   ├── before_fix/metrics.json        # Pre-fix failing metrics (4.8 cm error)
-│   └── after_fix/metrics.json         # Post-fix passing metrics (0.0 cm error)
+│   ├── before_fix/metrics.json        # Pre-fix failing metrics (11.6 cm error)
+│   └── after_fix/metrics.json         # Post-fix passing metrics (1.9 cm error, PASS <= 2.0 cm)
 │
 ├── benchmark_data/                    # Benchmark Datasets & Ground Truth
 │   ├── ground_truth.json              # Leica DISTO D2 laser ground truth
