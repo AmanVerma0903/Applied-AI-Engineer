@@ -164,28 +164,51 @@ class SensorReader:
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         cap.release()
 
-        # Calibrated nominal intrinsics for iPhone video (approx 26mm equiv)
-        fx = fy = max(w, h) * 0.85
-        cam_matrix = np.array([
-            [fx, 0.0, w / 2.0],
-            [0.0, fy, h / 2.0],
-            [0.0, 0.0, 1.0]
-        ], dtype=np.float32)
+        # Load intrinsics if available or compute calibrated nominals
+        base_dir = capture_path if os.path.isdir(capture_path) else os.path.dirname(capture_path)
+        cam_matrix_path = os.path.join(base_dir, "camera_matrix.csv")
+        if os.path.exists(cam_matrix_path):
+            cam_matrix = np.loadtxt(cam_matrix_path, delimiter=",").astype(np.float32)
+        else:
+            fx = fy = max(w, h) * 0.85
+            cam_matrix = np.array([
+                [fx, 0.0, w / 2.0],
+                [0.0, fy, h / 2.0],
+                [0.0, 0.0, 1.0]
+            ], dtype=np.float32)
+
+        odom_path = os.path.join(base_dir, "odometry.csv")
+        poses = []
+        if os.path.exists(odom_path):
+            odom_df = pd.read_csv(odom_path)
+            odom_df.columns = [c.strip() for c in odom_df.columns]
+            for _, row in odom_df.iterrows():
+                frame_idx = int(row["frame"])
+                t = np.array([row["x"], row["y"], row["z"]], dtype=np.float32)
+                quat = np.array([row["qx"], row["qy"], row["qz"], row["qw"]], dtype=np.float32)
+                poses.append(Pose(
+                    timestamp=float(row.get("timestamp", 0.0)),
+                    frame_idx=frame_idx,
+                    t=t,
+                    quat=quat
+                ))
 
         return CaptureData(
             capture_id=capture_id,
             tier="video",
             camera_matrix=cam_matrix,
-            poses=[],
+            poses=poses,
             depth_frames=[],
             video_path=video_file,
             metadata={
                 "frame_count": frame_count,
                 "fps": fps,
                 "resolution": (w, h),
-                "duration_sec": frame_count / fps if fps > 0 else 0
+                "duration_sec": frame_count / fps if fps > 0 else 0,
+                "has_odometry": len(poses) > 0
             }
         )
+
 
     @staticmethod
     def load_photos(capture_dir: str, capture_id: str = "capture_photos") -> CaptureData:
@@ -195,10 +218,13 @@ class SensorReader:
         for ext in exts:
             photo_files.extend(glob.glob(os.path.join(capture_dir, ext)))
             photo_files.extend(glob.glob(os.path.join(capture_dir, ext.upper())))
-        photo_files = sorted(photo_files)
+            photo_files.extend(glob.glob(os.path.join(capture_dir, "*", ext)))
+            photo_files.extend(glob.glob(os.path.join(capture_dir, "*", ext.upper())))
+        photo_files = sorted(set(photo_files))
 
         if not photo_files:
-            raise FileNotFoundError(f"No photo files found in {capture_dir}")
+            raise FileNotFoundError(f"No photo files found in {capture_dir} or its subdirectories")
+
 
         # Read first image to determine aspect ratio and resolution
         img0 = cv2.imread(photo_files[0])

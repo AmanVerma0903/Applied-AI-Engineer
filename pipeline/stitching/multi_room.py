@@ -171,6 +171,18 @@ class MultiRoomStitcher:
 
         residual_drift = float(round(drift_residual_m, 3)) if drift_residual_m is not None else 0.0
 
+        # Explicit pairwise Shapely boolean intersection check
+        detected_overlap = False
+        for p_i in range(len(placements)):
+            for p_j in range(p_i + 1, len(placements)):
+                if placements[p_i].polygon.intersects(placements[p_j].polygon):
+                    inter_poly = placements[p_i].polygon.intersection(placements[p_j].polygon)
+                    if inter_poly.area > 1e-4:
+                        detected_overlap = True
+                        break
+            if detected_overlap:
+                break
+
         return StitchedPropertyPlan(
             property_id="property_whole_plan",
             tier=tier,
@@ -180,5 +192,6 @@ class MultiRoomStitcher:
             ci95_floor_area_sqm=ci_area,
             drift_correction_applied=drift_correction_enabled,
             drift_residual_m=residual_drift,
-            has_overlaps=False
+            has_overlaps=detected_overlap
         )
+
