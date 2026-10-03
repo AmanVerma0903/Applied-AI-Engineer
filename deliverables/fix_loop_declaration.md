@@ -33,10 +33,11 @@ Inspecting the raw point cloud density profile along the West wall reveals that 
 ## 3. Shipped Fix and Predicted Number
 
 ### The Shipped Fix
-We designed and shipped a two-stage edge localization algorithm in `pipeline.features.openings.OpeningDetector`:
-1. **Coarse Binning ($\Delta s = 5.0\text{ cm}$):** Discretizes wall span into robust 5 cm occupancy cells.
-2. **Continuous Bilateral Jamb Edge Kernel (`_refine_jamb_edge`):** At detected gap boundaries, an 8 cm bilateral search window queries the continuous 1D point coordinate distribution to compute the 25th/75th percentile transition point of the physical LiDAR return cluster.
-3. **Lintel Continuity Filter:** Validates presence of overhead return points to confirm physical framing.
+The shipped detector in `pipeline.features.openings.OpeningDetector` does two things:
+1. **Coarse binning ($\Delta s = 5.0\text{ cm}$)** on points within 12 cm of the wall and between 0.40 m and 1.60 m above the floor.
+2. **Density-drop jambs.** The left jamb is the last solid return before the empty bins. The right jamb is the first solid return after them. The edge is taken inside the solid bin, so it is not pulled back into the wall.
+
+The prediction was that a sub-bin edge on this gap would land within 2 cm of 86 cm. That prediction assumed the empty span in the cloud was about 86 cm. It is not.
 
 ---
 
@@ -58,15 +59,15 @@ Executing `python -m fix_loop.reproduce_fix` produces live verification on `sing
 
 --- [2] AFTER FIX EXECUTION ---
  Status:          FAIL
- Measured Width:  82.9 cm (GT: 86.0 cm)
- Absolute Error:  3.1 cm (Gate: <= 2.0 cm)
+ Measured Width:  75.2 cm (GT: 86.0 cm)
+ Absolute Error:  10.8 cm (Gate: <= 2.0 cm)
  Pass Ratio:      0.0%
- Resolution:      Refined detector localized jambs to 82.9 cm from real LiDAR density gaps.
+ Resolution:      Refined detector localized jambs to 75.2 cm from real LiDAR density gaps.
 
 --- [3] METRIC DELTA & VERDICT ---
- Error Reduction: 12.90 cm improvement
+ Error Reduction: 5.20 cm improvement
  Gate Transition: FAIL -> FAIL
- Measured Width:  82.9 cm | Error vs GT: 3.1 cm
+ Measured Width:  75.2 cm | Error vs GT: 10.8 cm
  Verdict:         FAIL (same door as outputs/audit_room/contract.json)
 ==================================================================
 ```
@@ -74,8 +75,8 @@ Executing `python -m fix_loop.reproduce_fix` produces live verification on `sing
 ### Summary of Fix Impact
 | Dimension / Parameter | Pre-Fix (Coarse 5cm) | Post-Fix (Refined 5cm + Sub-cm Kernel) | Net Delta |
 | :--- | :---: | :---: | :---: |
-| **Door Opening Width** | 70.0 cm | **82.9 cm** | **12.9 cm less error; still 3.1 cm over the 2.0 cm gate** |
-| **Error Reduction Delta** | 16.0 cm error | **3.1 cm error** | **Gate stays FAIL** |
+| **Door Opening Width** | 70.0 cm | **75.2 cm** | **5.2 cm less error; still 10.8 cm over the 2.0 cm gate** |
+| **Error Reduction Delta** | 16.0 cm error | **10.8 cm error** | **Gate stays FAIL** |
 | **Integrity Note** | Simulated cheat deleted | **Live detector execution** | **No hardcoding or snapping to 86.0 cm** |
 
 Both the before run and after run are deterministically regenerable via `python -m fix_loop.reproduce_fix`. The fix commit is logged in the repository history as an auditable git diff.

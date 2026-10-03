@@ -52,8 +52,8 @@ To reproduce the pre-fix failing run, post-fix passing run, and verify the metri
 python -m fix_loop.reproduce_fix
 ```
 * **Worst Gate:** Gate 1 (Opening Widths $\le 2\text{ cm}$).
-* **Live door on the walked-room west wall:** **82.9 cm** versus the 86.0 cm reference (**3.1 cm** error). Gate 1 stays **FAIL** because the threshold is 2.0 cm.
-* **Shipped detector:** occupancy gaps plus `_refine_jamb_edge`, and openings that touch the wall ends are rejected as boundary artifacts.
+* **Live door on the walked-room west wall:** **75.2 cm** versus the 86.0 cm reference (**10.8 cm** error). Gate 1 stays **FAIL** because the threshold is 2.0 cm.
+* **Shipped detector:** 5 cm occupancy in the 0.40–1.60 m band, then the last solid return and the first solid return on either side of the void. Openings that touch the wall ends are rejected.
 * **Documentation:** See [`deliverables/fix_loop_declaration.md`](deliverables/fix_loop_declaration.md).
 
 ---
@@ -62,12 +62,12 @@ python -m fix_loop.reproduce_fix
 
 | Gate | Specification | Live Shipped Pipeline Metric | Gate Verdict | Notes |
 | :--- | :--- | :---: | :---: | :--- |
-| **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | 0% pass (one door, **3.1 cm** error) | `FAIL` | West-wall door **82.9 cm** vs 86.0 cm reference. No injected width. |
-| **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; spread across captures $\le 1.0\text{ cm}$ | Max err about **120 cm** | `FAIL` | Scan never sees the ceiling. Reported height is **1.236 m** with a wide interval. |
-| **Gate 3: Repeatability** | Two passes of the same room within $1\text{ cm}$ or $0.5\%$ | Max wall diff **1.8 cm** | `FAIL` | Short walls miss the 1.72 cm allowance by 0.8 mm against `benchmark_data/repeat_run`. |
+| **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | 0% pass (one door, **10.8 cm** error) | `FAIL` | West-wall door **75.2 cm** vs 86.0 cm reference. The void in the cloud is not 86 cm. |
+| **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; spread across captures $\le 1.0\text{ cm}$ | Max err **132.2 cm**; spread **11.8 cm** | `FAIL` | Primary height **1.236 m**. Repeat capture height **1.118 m**. The phone never sees the ceiling. |
+| **Gate 3: Repeatability** | Two captures of the same room within $1\text{ cm}$ or $0.5\%$ | Max wall diff **494.7 cm** | `FAIL` | `benchmark_data/repeat_run` is 250 frames and does not see the far walls (2.058 m and 1.099 m vs 3.432 m and 6.046 m). |
 | **Gate 4: Drift Accountability** | Loop closure; poses used as-is is an automatic fail | Residual **2.1 cm** (off: **45.6 cm**) | `PASS` | **21.7x** reduction on the capture odometry. |
-| **Gate 5: Photo-Tier Stitch** | Per-room stills, 0 overlaps, footprint within $\pm 8\%$ | **78%** footprint error | `FAIL` | Four synthetic rooms scaled from a 0.813 m door prior. Ground-truth sizes are not copied in. |
-| **Part 3: Head-to-Head** | Beat or tie Magicplan on $\ge 70\%$ of shared dimensions | **50%** (3 wins, 3 losses) | `FAIL` | Compared to the in-repo reference fixture, not a live Magicplan export. |
+| **Gate 5: Photo-Tier Stitch** | Per-room stills, 0 overlaps, footprint within $\pm 8\%$ | **78.31%** footprint error | `FAIL` | Four rooms, stitched area **13.04 m²** vs reference **60.13 m²**. Scale is a 0.813 m residential door prior. |
+| **Part 3: Head-to-Head** | Beat or tie the in-repo fixture on $\ge 70\%$ of shared dimensions | **33.3%** (2 wins, 4 losses) | `FAIL` | The fixture is not a live Magicplan export. |
 
 ---
 
@@ -121,9 +121,9 @@ python -m fix_loop.reproduce_fix
 
 ## 📱 Multi-Tier Input Modalities & Capture Route
 
-1. **LiDAR Tier:** iOS Pro devices (iPhone 12 Pro through 16 Pro) via Stray Scanner app. Produces dToF depth, 6-DoF VIO poses, and intrinsics. Delivers sub-centimeter metrology ($\pm 1.2\text{ cm}$ 95% CI).
-2. **Video Tier:** Any iPhone 15 or newer. Handheld 4K walkthrough clip with monocular depth estimation and visual odometry ($\pm 4.5\text{ cm}$ 95% CI).
-3. **Photo Tier:** Any smartphone. 2 to 8 stills per room, organized in per-room folders. Produces stitched multi-room plan ($\pm 18.0\text{ cm}$ 95% CI).
+1. **LiDAR Tier:** iOS Pro devices (iPhone 12 Pro through 16 Pro) via Stray Scanner app. Produces dToF depth, 6-DoF VIO poses, and intrinsics. Live wall ci95 on the primary room is about **1.2 cm**.
+2. **Video Tier:** Any iPhone 15 or newer. Handheld walkthrough. Features are triangulated with odometry as a metric prior. The contract marks scale as approximate. Live wall ci95 is about **6.8 cm** and the ceiling ci95 is **18 cm**.
+3. **Photo Tier:** Any smartphone. 2 to 8 stills per room, one folder per room. Scale is a stated 0.813 m residential door prior with a wide interval (door ci95 **12 cm**, wall ci95 about **18 cm**). Identical frames across folders cannot recover four different room sizes.
 
 Complete non-engineer field guide available in [`deliverables/capture_route.md`](deliverables/capture_route.md).
 

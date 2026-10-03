@@ -73,9 +73,9 @@ To serve the entire spectrum of field conditions, the pipeline supports three ma
 +-------------------------------------------------------------------------------+
 | Tier 3: LiDAR (High Density)      | dToF + 6-DoF VIO   | CI: ±0.012 m (±1.2 cm)|
 +-------------------------------------------------------------------------------+
-| Tier 2: Video (Medium Density)    | 4K Stream + Flow   | CI: ±0.045 m (±4.5 cm)|
+| Tier 2: Video (Medium Density)    | 4K Stream + Flow   | CI: wall ~0.07 m, ceiling 0.18 m |
 +-------------------------------------------------------------------------------+
-| Tier 1: Photos (Low Density)      | 2-8 Stills / Room  | CI: ±0.180 m (±18 cm) |
+| Tier 1: Photos (Low Density)      | 2-8 Stills / Room  | CI: wall ~0.18 m, door prior 0.12 m |
 +-------------------------------------------------------------------------------+
 ```
 
@@ -88,9 +88,9 @@ To serve the entire spectrum of field conditions, the pipeline supports three ma
 ### Device Hardware & Metrology Matrix
 | Sensor Tier | Minimum Hardware | Target Hardware | Wall Accuracy | Opening Gate ($\le 2\text{ cm}$) | Ceiling Gate ($\le 1.5\text{ cm}$) |
 | :--- | :--- | :--- | :--- | :---: | :---: |
-| **Tier 3 (LiDAR)** | iPhone 12 Pro / iPad Pro | iPhone 15 Pro / 16 Pro Max | East wall 1.4 cm; short walls repeat within 1.8 cm | **FAIL (Door 82.9 cm, 3.1 cm error)** | **FAIL (Measured 1.236 m)** |
-| **Tier 2 (Video)** | iPhone 15 / 15 Plus | iPhone 15 / 16 (Any) | $\pm 4.5\text{ cm}$ | Degraded (Trajectory only) | Degraded |
-| **Tier 1 (Photos)**| iPhone 15 / 15 Plus | iPhone 15 / 16 (Any) | $\pm 18.0\text{ cm}$ | Requires per-room photo folders | Requires per-room photo folders |
+| **Tier 3 (LiDAR)** | iPhone 12 Pro / iPad Pro | iPhone 15 Pro / 16 Pro Max | East wall 1.4 cm on the full walk; repeat capture does not see the far walls | **FAIL (Door 75.2 cm, 10.8 cm error)** | **FAIL (Measured 1.236 m)** |
+| **Tier 2 (Video)** | iPhone 15 / 15 Plus | iPhone 15 / 16 (Any) | Triangulated walls 2.518 m and 2.249 m, ci95 about 0.07 m, scale approximate | One opening 0.626 m wide | Ceiling 2.109 m, ci95 0.18 m |
+| **Tier 1 (Photos)**| iPhone 15 / 15 Plus | iPhone 15 / 16 (Any) | First-room walls 2.069 m and 1.578 m, ci95 about 0.18 m | Door prior 0.813 m, ci95 0.12 m | Ceiling 2.100 m from the same prior |
 
 ---
 
@@ -123,8 +123,8 @@ Metrological confidence must be mathematically sound. The pipeline avoids "confi
 For any wall length $L = \|P_{\text{end}} - P_{\text{start}}\|$, the variance is:
 $$\sigma_L^2 = \sigma_{\text{depth}}^2 \left(1 + \beta \cdot L\right) \cdot \frac{1}{\sqrt{N_{\text{inliers}}}}$$
 * At the **LiDAR tier** ($\sigma_{\text{depth}} = 0.008\text{ m}$): $95\%\text{ CI} = 1.96 \cdot \sigma_L \approx \mathbf{\pm 0.012\text{ m}}$ ($\pm 1.2\text{ cm}$).
-* At the **Video tier** ($\sigma_{\text{depth}} = 0.028\text{ m}$): $95\%\text{ CI} \approx \mathbf{\pm 0.045\text{ m}}$ ($\pm 4.5\text{ cm}$).
-* At the **Photo tier** ($\sigma_{\text{depth}} = 0.065\text{ m}$): $95\%\text{ CI} \approx \mathbf{\pm 0.180\text{ m}}$ ($\pm 18.0\text{ cm}$).
+* At the **Video tier** the live contract uses a wider interval because odometry is only a prior for triangulation: wall ci95 about **0.068 m**, ceiling ci95 **0.18 m**.
+* At the **Photo tier** the live contract uses ci95 about **0.18 m** on wall length and **0.12 m** on the 0.813 m residential door prior.
 
 Confidence intervals widen monotonically and honestly as sensor constraints loosen, satisfying Part 2 calibration scoring.
 
@@ -143,15 +143,13 @@ During initial benchmarking of the baseline unrefined pipeline on `single_room/c
 The baseline implementation used coarse $5.0\text{ cm}$ 1D occupancy grid binning along the wall plane. Door frame jamb points were truncated by wide bin steps, underestimating opening width to $70.0\text{ cm}$.
 
 ### 3. Shipped Fix & Prediction
-We designed and shipped a two-stage edge localization algorithm in `pipeline.features.openings`:
-1. Discretized occupancy bins at $\Delta s = 5.0\text{ cm}$.
-2. Implemented `_refine_jamb_edge`: an 8 cm bilateral search kernel that computes the exact 25th/75th percentile density transition of continuous point clusters along the door jamb.
+The shipped detector keeps the 5 cm bins and replaces the old percentile window, which started the opening inside the wall, with the last solid return before the void and the first solid return after it. The prediction was that this edge would fall within 2 cm of 86 cm. That prediction is wrong: the empty span in the cloud is shorter than 86 cm.
 
 ### 4. Verification & Delta
 Running live `python -m fix_loop.reproduce_fix` on `single_room/c00a170fe1`:
-* **Shipped measured width:** **82.9 cm** on the walked-room west wall
-* **Absolute error vs the 86.0 cm reference:** **3.1 cm** (Gate 1 threshold is 2.0 cm, so this opening **FAILS**)
-* **Honest Evaluation:** The aperture measurement comes entirely from live LiDAR density gaps without artificial snapping to 86.0 cm.
+* **Shipped measured width:** **75.2 cm** on the walked-room west wall (`outputs/audit_room/contract.json` and `fix_loop/after_fix/metrics.json`)
+* **Absolute error vs the 86.0 cm reference:** **10.8 cm** (Gate 1 threshold is 2.0 cm, so this opening **FAILS**)
+* **Why it fell short:** Coarse bins measure 70.0 cm (16.0 cm error). The density drop moves that to 75.2 cm (10.8 cm error). The points do not support 86 cm, so the width is not assigned to 0.860.
 
 ---
 
