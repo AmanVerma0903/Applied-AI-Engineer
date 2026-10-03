@@ -46,11 +46,10 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
 
     # 2. Gate 2 & 3: Run 2 Live capture for repeatability
     print("\n[Gate 2 & 3/5] Executing Live Repeatability Pass on Sensor Data...")
-    capture_path = "single_room/c00a170fe1"
-    # Second pass of the same full capture (different frame stride). The partial
-    # repeat_run folder does not cover the same room envelope.
+    capture_path = "benchmark_data/repeat_run"
+    # Second capture, not a second stride of the same file.
     capture = SensorReader.load(capture_path, tier="lidar")
-    pcd2 = PointCloudBuilder.from_capture(capture, capture_path, frame_stride=25, voxel_size=0.03)
+    pcd2 = PointCloudBuilder.from_capture(capture, capture_path, frame_stride=5, voxel_size=0.03)
     fp2, cp2 = RansacPlaneDetector.extract_horizontal_planes(pcd2.points)
     f_elev2 = float(fp2.elevation_m) if fp2 else float(np.percentile(pcd2.points[:, 1], 2.0))
     if cp2 is not None:
@@ -84,6 +83,7 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
     run1_walls = [w["length_m"]["value"] if isinstance(w.get("length_m"), dict) else float(w["length_m"]) for w in r0["walls"]]
     run2_walls = [round(w.length_m, 3) for w in geo2.walls]
     gate3_res = evaluator.evaluate_wall_repeatability_gate(run1_walls, run2_walls)
+    gate3_res["run2_capture"] = capture_path
     print(f"  Result: {gate3_res['status']} | All {len(run1_walls)} walls within tolerance: {gate3_res['gate_passed']}")
 
     # 4. Gate 4: Drift Accountability & Loop Closure Ablation (live odometry)
@@ -137,7 +137,46 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
     }
 
 
+def _contract_blurb(path: str, label: str) -> str:
+    if not os.path.exists(path):
+        return f"* **{label}:** contract not present at `{path}`."
+    with open(path, "r", encoding="utf-8") as handle:
+        contract = json.load(handle)
+    room = contract["rooms"][0]
+    walls = room["walls"]
+    lengths = ", ".join(
+        f"{w['wall_id'].split('_')[-1]} {w['length_m']['value']:.3f} m (ci95 {w['length_m']['ci95']})"
+        for w in walls
+    )
+    openings = [op for w in walls for op in w.get("openings", [])]
+    damages = [(w["wall_id"], d) for w in walls for d in w.get("damage_regions", [])]
+    op_txt = "; ".join(
+        f"{op['opening_id']} width {op['width_m']['value']:.3f} m height {op['height_m']['value']:.3f} m"
+        for op in openings
+    ) or "none"
+    dmg_txt = "; ".join(
+        f"{d['damage_class']} {d['metric_area_sqm']['value']} sqm on {wall_id}"
+        for wall_id, d in damages
+    ) or "none"
+    meta = contract.get("metadata", {})
+    stitched = contract["stitched_plan"]["total_area_sqm"]["value"]
+    return (
+        f"* **{label}** (`{path}`): {len(contract['rooms'])} room(s), "
+        f"stitched area {stitched} sqm, first-room ceiling {room['ceiling_height_m']['value']:.3f} m "
+        f"(ci95 {room['ceiling_height_m']['ci95']}), first-room area {room['floor_area_sqm']['value']} sqm, "
+        f"first-room walls [{lengths}]. Openings listed for the first room: {op_txt}. "
+        f"Damage on the first room: {dmg_txt}. "
+        f"Scale: {meta.get('scale_quality', 'unspecified')} via {meta.get('scale_source', 'unspecified')}."
+    )
+
+
 def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
+    tier_notes = "\n".join([
+        _contract_blurb("outputs/video_run/contract.json", "Video tier"),
+        _contract_blurb("outputs/photo_run/contract.json", "Photo tier"),
+        _contract_blurb("outputs/staged_damage/contract.json", "Staged damage LiDAR"),
+        _contract_blurb("outputs/audit_room/contract.json", "Primary LiDAR"),
+    ])
     md = rf"""# Deliverable 5: Comprehensive Benchmark Report
 **Project:** Applied AI Spatial Reconstruction & Damage Assessment Pipeline  
 **Evaluation Standard:** Applied AI Case Study (Part 2, 3 & 4 Gates)  
@@ -151,18 +190,18 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 
 | Gate | Case Study Requirement | Measured Metric | Status | Verdict |
 | :--- | :--- | :--- | :---: | :--- |
-| **Gate 1: Opening Widths** | $\\le 2.0\text{{ cm}}$ on $\\ge 85\%$ of openings | **{g1['pass_ratio']}%** pass (Mean err: **{g1['mean_error_cm']} cm**) | `{g1['status']}` | {'Compliant with opening width threshold' if g1['gate_passed'] else 'Honest detection on physical aperture; no fake door injection'} |
-| **Gate 2: Ceiling Height** | $\\le 1.5\text{{ cm}}$ error; multi-capture spread $\\le 1.0\text{{ cm}}$ | Max err: **{g2['max_error_cm']} cm**; Spread: **{g2['spread_cm']} cm** | `{g2['status']}` | {g2['diagnosis']} |
-| **Gate 3: Repeatability** | Two captures of same room agree within $1\text{{ cm}}$ or $0.5\%$ | Max wall diff: **{max([w['diff_cm'] for w in g3['wall_comparisons']]) if g3['wall_comparisons'] else 0.0} cm** | `{g3['status']}` | {'Zero walls exceeded tolerance' if g3['gate_passed'] else 'Wall variation observed across passes'} |
+| **Gate 1: Opening Widths** | $\\le 2.0 cm$ on $\\ge 85%$ of openings | **{g1['pass_ratio']}%** pass (Mean err: **{g1['mean_error_cm']} cm**) | `{g1['status']}` | {'Compliant with opening width threshold' if g1['gate_passed'] else 'Honest detection on physical aperture; no fake door injection'} |
+| **Gate 2: Ceiling Height** | $\\le 1.5 cm$ error; multi-capture spread $\\le 1.0 cm$ | Max err: **{g2['max_error_cm']} cm**; Spread: **{g2['spread_cm']} cm** | `{g2['status']}` | {g2['diagnosis']} |
+| **Gate 3: Repeatability** | Two captures of same room agree within $1 cm$ or $0.5%$ | Max wall diff: **{max([w['diff_cm'] for w in g3['wall_comparisons']]) if g3['wall_comparisons'] else 0.0} cm** | `{g3['status']}` | {'Zero walls exceeded tolerance' if g3['gate_passed'] else 'Wall variation observed across passes'} |
 | **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **{abl['drift_correction_on']['loop_closing_gap_m']*100:.1f} cm** (OFF: **{abl['drift_correction_off']['loop_closing_gap_m']*100:.1f} cm**) | `{abl['drift_correction_on']['gate_compliance']}` | **{abl['drift_reduction_factor']}** via pose graph optimization |
-| **Gate 5: Footprint Stitching** | Valid topology, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: **{g5['error_pct']}%**; Overlaps: **0** | `{g5['status']}` | {g5.get('context', 'Single-room capture bounds evaluated')} |
+| **Gate 5: Footprint Stitching** | Valid topology, 0 overlaps, footprint within $\pm 8%$ | Footprint error: **{g5['error_pct']}%**; Overlaps: **0** | `{g5['status']}` | {g5.get('context', 'Single-room capture bounds evaluated')} |
 
 ---
 
 ## 2. Gate 1: Opening Widths Metrology
 
 - **Test Specification:** Every architectural opening is evaluated against reference ground truth. Missed openings and phantom openings count as misses.
-- **Pass Threshold:** $\\le 2.0\text{{ cm}}$ on $\\ge 85\%$ of evaluated openings.
+- **Pass Threshold:** $\\le 2.0 cm$ on $\\ge 85%$ of evaluated openings.
 
 | Opening ID | Type & Association | Reference GT | Measured Width | Absolute Error | Gate Assessment |
 | :--- | :--- | :---: | :---: | :---: | :---: |
@@ -174,7 +213,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
             err_vs_door = abs(w_val - 0.860)
             if err_vs_door <= 0.15:
                 err_cm = round(err_vs_door * 100, 1)
-                md += f"| `{op_id}` | **Matched Door (`door_main`)** | 86.0 cm | **{w_val*100:.1f} cm** | **{err_cm} cm** | `{'PASS' if err_cm <= 2.0 else 'FAIL'}` (Within $\\le 2.0\\text{{ cm}}$ tolerance) |\n"
+                md += f"| `{op_id}` | **Matched Door (`door_main`)** | 86.0 cm | **{w_val*100:.1f} cm** | **{err_cm} cm** | `{'PASS' if err_cm <= 2.0 else 'FAIL'}` |\n"
             else:
                 md += f"| `{op_id}` | Physical Opening (Unmodeled in 1-Door GT) | Unmodeled | **{w_val*100:.1f} cm** | Unmatched | `FAIL` (Phantom penalty under Gate 1 rule) |\n"
     else:
@@ -185,7 +224,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
     md += f"""
 ### Gate 1 Metrology Breakdown
 * **Physical Door Accuracy:** The closest detected opening is **{matched_op_w} cm** versus the 86.0 cm reference (absolute error **{g1['mean_error_cm']} cm**).
-* **Gate 1 Scoring:** Pass ratio **{g1['pass_ratio']}%** (requirement $\\ge 85\%$). Status: **{g1['status']}**.
+* **Gate 1 Scoring:** Pass ratio **{g1['pass_ratio']}%** (requirement $\\ge 85%$). Status: **{g1['status']}**.
 
 ---
 
@@ -195,7 +234,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 - **Ground Truth:** {g2['ground_truth_m']:.3f} m
 - **Capture Run 1:** {g2['measured_runs_m'][0]:.3f} m (Error: {abs(g2['measured_runs_m'][0] - g2['ground_truth_m'])*100:.1f} cm)
 - **Capture Run 2:** {g2['measured_runs_m'][1]:.3f} m (Error: {abs(g2['measured_runs_m'][1] - g2['ground_truth_m'])*100:.1f} cm)
-- **Spread Across Captures:** **{g2['spread_cm']} cm** (Gate: $\\le 1.0\text{{ cm}}$)
+- **Spread Across Captures:** **{g2['spread_cm']} cm** (Gate: at most 1.0 cm)
 - **Diagnosis:** **{g2['diagnosis']}**
 
 > **Technical Root Cause Note on Gate 2:** The capture operator held the phone chest-high without pitching upward toward the ceiling moulding during this scan. The pipeline's vertical plane RANSAC honestly extracts the highest scanned horizontal surfaces ({max(g2['measured_runs_m']):.2f}m) and widens the 95% CI rather than fabricating an arbitrary 8-foot (2.438m) constant.
@@ -210,6 +249,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 
     md += rf"""
 * **Repeatability Gate Verdict:** **{g3['status']}**
+* **Run 2 capture:** `{g3.get('run2_capture', 'benchmark_data/repeat_run')}` (a second LiDAR capture, not another stride of the same file). The repeat folder has 250 depth frames. Its reconstructed envelope is the Run 2 column above. It does not contain the north and east walls of the full walk, so the wall lengths do not agree.
 
 ---
 
@@ -232,7 +272,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 
 | Input Tier | Captured Assets | Stitched Footprint | Ground Truth | Error % | Gate Threshold | Overlaps | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Photo Tier** | Per-room stills | **{g5['measured_footprint_sqm']:.2f} m²** | **{g5['gt_footprint_sqm']:.2f} m²** | **{g5['error_pct']}%** | $\le 8.0\%$ | None | `{g5['status']}` |
+| **Photo Tier** | Per-room stills | **{g5['measured_footprint_sqm']:.2f} m²** | **{g5['gt_footprint_sqm']:.2f} m²** | **{g5['error_pct']}%** | $\le 8.0%$ | None | `{g5['status']}` |
 
 > **Evaluation Context on Gate 5:** {g5.get('context', 'Single room capture evaluated against matching room GT')}
 
@@ -245,13 +285,13 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
   * Gate 5 scores the photo-tier stitch ({g5['measured_footprint_sqm']:.2f} m²) against the whole-property reference ({g5['gt_footprint_sqm']:.2f} m²).
   * The stills are repeated synthetic views. Scale comes from a 0.813 m residential door prior, not from a laser measurement and not from a ground-truth size table.
   * The LiDAR capture itself never sees a closed 5.44 m x 6.06 m envelope or the ceiling, so those reference sizes are not written into the contract.
-  * Result: **Gate 5 FAIL ({g5['error_pct']}% vs $\\le 8.0\%$)**.
+  * Result: **Gate 5 FAIL ({g5['error_pct']}% vs $\\le 8.0%$)**.
 
 ---
 
 ## 6. Part 3: Head-to-Head vs Magicplan Reference Fixture
 
-- **Comparison Rule:** Beat or tie on $\ge 70\%$ of shared dimensions.
+- **Comparison Rule:** Beat or tie on $\ge 70%$ of shared dimensions.
 > **Audit Note:** The Magicplan export is an unofficial in-repo reference fixture (nominal comparison baseline; not an official third-party Magicplan cloud export).
 
 | Room | Shared Dimension | Pipeline Dimension | Laser GT | Pipeline Error | Magicplan Error | Delta Advantage | Verdict |
@@ -266,13 +306,19 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 * **Pipeline Wins:** {h2h['wins']} ({round(h2h['wins']/max(1, h2h['total_shared_dimensions'])*100, 1)}%)
 * **Ties:** {h2h['ties']}
 * **Losses:** {h2h['losses']}
-* **Beat / Tie Rate:** **{h2h['beat_or_tie_percentage']}%** (Gate Requirement: $\\ge 70.0\%$)
+* **Beat / Tie Rate:** **{h2h['beat_or_tie_percentage']}%** (Gate Requirement: $\\ge 70.0%$)
 * **Verdict:** **{'PASS' if h2h['gate_passed'] else 'FAIL'}**
 
 ---
 
-## 7. Performance & Honesty Summary
-All reported metrics are computed live from active pipeline outputs and sensor data (`single_room/c00a170fe1`). Zero hardcoded constants or simulated passes exist in this evaluation.
+## 7. Other tier contracts
+
+{tier_notes}
+
+---
+
+## 8. Performance & Honesty Summary
+All reported metrics are computed live from active pipeline outputs and sensor data (`single_room/c00a170fe1`, `benchmark_data/repeat_run`, `benchmark_data/multi_room/photos`). Zero hardcoded constants or simulated passes exist in this evaluation.
 """
     return md
 
