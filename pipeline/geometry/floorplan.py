@@ -57,12 +57,45 @@ class FloorPlanSynthesizer:
         return float(np.average(centers[low_idx:high_idx], weights=weights))
 
     @staticmethod
+    def _outer_peak(coords: np.ndarray, side: str) -> float:
+        """Leftmost or rightmost histogram peak with real wall support."""
+        lo = float(np.percentile(coords, 1.0))
+        hi = float(np.percentile(coords, 99.0))
+        if hi - lo < 0.4 or len(coords) < 30:
+            return lo if side == "min" else hi
+        bin_w = 0.08
+        nbins = max(16, int(np.ceil((hi - lo) / bin_w)))
+        hist, edges = np.histogram(coords, bins=nbins, range=(lo, hi))
+        thresh = max(40.0, 0.10 * float(hist.max()))
+        peaks = np.where(hist >= thresh)[0]
+        if len(peaks) == 0:
+            return lo if side == "min" else hi
+        ordered = list(peaks if side == "min" else peaks[::-1])
+        chosen = int(ordered[0])
+        bin_m = (hi - lo) / max(1, nbins)
+        for nxt in ordered[1:]:
+            a, b = sorted((chosen, int(nxt)))
+            valley = hist[a + 1:b]
+            gap_m = (b - a) * bin_m
+            # A deep gap means the extreme peak is the next room seen through a doorway.
+            if len(valley) and float(valley.max()) < 0.35 * float(hist[chosen]) and gap_m > 0.60:
+                chosen = int(nxt)
+                continue
+            break
+        return FloorPlanSynthesizer._fit_plane_1d(
+            coords,
+            float(edges[chosen]),
+            float(edges[min(chosen + 1, len(edges) - 1)]),
+        )
+
+    @staticmethod
     def extract_room_geometry(
         points_aligned: np.ndarray,
         floor_elev: float,
         ceil_elev: float,
         room_id: str = "room_01",
-        room_name: str = "Main Room"
+        room_name: str = "Main Room",
+        trajectory_xy: Optional[np.ndarray] = None
     ) -> RoomGeometry:
         """
         Slices points at mid-wall height, fits vertical wall planes along Manhattan axes,
@@ -73,17 +106,25 @@ class FloorPlanSynthesizer:
 
         mask = (points_aligned[:, 1] >= slice_min) & (points_aligned[:, 1] <= slice_max)
         wall_pts = points_aligned[mask]
+        # Keep the room the camera walked, not the next room seen through a doorway.
+        if trajectory_xy is not None and len(trajectory_xy) >= 10 and len(wall_pts) > 0:
+            tmin = trajectory_xy.min(axis=0) - 1.15
+            tmax = trajectory_xy.max(axis=0) + 1.15
+            inside = (
+                (wall_pts[:, 0] >= tmin[0]) & (wall_pts[:, 0] <= tmax[0]) &
+                (wall_pts[:, 2] >= tmin[1]) & (wall_pts[:, 2] <= tmax[1])
+            )
+            if int(np.sum(inside)) > 100:
+                wall_pts = wall_pts[inside]
 
         if len(wall_pts) < 100:
             x_min, x_max = float(points_aligned[:, 0].min()), float(points_aligned[:, 0].max())
             z_min, z_max = float(points_aligned[:, 2].min()), float(points_aligned[:, 2].max())
         else:
-            # Fit vertical wall planes from 1D density profiles
+            # Dominant walked-room walls. The sparse tail beyond a doorway is a
+            # neighboring space, so the fit stays on the high-density envelope.
             x_pts = wall_pts[:, 0]
             z_pts = wall_pts[:, 2]
-
-            # Outer envelope wall planes fitted directly from 1D density profiles
-            # Eliminates magic thresholds (1.0, 2.5, -0.5..0.2) and avoids interior counter partitions
             x_max = FloorPlanSynthesizer._fit_plane_1d(x_pts, float(np.percentile(x_pts, 85.0)), float(np.percentile(x_pts, 99.5)))
             z_max = FloorPlanSynthesizer._fit_plane_1d(z_pts, float(np.percentile(z_pts, 85.0)), float(np.percentile(z_pts, 99.5)))
             z_min = FloorPlanSynthesizer._fit_plane_1d(z_pts, float(np.percentile(z_pts, 0.5)), float(np.percentile(z_pts, 15.0)))

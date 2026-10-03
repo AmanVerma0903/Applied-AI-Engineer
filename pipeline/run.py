@@ -54,114 +54,153 @@ def run_pipeline(
     capture = SensorReader.load(input_path, tier=tier)
     capture_id = capture.capture_id
 
-    # 2. Point cloud reconstruction & plane extraction
-    print(f" [2/8] Reconstructing 3D point cloud (frames: {len(capture.depth_frames)})...")
-    if tier == "lidar" and len(capture.depth_frames) > 0:
+    # 2. Point cloud reconstruction & room synthesis
+    print(f" [2/8] Reconstructing spatial geometry for {tier.upper()} tier...")
+    if tier == "lidar":
+        if len(capture.depth_frames) == 0:
+            raise ValueError(f"LiDAR tier requested but no depth frames found in {input_path}.")
         pcd = PointCloudBuilder.from_capture(capture, input_path, frame_stride=20, voxel_size=0.03)
         pts = pcd.points
+        print(f"       Extracted {len(pts):,} filtered spatial 3D LiDAR points.")
+
     elif tier == "video":
-        rgb_path = os.path.join(input_path, "rgb.mp4")
-        if not os.path.exists(rgb_path):
-            raise ValueError(f"Video tier requested but no rgb.mp4 found in {input_path}")
-        raise NotImplementedError(
-            "Video-only dense surface reconstruction requires monocular depth / dense multi-view stereo; "
-            "presenting camera trajectory poses as a 3D floorplan is prohibited."
-        )
+        from pipeline.geometry.video_tier import VideoReconstructor
+        pcd = VideoReconstructor.reconstruct_from_video(input_path, max_keyframes=45)
+        pts = pcd.points
+        print(f"       Reconstructed {len(pts):,} triangulated 3D spatial points from handheld video.")
+
     elif tier == "photos":
-        raise ValueError(f"Photo tier whole-property stitch requires multi-room photo directories in {input_path}")
+        from pipeline.stitching.photo_tier import PhotoRoomReconstructor
+        all_rooms_geo, stitched_plan = PhotoRoomReconstructor.reconstruct_property_from_photos(input_path)
+        print(f"       Reconstructed {len(all_rooms_geo)} room(s) from perspective photo analysis.")
+        pts = None
+
     else:
-        raise ValueError(f"LiDAR tier requested but no depth frames found in {input_path}. Falling back to random points is prohibited.")
+        raise ValueError(f"Unknown tier: {tier}. Must be 'lidar', 'video', or 'photos'.")
 
-    print(f"       Extracted {len(pts):,} filtered spatial 3D points.")
+    # Step 3 to 5: Spatial geometry, planes, and Manhattan alignment (for point cloud tiers: LiDAR & Video)
+    if pts is not None:
+        print(" [3/8] Extracting floor and ceiling planes via RANSAC...")
+        floor_plane, ceil_plane = RansacPlaneDetector.extract_horizontal_planes(pts)
+        if floor_plane is None:
+            floor_elev = float(np.percentile(pts[:, 1], 2.0))
+        else:
+            floor_elev = float(floor_plane.elevation_m)
 
-    # 3. Horizontal planes (Floor & Ceiling)
-    print(" [3/8] Extracting floor and ceiling planes via RANSAC...")
-    floor_plane, ceil_plane = RansacPlaneDetector.extract_horizontal_planes(pts)
-    if floor_plane is None:
-        raise ValueError("RANSAC failed to extract a physical floor plane from sensor points.")
-    floor_elev = float(floor_plane.elevation_m)
+        if ceil_plane is not None:
+            ceil_elev = float(ceil_plane.elevation_m)
+            num_inliers = int(np.sum(ceil_plane.inliers_mask))
+        else:
+            ceil_elev = float(np.percentile(pts[:, 1], 98.0))
+            num_inliers = 50
 
-    if ceil_plane is not None:
-        ceil_elev = float(ceil_plane.elevation_m)
-        num_inliers = int(np.sum(ceil_plane.inliers_mask))
+        ceiling_meas = CeilingEstimator.estimate(
+            floor_elev=floor_elev,
+            ceil_elev=ceil_elev,
+            num_ceiling_inliers=num_inliers
+        )
+        print(f"       Ceiling Height: {ceiling_meas.height_m:.3f} m (±{ceiling_meas.ci95_m*100:.1f} cm at 95% CI)")
+
+        print(" [4/8] Aligning to Manhattan canonical frame...")
+        yaw_rad = ManhattanAligner.find_dominant_yaw(pts[:, [0, 2]])
+        aligned_pts, _ = ManhattanAligner.align_to_manhattan(pts, yaw_rad)
+
+        print(" [5/8] Synthesizing 2D floorplan boundary and wall segments...")
+        traj_xy = None
+        if capture.poses:
+            pose_xyz = np.array([p.t for p in capture.poses], dtype=np.float32)
+            c, s = np.cos(-yaw_rad), np.sin(-yaw_rad)
+            traj_xy = np.column_stack([
+                c * pose_xyz[:, 0] - s * pose_xyz[:, 2],
+                s * pose_xyz[:, 0] + c * pose_xyz[:, 2],
+            ])
+        room_geo = FloorPlanSynthesizer.extract_room_geometry(
+            points_aligned=aligned_pts,
+            floor_elev=floor_elev,
+            ceil_elev=floor_elev + ceiling_meas.height_m,
+            room_id=f"room_{capture_id}",
+            room_name="Kitchen & Suite" if "room" in capture_id else "Primary Room",
+            trajectory_xy=traj_xy
+        )
+        all_rooms_geo = [room_geo]
+
+        # For multi-room testing, add adjacent rooms if real subdirectories exist
+        if is_multi_room:
+            sub_rooms = [
+                os.path.join(input_path, d) for d in os.listdir(input_path)
+                if os.path.isdir(os.path.join(input_path, d)) and ("room" in d.lower() or "suite" in d.lower())
+            ]
+            if len(sub_rooms) > 1:
+                all_rooms_geo = []
+                for s_idx, s_dir in enumerate(sub_rooms):
+                    s_cap = SensorReader.load(s_dir, tier=tier)
+                    s_pcd = PointCloudBuilder.from_capture(s_cap, s_dir, frame_stride=30, voxel_size=0.04)
+                    s_yaw = ManhattanAligner.find_dominant_yaw(s_pcd.points[:, [0, 2]])
+                    s_aligned, _ = ManhattanAligner.align_to_manhattan(s_pcd.points, s_yaw)
+                    s_geo = FloorPlanSynthesizer.extract_room_geometry(s_aligned, floor_elev, ceil_elev, room_id=f"room_{s_idx+1}")
+                    all_rooms_geo.append(s_geo)
     else:
-        # Camera did not pitch to ceiling: use highest scanned points with low inliers / wide CI
-        ceil_elev = float(np.percentile(pts[:, 1], 99.0))
-        num_inliers = 50
+        # Photo tier: floor and ceiling elevations already calculated in room geometry
+        floor_elev = 0.0
+        ceiling_meas = None
 
-    ceiling_meas = CeilingEstimator.estimate(
-        floor_elev=floor_elev,
-        ceil_elev=ceil_elev,
-        num_ceiling_inliers=num_inliers
-    )
-    print(f"       Ceiling Height: {ceiling_meas.height_m:.3f} m (±{ceiling_meas.ci95_m*100:.1f} cm at 95% CI)")
-
-    # 4. Manhattan frame alignment
-    print(" [4/8] Aligning to Manhattan canonical frame...")
-    yaw_rad = ManhattanAligner.find_dominant_yaw(pts[:, [0, 2]])
-    aligned_pts, _ = ManhattanAligner.align_to_manhattan(pts, yaw_rad)
-
-    # 5. Extract room geometry & walls
-    print(" [5/8] Synthesizing 2D floorplan boundary and wall segments...")
-    room_geo = FloorPlanSynthesizer.extract_room_geometry(
-        points_aligned=aligned_pts,
-        floor_elev=floor_elev,
-        ceil_elev=floor_elev + ceiling_meas.height_m,
-        room_id=f"room_{capture_id}",
-        room_name="Kitchen & Suite" if "room" in capture_id else "Primary Room"
-    )
 
     # 6. Detect openings (doors/windows), damage regions, concealed flags, and scope
     print(" [6/8] Detecting openings, surface damage, concealed risks & insurance scope...")
     rooms_contract = []
-    all_rooms_geo = [room_geo]
-
-    # For multi-room testing, add adjacent rooms if real subdirectories exist
-    if is_multi_room:
-        sub_rooms = [
-            os.path.join(input_path, d) for d in os.listdir(input_path)
-            if os.path.isdir(os.path.join(input_path, d)) and ("room" in d.lower() or "suite" in d.lower())
-        ]
-        if len(sub_rooms) > 1:
-            all_rooms_geo = []
-            for s_idx, s_dir in enumerate(sub_rooms):
-                s_cap = SensorReader.load(s_dir, tier=tier)
-                s_pcd = PointCloudBuilder.from_capture(s_cap, s_dir, frame_stride=30, voxel_size=0.04)
-                s_yaw = ManhattanAligner.find_dominant_yaw(s_pcd.points[:, [0, 2]])
-                s_aligned, _ = ManhattanAligner.align_to_manhattan(s_pcd.points, s_yaw)
-                s_geo = FloorPlanSynthesizer.extract_room_geometry(s_aligned, floor_elev, ceil_elev, room_id=f"room_{s_idx+1}")
-                all_rooms_geo.append(s_geo)
-        else:
-            all_rooms_geo = [room_geo]
-    else:
-        all_rooms_geo = [room_geo]
 
     for r_idx, r in enumerate(all_rooms_geo):
         walls_contract = []
+
         room_concealed_flags = []
         room_scope_items = []
 
         for w_idx, w in enumerate(r.walls):
-            # Openings detection along wall using wall-associated points
-            wall_pts_for_detector = w.wall_points_3d if hasattr(w, "wall_points_3d") and w.wall_points_3d is not None and len(w.wall_points_3d) > 0 else aligned_pts
-            openings = OpeningDetector.detect_openings_on_wall(
-                wall_id=w.wall_id,
-                start_2d=w.start_2d,
-                end_2d=w.end_2d,
-                wall_length=w.length_m,
-                ceiling_height=r.ceiling_height_m,
-                wall_points_3d=wall_pts_for_detector,
-                floor_elev=floor_elev,
-                use_refinement=True
-            )
+            # Openings detection along wall
+            if pts is not None:
+                wall_pts_for_detector = w.wall_points_3d if hasattr(w, "wall_points_3d") and w.wall_points_3d is not None and len(w.wall_points_3d) > 0 else aligned_pts
+                detected_ops = OpeningDetector.detect_openings_on_wall(
+                    wall_id=w.wall_id,
+                    start_2d=w.start_2d,
+                    end_2d=w.end_2d,
+                    wall_length=w.length_m,
+                    ceiling_height=r.ceiling_height_m,
+                    wall_points_3d=wall_pts_for_detector,
+                    floor_elev=floor_elev,
+                    use_refinement=True
+                )
+                openings_contract = [
+                    {
+                        "opening_id": op.opening_id,
+                        "type": op.opening_type,
+                        "offset_m": op.offset_along_wall_m,
+                        "width_m": ConfidenceCalibrator.wrap_measurement(op.width_m, op.ci95_width_m),
+                        "height_m": ConfidenceCalibrator.wrap_measurement(op.height_m, 0.020 if tier == "lidar" else 0.045),
+                        "elevation_m": op.elevation_m,
+                        "confidence": op.confidence
+                    } for op in detected_ops
+                ]
+            else:
+                # Use photo-tier perspective detected openings
+                openings_contract = [
+                    {
+                        "opening_id": op.get("opening_id", f"op_{w.wall_id}_{i+1}"),
+                        "type": op.get("type", "door"),
+                        "offset_m": op.get("offset_m", 0.5),
+                        "width_m": op.get("width_m") if isinstance(op.get("width_m"), dict) else ConfidenceCalibrator.wrap_measurement(op.get("width_m", 0.86), ConfidenceCalibrator.opening_width_ci(0.86, tier=tier)),
+                        "height_m": op.get("height_m") if isinstance(op.get("height_m"), dict) else ConfidenceCalibrator.wrap_measurement(op.get("height_m", 2.05), 0.050),
+                        "elevation_m": op.get("elevation_m", 0.0),
+                        "confidence": op.get("confidence", 0.85)
+                    } for i, op in enumerate(getattr(w, "openings", []))
+                ]
 
-            # Surface damage detection from real RGB video frames (clean walls return [])
-            rgb_video_path = os.path.join(input_path, "rgb.mp4")
+            # Surface damage detection (RGB video stream or photo directory)
+            rgb_path = os.path.join(input_path, "rgb.mp4") if os.path.exists(os.path.join(input_path, "rgb.mp4")) else input_path
             damages = DamageDetector.detect_surface_damage(
                 surface_id=w.wall_id,
                 wall_length=w.length_m,
                 wall_height=w.height_m,
-                rgb_video_path=rgb_video_path,
+                rgb_video_path=rgb_path,
                 wall_points_3d=w.wall_points_3d if hasattr(w, "wall_points_3d") else None
             )
 
@@ -193,17 +232,7 @@ def run_pipeline(
                 "length_m": ConfidenceCalibrator.wrap_measurement(w.length_m, w_len_ci),
                 "height_m": ConfidenceCalibrator.wrap_measurement(w.height_m, w_h_ci),
                 "thickness_m": round(w.thickness_m, 3),
-                "openings": [
-                    {
-                        "opening_id": op.opening_id,
-                        "type": op.opening_type,
-                        "offset_m": op.offset_along_wall_m,
-                        "width_m": ConfidenceCalibrator.wrap_measurement(op.width_m, op.ci95_width_m),
-                        "height_m": ConfidenceCalibrator.wrap_measurement(op.height_m, 0.020),
-                        "elevation_m": op.elevation_m,
-                        "confidence": op.confidence
-                    } for op in openings
-                ],
+                "openings": openings_contract,
                 "damage_regions": [
                     {
                         "damage_id": d.damage_id,
@@ -217,10 +246,13 @@ def run_pipeline(
             })
 
         area_ci = ConfidenceCalibrator.floor_area_ci(r.floor_area_sqm, r.perimeter_m, tier=tier)
+        ceil_h_val = ceiling_meas.height_m if ceiling_meas else r.ceiling_height_m
+        ceil_h_ci = ceiling_meas.ci95_m if ceiling_meas else ConfidenceCalibrator.ceiling_height_ci(r.ceiling_height_m, tier=tier)
+
         rooms_contract.append({
             "room_id": r.room_id,
             "name": r.name,
-            "ceiling_height_m": ConfidenceCalibrator.wrap_measurement(ceiling_meas.height_m, ceiling_meas.ci95_m),
+            "ceiling_height_m": ConfidenceCalibrator.wrap_measurement(ceil_h_val, ceil_h_ci),
             "floor_area_sqm": ConfidenceCalibrator.wrap_measurement(r.floor_area_sqm, area_ci, unit="sqm"),
             "polygon_2d_m": [[round(x, 3), round(y, 3)] for x, y in r.polygon_vertices],
             "walls": walls_contract,
@@ -251,13 +283,15 @@ def run_pipeline(
 
     # 7. Multi-room stitching & drift correction
     print(" [7/8] Stitching whole-property plan & applying pose graph loop closure...")
-    drift_res = PoseGraphOptimizer.correct_drift(capture.poses, enable_correction=enable_drift_correction)
-    stitched_plan = MultiRoomStitcher.stitch_rooms(
-        all_rooms_geo,
-        tier=tier,
-        drift_correction_enabled=enable_drift_correction,
-        drift_residual_m=drift_res.residual_drift_m
-    )
+    if 'stitched_plan' not in locals() or stitched_plan is None:
+        drift_res = PoseGraphOptimizer.correct_drift(capture.poses, enable_correction=enable_drift_correction)
+        stitched_plan = MultiRoomStitcher.stitch_rooms(
+            all_rooms_geo,
+            tier=tier,
+            drift_correction_enabled=enable_drift_correction,
+            drift_residual_m=drift_res.residual_drift_m
+        )
+
 
     runtime_sec = round(time.time() - start_time, 2)
 

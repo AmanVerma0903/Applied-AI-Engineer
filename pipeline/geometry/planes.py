@@ -78,7 +78,7 @@ class RansacPlaneDetector:
         # Least squares refinement on inliers
         inlier_pts = points[best_inliers]
         centroid = inlier_pts.mean(axis=0)
-        uu, dd, vv = np.linalg.svd(inlier_pts - centroid)
+        _, _, vv = np.linalg.svd(inlier_pts - centroid, full_matrices=False)
         refined_normal = vv[2]
         if expected_normal is not None and np.dot(refined_normal, expected_normal) < 0:
             refined_normal = -refined_normal

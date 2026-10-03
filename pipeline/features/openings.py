@@ -121,6 +121,11 @@ class OpeningDetector:
                         refined_end = raw_end
 
                     refined_width = refined_end - refined_start
+                    # Gaps that touch the wall ends are histogram boundary artifacts, not doors.
+                    if refined_start < 0.35 or refined_end > wall_length - 0.35:
+                        continue
+                    if not (min_door_width_m <= refined_width <= max_door_width_m):
+                        continue
 
                     # Verify lintel or upper framing points exist above door
                     lintel_min_h = min(ceiling_height - 0.10, 1.90)
