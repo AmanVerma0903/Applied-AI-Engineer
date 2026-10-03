@@ -44,7 +44,15 @@ def _get_live_door_wall():
 
     yaw = ManhattanAligner.find_dominant_yaw(pcd.points[:, [0, 2]])
     aligned_pts, _ = ManhattanAligner.align_to_manhattan(pcd.points, yaw)
-    room_geo = FloorPlanSynthesizer.extract_room_geometry(aligned_pts, floor_elev, ceil_elev)
+    pose_xyz = np.array([p.t for p in capture.poses], dtype=np.float32)
+    c, s = np.cos(-yaw), np.sin(-yaw)
+    traj_xy = np.column_stack([
+        c * pose_xyz[:, 0] - s * pose_xyz[:, 2],
+        s * pose_xyz[:, 0] + c * pose_xyz[:, 2],
+    ])
+    room_geo = FloorPlanSynthesizer.extract_room_geometry(
+        aligned_pts, floor_elev, ceil_elev, trajectory_xy=traj_xy
+    )
     door_wall = [w for w in room_geo.walls if "W4" in w.wall_id or "West" in w.wall_id][0]
 
     if door_wall is None:
@@ -75,10 +83,12 @@ def run_before_fix() -> dict:
         use_refinement=False
     )
 
-    target_op = min(ops, key=lambda o: abs(o.width_m - gt_width_m)) if ops else None
+    target_op = ops[0] if ops else None
     measured_m = target_op.width_m if target_op else 0.0
     error_cm = round(abs(measured_m - gt_width_m) * 100, 2)
-    pass_gate = error_cm <= 2.0
+    within = [o for o in ops if abs(o.width_m - gt_width_m) * 100 <= 2.0]
+    pass_ratio = (100.0 * len(within) / len(ops)) if ops else 0.0
+    pass_gate = pass_ratio >= 85.0
 
     result = {
         "run": "BEFORE_FIX",
@@ -87,7 +97,7 @@ def run_before_fix() -> dict:
         "measured_width_cm": round(measured_m * 100, 2),
         "absolute_error_cm": error_cm,
         "gate_threshold_cm": 2.0,
-        "pass_ratio_pct": 100.0 if pass_gate else 0.0,
+        "pass_ratio_pct": round(pass_ratio, 1),
         "gate_status": "PASS" if pass_gate else "FAIL",
         "failure_summary": f"Coarse binning width error of {error_cm} cm exceeds <= 2.0 cm gate threshold."
     }
@@ -114,10 +124,12 @@ def run_after_fix() -> dict:
         use_refinement=True
     )
 
-    target_op = min(ops, key=lambda o: abs(o.width_m - gt_width_m)) if ops else None
+    target_op = ops[0] if ops else None
     measured_m = target_op.width_m if target_op else 0.0
     error_cm = round(abs(measured_m - gt_width_m) * 100, 2)
-    pass_gate = error_cm <= 2.0
+    within = [o for o in ops if abs(o.width_m - gt_width_m) * 100 <= 2.0]
+    pass_ratio = (100.0 * len(within) / len(ops)) if ops else 0.0
+    pass_gate = pass_ratio >= 85.0
 
     result = {
         "run": "AFTER_FIX",
@@ -126,7 +138,7 @@ def run_after_fix() -> dict:
         "measured_width_cm": round(measured_m * 100, 2),
         "absolute_error_cm": error_cm,
         "gate_threshold_cm": 2.0,
-        "pass_ratio_pct": 100.0 if pass_gate else 0.0,
+        "pass_ratio_pct": round(pass_ratio, 1),
         "gate_status": "PASS" if pass_gate else "FAIL",
         "success_summary": f"Refined detector localized jambs to {round(measured_m*100, 2)} cm from real LiDAR density gaps."
     }
@@ -168,7 +180,7 @@ def main():
     print(f" Error Reduction: {delta_cm:.2f} cm improvement")
     print(f" Gate Transition: {before['gate_status']} -> {after['gate_status']}")
     print(f" Measured Width:  {after['measured_width_cm']} cm | Error vs GT: {after['absolute_error_cm']} cm")
-    print(f" Verdict:         {'PASS' if after['gate_status'] == 'PASS' else 'FAIL (Honest metric vs GT; sub-cm edge refinement verified with 14.7cm delta)'}")
+    print(f" Verdict:         {after['gate_status']} (same west-wall door as outputs/audit_room/contract.json; error reduced by {delta_cm:.1f} cm)")
     print("==================================================================\n")
 
 
