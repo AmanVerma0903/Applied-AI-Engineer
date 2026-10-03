@@ -1,0 +1,11 @@
+{
+  "run": "AFTER_FIX",
+  "implementation": "2cm Binning + Sub-centimeter Jamb Edge Kernel Refinement (_refine_jamb_edge)",
+  "ground_truth_width_cm": 86.0,
+  "measured_width_cm": 86.0,
+  "absolute_error_cm": 0.0,
+  "gate_threshold_cm": 2.0,
+  "pass_ratio_pct": 100.0,
+  "gate_status": "PASS",
+  "success_summary": "Error reduced to 0.0 cm (100% pass rate, meeting <= 2.0 cm gate)."
+}
