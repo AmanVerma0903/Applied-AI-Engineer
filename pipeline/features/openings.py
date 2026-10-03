@@ -76,8 +76,9 @@ class OpeningDetector:
         if len(s_in) < 40:
             return []
 
-        # Create 1D histogram along wall length for door height zone (0.3m to 1.8m)
-        door_zone = (h_in >= 0.30) & (h_in <= 1.80)
+        # Create 1D histogram along wall length for door height zone (adaptive to ceiling height)
+        max_door_h = min(ceiling_height - 0.05, 1.80)
+        door_zone = (h_in >= 0.20) & (h_in <= max_door_h) if max_door_h > 0.25 else (h_in >= 0.10)
         s_door = s_in[door_zone]
 
         if len(s_door) < 20:
@@ -122,10 +123,13 @@ class OpeningDetector:
                     refined_width = refined_end - refined_start
 
                     # Verify lintel or upper framing points exist above door
-                    above_door = (s_in >= refined_start) & (s_in <= refined_end) & (h_in > 1.90)
+                    lintel_min_h = min(ceiling_height - 0.10, 1.90)
+                    above_door = (s_in >= refined_start) & (s_in <= refined_end) & (h_in > lintel_min_h)
                     has_lintel = np.sum(above_door) > 0
 
                     conf = 0.90 if has_lintel else 0.75
+                    # Clamp physical door height to not exceed room ceiling height
+                    effective_door_height = min(door_lintel_height_m, max(0.50, ceiling_height - 0.05))
 
                     openings.append(DetectedOpening(
                         opening_id=f"op_{wall_id}_{len(openings)+1}",
@@ -133,7 +137,7 @@ class OpeningDetector:
                         opening_type="door",
                         offset_along_wall_m=float(round(refined_start, 3)),
                         width_m=float(round(refined_width, 3)),
-                        height_m=float(round(door_lintel_height_m, 3)),
+                        height_m=float(round(effective_door_height, 3)),
                         elevation_m=0.0,
                         confidence=conf,
                         ci95_width_m=0.024

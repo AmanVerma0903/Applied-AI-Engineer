@@ -82,26 +82,12 @@ class FloorPlanSynthesizer:
             x_pts = wall_pts[:, 0]
             z_pts = wall_pts[:, 2]
 
-            # East wall: positive X peak
-            x_max = FloorPlanSynthesizer._fit_plane_1d(x_pts, 1.0, float(np.percentile(x_pts, 99.5)))
-            # North wall: positive Z peak
-            z_max = FloorPlanSynthesizer._fit_plane_1d(z_pts, 2.5, float(np.percentile(z_pts, 99.5)))
-            # South wall: negative Z peak
-            z_min = FloorPlanSynthesizer._fit_plane_1d(z_pts, float(np.percentile(z_pts, 0.5)), 0.5)
-
-            # West wall: find dominant wall plane on negative side
-            # In Manhattan room with doorway, look for primary partition/bounding wall plane
-            neg_x = x_pts[x_pts < 0.5]
-            if len(neg_x) > 50:
-                # Check for partition wall near 0 (-0.4 to 0.2) vs outer wall
-                x_near = neg_x[(neg_x >= -0.5) & (neg_x <= 0.2)]
-                x_far = neg_x[neg_x < -0.5]
-                if len(x_far) > len(x_near) * 1.5:
-                    x_min = FloorPlanSynthesizer._fit_plane_1d(neg_x, float(np.percentile(neg_x, 1.0)), -0.5)
-                else:
-                    x_min = FloorPlanSynthesizer._fit_plane_1d(neg_x, -0.5, 0.2)
-            else:
-                x_min = float(np.percentile(wall_pts[:, 0], 2.0))
+            # Outer envelope wall planes fitted directly from 1D density profiles
+            # Eliminates magic thresholds (1.0, 2.5, -0.5..0.2) and avoids interior counter partitions
+            x_max = FloorPlanSynthesizer._fit_plane_1d(x_pts, float(np.percentile(x_pts, 85.0)), float(np.percentile(x_pts, 99.5)))
+            z_max = FloorPlanSynthesizer._fit_plane_1d(z_pts, float(np.percentile(z_pts, 85.0)), float(np.percentile(z_pts, 99.5)))
+            z_min = FloorPlanSynthesizer._fit_plane_1d(z_pts, float(np.percentile(z_pts, 0.5)), float(np.percentile(z_pts, 15.0)))
+            x_min = FloorPlanSynthesizer._fit_plane_1d(x_pts, float(np.percentile(x_pts, 0.5)), float(np.percentile(x_pts, 15.0)))
 
         ceiling_height = float(max(0.1, ceil_elev - floor_elev))
 

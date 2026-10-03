@@ -169,7 +169,7 @@ class MultiRoomStitcher:
         ci_factor = {"lidar": 0.015, "video": 0.030, "photos": 0.055}.get(tier, 0.03)
         ci_area = round(total_area * ci_factor, 2)
 
-        residual_drift = drift_residual_m if drift_residual_m is not None else (0.009 if drift_correction_enabled else 0.456)
+        residual_drift = float(round(drift_residual_m, 3)) if drift_residual_m is not None else 0.0
 
         return StitchedPropertyPlan(
             property_id="property_whole_plan",

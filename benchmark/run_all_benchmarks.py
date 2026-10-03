@@ -49,17 +49,19 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
     capture = SensorReader.load(capture_path, tier="lidar")
     pcd2 = PointCloudBuilder.from_capture(capture, capture_path, frame_stride=25, voxel_size=0.03)
     fp2, cp2 = RansacPlaneDetector.extract_horizontal_planes(pcd2.points)
+    f_elev2 = float(fp2.elevation_m) if fp2 else float(np.percentile(pcd2.points[:, 1], 2.0))
+    c_elev2 = float(cp2.elevation_m) if cp2 else float(np.percentile(pcd2.points[:, 1], 98.0))
     ceil2_meas = CeilingEstimator.estimate(
-        floor_elev=fp2.elevation_m if fp2 else -1.45,
-        ceil_elev=cp2.elevation_m if cp2 else 0.99
+        floor_elev=f_elev2,
+        ceil_elev=c_elev2
     )
 
     yaw2 = ManhattanAligner.find_dominant_yaw(pcd2.points[:, [0, 2]])
     aligned_pts2, _ = ManhattanAligner.align_to_manhattan(pcd2.points, yaw2)
     geo2 = FloorPlanSynthesizer.extract_room_geometry(
         aligned_pts2,
-        floor_elev=fp2.elevation_m if fp2 else -1.45,
-        ceil_elev=cp2.elevation_m if cp2 else 0.99
+        floor_elev=f_elev2,
+        ceil_elev=c_elev2
     )
 
     ceil1 = r0["ceiling_height_m"]["value"] if isinstance(r0.get("ceiling_height_m"), dict) else float(r0["ceiling_height_m"])
@@ -85,8 +87,16 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
     # 5. Gate 5: Footprint Stitching Gate
     print("\n[Gate 5/5] Evaluating Whole-Property Stitch Gate...")
     measured_footprint = contract["stitched_plan"]["total_area_sqm"]["value"] if isinstance(contract["stitched_plan"].get("total_area_sqm"), dict) else float(contract["stitched_plan"]["total_area_sqm"])
-    gt_footprint = gt_r1.get("floor_area_sqm", 32.966)
+    num_rooms = len(contract.get("rooms", []))
+    if num_rooms <= 1:
+        gt_footprint = gt_r1.get("floor_area_sqm", 32.966)
+        gate5_context = "Single-room capture evaluated against matching room GT (photo-tier multi-room capture not run due to missing photo folders)"
+    else:
+        gt_footprint = gt_data["rooms"]["multi_room_property"]["total_footprint_sqm"]
+        gate5_context = "Whole-property multi-room stitch"
+
     gate5_res = evaluator.evaluate_photo_stitching_gate(measured_footprint, gt_footprint_sqm=gt_footprint)
+    gate5_res["context"] = gate5_context
     print(f"  Result: {gate5_res['status']} | Footprint Error: {gate5_res['error_pct']}% (Gate: <= 8.0%)")
 
     # 6. Part 3: Head-to-Head Metrology vs Consumer Benchmark
@@ -133,8 +143,8 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 | **Gate 1: Opening Widths** | $\\le 2.0\text{{ cm}}$ on $\\ge 85\%$ of openings | **{g1['pass_ratio']}%** pass (Mean err: **{g1['mean_error_cm']} cm**) | `{g1['status']}` | {'Compliant with opening width threshold' if g1['gate_passed'] else 'Honest detection on physical aperture; no fake door injection'} |
 | **Gate 2: Ceiling Height** | $\\le 1.5\text{{ cm}}$ error; multi-capture spread $\\le 1.0\text{{ cm}}$ | Max err: **{g2['max_error_cm']} cm**; Spread: **{g2['spread_cm']} cm** | `{g2['status']}` | {g2['diagnosis']} |
 | **Gate 3: Repeatability** | Two captures of same room agree within $1\text{{ cm}}$ or $0.5\%$ | Max wall diff: **{max([w['diff_cm'] for w in g3['wall_comparisons']]) if g3['wall_comparisons'] else 0.0} cm** | `{g3['status']}` | {'Zero walls exceeded tolerance' if g3['gate_passed'] else 'Wall variation observed across passes'} |
-| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **{abl['drift_correction_on']['loop_closing_gap_m']*100:.1f} cm** (OFF: **{abl['drift_correction_off']['loop_closing_gap_m']*100:.1f} cm**) | `PASS` | **{abl['drift_reduction_factor']}** via pose graph optimization |
-| **Gate 5: Footprint Stitching** | Valid topology, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: **{g5['error_pct']}%**; Overlaps: **0** | `{g5['status']}` | {'Topological layout within tolerance' if g5['gate_passed'] else 'Single-room capture bounds evaluated'} |
+| **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **{abl['drift_correction_on']['loop_closing_gap_m']*100:.1f} cm** (OFF: **{abl['drift_correction_off']['loop_closing_gap_m']*100:.1f} cm**) | `{abl['drift_correction_on']['gate_compliance']}` | **{abl['drift_reduction_factor']}** via pose graph optimization |
+| **Gate 5: Footprint Stitching** | Valid topology, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: **{g5['error_pct']}%**; Overlaps: **0** | `{g5['status']}` | {g5.get('context', 'Single-room capture bounds evaluated')} |
 
 ---
 
@@ -198,7 +208,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 | **Trajectory Loop Closing Gap** | **{abl['drift_correction_off']['loop_closing_gap_m']*100:.1f} cm** | **{abl['drift_correction_on']['loop_closing_gap_m']*100:.1f} cm** | **{abl['closing_gap_reduction_cm']} cm reduction** |
 | **Accumulated Drift** | {abl['drift_correction_off']['accumulated_drift_m']:.3f} m | {abl['drift_correction_on']['accumulated_drift_m']:.3f} m | Corrected along trajectory |
 | **Detected Loop Closures** | {abl['drift_correction_off']['num_loop_closures']} | {abl['drift_correction_on']['num_loop_closures']} | Anchored loop closures |
-| **Gate Row Compliance** | **AUTOMATIC FAIL** | **PASS** | Full marks earned |
+| **Gate Row Compliance** | **{abl['drift_correction_off']['gate_compliance']}** | **{abl['drift_correction_on']['gate_compliance']}** | {'Full marks earned' if abl['drift_correction_on']['gate_compliance'] == 'PASS' else 'Ablation evaluated'} |
 
 ---
 
@@ -206,13 +216,16 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 
 | Input Tier | Captured Assets | Stitched Footprint | Ground Truth | Error % | Gate Threshold | Overlaps | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LiDAR Tier** | Real dToF + Odometry | {g5['measured_footprint_sqm']:.2f} m² | {g5['gt_footprint_sqm']:.2f} m² | **{g5['error_pct']}%** | $\\le 8.0\%$ | None | `{g5['status']}` |
+| **LiDAR Tier** | Real dToF + Odometry | {g5['measured_footprint_sqm']:.2f} m² | {g5['gt_footprint_sqm']:.2f} m² | **{g5['error_pct']}%** | $\le 8.0\%$ | None | `{g5['status']}` |
+
+> **Evaluation Context on Gate 5:** {g5.get('context', 'Single room capture evaluated against matching room GT')}
 
 ---
 
 ## 6. Part 3: Head-to-Head vs Magicplan Reference Fixture
 
-- **Comparison Rule:** Beat or tie on $\\ge 70\%$ of shared dimensions.
+- **Comparison Rule:** Beat or tie on $\ge 70\%$ of shared dimensions.
+> **Audit Note:** The Magicplan export is an unofficial in-repo reference fixture (nominal comparison baseline; not an official third-party Magicplan cloud export).
 
 | Room | Shared Dimension | Pipeline Dimension | Laser GT | Pipeline Error | Magicplan Error | Delta Advantage | Verdict |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |

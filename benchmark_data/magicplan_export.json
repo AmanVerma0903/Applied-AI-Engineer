@@ -1,8 +1,9 @@
 {
-  "app_name": "Magicplan",
+  "app_name": "Magicplan (Reference Fixture)",
   "app_version": "12.4.2 (iOS 17.5.1)",
   "hardware": "iPhone 15 Pro (A2848)",
   "export_format": "magicplan_json_v4",
+  "fixture_note": "Unofficial in-repo benchmark reference fixture (authored for nominal baseline comparison; not an official live Magicplan cloud export)",
   "rooms": {
     "room_01_kitchen_suite": {
       "name": "Kitchen & Suite",

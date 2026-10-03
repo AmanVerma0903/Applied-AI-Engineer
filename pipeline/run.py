@@ -63,10 +63,10 @@ def run_pipeline(
         rgb_path = os.path.join(input_path, "rgb.mp4")
         if not os.path.exists(rgb_path):
             raise ValueError(f"Video tier requested but no rgb.mp4 found in {input_path}")
-        if len(capture.poses) > 0:
-            pts = np.array([p.t for p in capture.poses], dtype=np.float32)
-        else:
-            raise ValueError("Insufficient odometry to reconstruct 3D points for video tier.")
+        raise NotImplementedError(
+            "Video-only dense surface reconstruction requires monocular depth / dense multi-view stereo; "
+            "presenting camera trajectory poses as a 3D floorplan is prohibited."
+        )
     elif tier == "photos":
         raise ValueError(f"Photo tier whole-property stitch requires multi-room photo directories in {input_path}")
     else:
@@ -77,13 +77,22 @@ def run_pipeline(
     # 3. Horizontal planes (Floor & Ceiling)
     print(" [3/8] Extracting floor and ceiling planes via RANSAC...")
     floor_plane, ceil_plane = RansacPlaneDetector.extract_horizontal_planes(pts)
-    floor_elev = floor_plane.elevation_m if floor_plane else -1.45
-    ceil_elev = ceil_plane.elevation_m if ceil_plane else 0.99
+    if floor_plane is None:
+        raise ValueError("RANSAC failed to extract a physical floor plane from sensor points.")
+    floor_elev = float(floor_plane.elevation_m)
+
+    if ceil_plane is not None:
+        ceil_elev = float(ceil_plane.elevation_m)
+        num_inliers = int(np.sum(ceil_plane.inliers_mask))
+    else:
+        # Camera did not pitch to ceiling: use highest scanned points with low inliers / wide CI
+        ceil_elev = float(np.percentile(pts[:, 1], 99.0))
+        num_inliers = 50
 
     ceiling_meas = CeilingEstimator.estimate(
         floor_elev=floor_elev,
         ceil_elev=ceil_elev,
-        num_ceiling_inliers=1200
+        num_ceiling_inliers=num_inliers
     )
     print(f"       Ceiling Height: {ceiling_meas.height_m:.3f} m (±{ceiling_meas.ci95_m*100:.1f} cm at 95% CI)")
 

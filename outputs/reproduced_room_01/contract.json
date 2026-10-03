@@ -1,58 +1,58 @@
 {
   "capture_id": "c00a170fe1",
   "tier": "lidar",
-  "timestamp": "2026-10-04T02:04:04.376761",
+  "timestamp": "2026-10-04T02:29:36.704929",
   "units": "meters",
   "rooms": [
     {
       "room_id": "room_c00a170fe1",
       "name": "Primary Room",
       "ceiling_height_m": {
-        "value": 1.22,
+        "value": 1.257,
         "ci95": 0.15,
         "unit": "m"
       },
       "floor_area_sqm": {
-        "value": 12.164,
-        "ci95": 0.11,
+        "value": 20.972,
+        "ci95": 0.15,
         "unit": "sqm"
       },
       "polygon_2d_m": [
         [
-          -0.28,
-          -1.139
+          -1.09,
+          -1.145
         ],
         [
-          2.293,
-          -1.139
+          2.374,
+          -1.145
         ],
         [
-          2.293,
-          3.588
+          2.374,
+          4.909
         ],
         [
-          -0.28,
-          3.588
+          -1.09,
+          4.909
         ]
       ],
       "walls": [
         {
           "wall_id": "room_c00a170fe1_W1_South",
           "start_m": [
-            -0.28,
-            -1.139
+            -1.09,
+            -1.145
           ],
           "end_m": [
-            2.293,
-            -1.139
+            2.374,
+            -1.145
           ],
           "length_m": {
-            "value": 2.573,
-            "ci95": 0.011,
+            "value": 3.464,
+            "ci95": 0.012,
             "unit": "m"
           },
           "height_m": {
-            "value": 1.22,
+            "value": 1.257,
             "ci95": 0.01,
             "unit": "m"
           },
@@ -63,20 +63,20 @@
         {
           "wall_id": "room_c00a170fe1_W2_East",
           "start_m": [
-            2.293,
-            -1.139
+            2.374,
+            -1.145
           ],
           "end_m": [
-            2.293,
-            3.588
+            2.374,
+            4.909
           ],
           "length_m": {
-            "value": 4.727,
-            "ci95": 0.012,
+            "value": 6.054,
+            "ci95": 0.013,
             "unit": "m"
           },
           "height_m": {
-            "value": 1.22,
+            "value": 1.257,
             "ci95": 0.01,
             "unit": "m"
           },
@@ -87,20 +87,20 @@
         {
           "wall_id": "room_c00a170fe1_W3_North",
           "start_m": [
-            2.293,
-            3.588
+            2.374,
+            4.909
           ],
           "end_m": [
-            -0.28,
-            3.588
+            -1.09,
+            4.909
           ],
           "length_m": {
-            "value": 2.573,
-            "ci95": 0.011,
+            "value": 3.464,
+            "ci95": 0.012,
             "unit": "m"
           },
           "height_m": {
-            "value": 1.22,
+            "value": 1.257,
             "ci95": 0.01,
             "unit": "m"
           },
@@ -111,25 +111,77 @@
         {
           "wall_id": "room_c00a170fe1_W4_West",
           "start_m": [
-            -0.28,
-            3.588
+            -1.09,
+            4.909
           ],
           "end_m": [
-            -0.28,
-            -1.139
+            -1.09,
+            -1.145
           ],
           "length_m": {
-            "value": 4.727,
-            "ci95": 0.012,
+            "value": 6.054,
+            "ci95": 0.013,
             "unit": "m"
           },
           "height_m": {
-            "value": 1.22,
+            "value": 1.257,
             "ci95": 0.01,
             "unit": "m"
           },
           "thickness_m": 0.12,
-          "openings": [],
+          "openings": [
+            {
+              "opening_id": "op_room_c00a170fe1_W4_West_1",
+              "type": "door",
+              "offset_m": 0.0,
+              "width_m": {
+                "value": 1.263,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.207,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.75
+            },
+            {
+              "opening_id": "op_room_c00a170fe1_W4_West_2",
+              "type": "door",
+              "offset_m": 1.424,
+              "width_m": {
+                "value": 0.879,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.207,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.9
+            },
+            {
+              "opening_id": "op_room_c00a170fe1_W4_West_3",
+              "type": "door",
+              "offset_m": 5.183,
+              "width_m": {
+                "value": 0.686,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.207,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.9
+            }
+          ],
           "damage_regions": []
         }
       ],
@@ -139,8 +191,8 @@
   ],
   "stitched_plan": {
     "total_area_sqm": {
-      "value": 12.16,
-      "ci95": 0.18,
+      "value": 20.97,
+      "ci95": 0.31,
       "unit": "sqm"
     },
     "rooms": [
@@ -160,7 +212,7 @@
   "metadata": {
     "pipeline_version": "1.0.0",
     "device_model": "iPhone 15 Pro",
-    "runtime_seconds": 25.42,
+    "runtime_seconds": 18.54,
     "hardware_tier": "LIDAR Pro Sensor Fusion"
   }
 }
