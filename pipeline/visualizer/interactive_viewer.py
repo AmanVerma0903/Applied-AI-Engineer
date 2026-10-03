@@ -294,7 +294,7 @@ class InteractiveViewerGenerator:
       </div>
       <div class="stat-pill">
         <span class="stat-label">Drift Status</span>
-        <span class="stat-val" style="color:var(--success);">{stitched.get("drift_residual_m", 0.012)*100:.1f} cm</span>
+        <span class="stat-val" style="color:var(--success);">{float(stitched.get("drift_residual_m") or 0.0)*100:.1f} cm</span>
       </div>
     </div>
   </header>

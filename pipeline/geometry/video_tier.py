@@ -1,7 +1,9 @@
 """
 pipeline.geometry.video_tier
 Dense feature tracking and multi-view stereo triangulation for Handheld Video Tier.
-Reconstructs 3D metric spatial point clouds from handheld video sequences (with or without odometry).
+        Reconstructs a point cloud by triangulating tracked features.
+        Capture odometry, when present, is only a metric prior for the camera
+        matrices. Camera-pose xyz is never written out as the floor plan.
 """
 
 import os

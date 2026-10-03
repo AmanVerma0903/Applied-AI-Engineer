@@ -78,6 +78,7 @@ def run_pipeline(
     else:
         raise ValueError(f"Unknown tier: {tier}. Must be 'lidar', 'video', or 'photos'.")
 
+    yaw_rad = 0.0
     # Step 3 to 5: Spatial geometry, planes, and Manhattan alignment (for point cloud tiers: LiDAR & Video)
     if pts is not None:
         print(" [3/8] Extracting floor and ceiling planes via RANSAC...")
@@ -99,6 +100,10 @@ def run_pipeline(
             ceil_elev=ceil_elev,
             num_ceiling_inliers=num_inliers
         )
+        if tier == "video":
+            # Odometry is a metric prior for triangulation, not a surveyed scale.
+            ceiling_meas.ci95_m = float(round(max(ceiling_meas.ci95_m, 0.18), 3))
+            ceiling_meas.confidence = min(ceiling_meas.confidence, 0.45)
         print(f"       Ceiling Height: {ceiling_meas.height_m:.3f} m (±{ceiling_meas.ci95_m*100:.1f} cm at 95% CI)")
 
         print(" [4/8] Aligning to Manhattan canonical frame...")
@@ -155,6 +160,16 @@ def run_pipeline(
         room_concealed_flags = []
         room_scope_items = []
 
+        rgb_path = os.path.join(input_path, "rgb.mp4") if os.path.exists(os.path.join(input_path, "rgb.mp4")) else input_path
+        room_damage_map = DamageDetector.detect_room_damage(
+            rgb_path=rgb_path if os.path.isfile(rgb_path) else None,
+            walls=r.walls,
+            capture_dir=input_path,
+            camera_matrix=getattr(capture, "camera_matrix", None),
+            poses=getattr(capture, "poses", None),
+            yaw_rad=yaw_rad,
+        )
+
         for w_idx, w in enumerate(r.walls):
             # Openings detection along wall
             if pts is not None:
@@ -174,8 +189,10 @@ def run_pipeline(
                         "opening_id": op.opening_id,
                         "type": op.opening_type,
                         "offset_m": op.offset_along_wall_m,
-                        "width_m": ConfidenceCalibrator.wrap_measurement(op.width_m, op.ci95_width_m),
-                        "height_m": ConfidenceCalibrator.wrap_measurement(op.height_m, 0.020 if tier == "lidar" else 0.045),
+                        "width_m": ConfidenceCalibrator.wrap_measurement(
+                            op.width_m, 0.08 if tier == "video" else op.ci95_width_m
+                        ),
+                        "height_m": ConfidenceCalibrator.wrap_measurement(op.height_m, 0.020 if tier == "lidar" else (0.10 if tier == "video" else 0.045)),
                         "elevation_m": op.elevation_m,
                         "confidence": op.confidence
                     } for op in detected_ops
@@ -194,15 +211,15 @@ def run_pipeline(
                     } for i, op in enumerate(getattr(w, "openings", []))
                 ]
 
-            # Surface damage detection (RGB video stream or photo directory)
-            rgb_path = os.path.join(input_path, "rgb.mp4") if os.path.exists(os.path.join(input_path, "rgb.mp4")) else input_path
-            damages = DamageDetector.detect_surface_damage(
-                surface_id=w.wall_id,
-                wall_length=w.length_m,
-                wall_height=w.height_m,
-                rgb_video_path=rgb_path,
-                wall_points_3d=w.wall_points_3d if hasattr(w, "wall_points_3d") else None
-            )
+            damages = list(room_damage_map.get(w.wall_id, []))
+            if not damages and os.path.isdir(rgb_path):
+                damages = DamageDetector.detect_surface_damage(
+                    surface_id=w.wall_id,
+                    wall_length=w.length_m,
+                    wall_height=w.height_m,
+                    rgb_video_path=rgb_path,
+                    wall_points_3d=w.wall_points_3d if hasattr(w, "wall_points_3d") else None
+                )
 
             # Concealed damage rules
             flags = ConcealedDamageRuleEngine.evaluate(
@@ -222,8 +239,9 @@ def run_pipeline(
             )
             room_scope_items.extend(scope_items)
 
-            w_len_ci = ConfidenceCalibrator.wall_length_ci(w.length_m, tier=tier)
-            w_h_ci = ConfidenceCalibrator.ceiling_height_ci(w.height_m, tier=tier)
+            density = 40 if tier == "video" else (30 if tier == "photos" else 500)
+            w_len_ci = ConfidenceCalibrator.wall_length_ci(w.length_m, tier=tier, point_density_pts_per_m=density)
+            w_h_ci = ceiling_meas.ci95_m if (tier == "video" and ceiling_meas is not None) else ConfidenceCalibrator.ceiling_height_ci(w.height_m, tier=tier)
 
             walls_contract.append({
                 "wall_id": w.wall_id,
@@ -326,7 +344,13 @@ def run_pipeline(
             "pipeline_version": "1.0.0",
             "device_model": device_model,
             "runtime_seconds": runtime_sec,
-            "hardware_tier": f"{tier.upper()} Pro Sensor Fusion"
+            "hardware_tier": f"{tier.upper()} Pro Sensor Fusion",
+            "scale_source": (
+                "odometry_prior_triangulation" if tier == "video"
+                else "residential_door_prior_0.813m" if tier == "photos"
+                else "lidar_depth"
+            ),
+            "scale_quality": "approximate" if tier in ("video", "photos") else "metric",
         }
     }
 
