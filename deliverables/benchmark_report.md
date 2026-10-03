@@ -77,7 +77,7 @@
 
 | Input Tier | Captured Assets | Stitched Footprint | Ground Truth | Error % | Gate Threshold | Overlaps | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LiDAR Tier** | Real dToF + Odometry | **13.04 m²** | **60.13 m²** | **78.31%** | $\le 8.0\%$ | None | `FAIL` |
+| **Photo Tier** | Per-room stills | **13.04 m²** | **60.13 m²** | **78.31%** | $\le 8.0\%$ | None | `FAIL` |
 
 > **Evaluation Context on Gate 5:** Photo-tier stitch of 4 rooms from stills (door-scale prior 0.813 m, no ground-truth lookup)
 
@@ -85,13 +85,12 @@
 * **Extracted Room Envelope:** The pipeline synthesized the closed 4-wall Manhattan boundary of the scanned primary room:
   * North/South Wall: **3.43 m**
   * East/West Wall: **6.05 m**
-  * Synthesized Area: **13.04 m²** (Perimeter: **18.96 m**).
+  * LiDAR room area from those walls: **20.75 m²**.
 * **Physical Root Cause of Footprint Discrepancy:**
-  * In `single_room/c00a170fe1`, the phone operator walked solely within the primary kitchen/dining room.
-  * The West wall at $X \\approx -1.07\\text{ m}$ is the physical partition wall separating the kitchen from the corridor. All 3 doorways sit directly on this partition.
-  * Sparse LiDAR points penetrate through the doorway into the corridor beyond ($X \\approx -4.08\\text{ m}$ and $-5.48\\text{ m}$), but lack closed wall scans or ceiling returns.
-  * The nominal architectural GT fixture modeled the entire suite as an unpartitioned 5.44m x 6.06m (60.13 m²) bounding box.
-  * Enforcing physical single-room extraction on dense walls yields 13.04 m², resulting in an honest **Gate 5 footprint FAIL (78.31% error vs $\\le 8.0\%$ tolerance)**. Fabricating GT coordinates or artificially stretching the room to 5.44m without physical wall evidence is prohibited.
+  * Gate 5 scores the photo-tier stitch (13.04 m²) against the whole-property reference (60.13 m²).
+  * The stills are repeated synthetic views. Scale comes from a 0.813 m residential door prior, not from a laser measurement and not from a ground-truth size table.
+  * The LiDAR capture itself never sees a closed 5.44 m x 6.06 m envelope or the ceiling, so those reference sizes are not written into the contract.
+  * Result: **Gate 5 FAIL (78.31% vs $\\le 8.0\%$)**.
 
 ---
 

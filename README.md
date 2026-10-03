@@ -64,7 +64,7 @@ python -m fix_loop.reproduce_fix
 | :--- | :--- | :---: | :---: | :--- |
 | **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | 0% pass (one door, **3.1 cm** error) | `FAIL` | West-wall door **82.9 cm** vs 86.0 cm reference. No injected width. |
 | **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; spread across captures $\le 1.0\text{ cm}$ | Max err about **120 cm** | `FAIL` | Scan never sees the ceiling. Reported height is **1.236 m** with a wide interval. |
-| **Gate 3: Repeatability** | Two passes of the same room within $1\text{ cm}$ or $0.5\%$ | See `deliverables/benchmark_report.md` | live | Second pass uses a different frame stride on `single_room/c00a170fe1`. |
+| **Gate 3: Repeatability** | Two passes of the same room within $1\text{ cm}$ or $0.5\%$ | Max wall diff **1.8 cm** | `FAIL` | Short walls miss the 1.72 cm allowance by 0.8 mm against `benchmark_data/repeat_run`. |
 | **Gate 4: Drift Accountability** | Loop closure; poses used as-is is an automatic fail | Residual **2.1 cm** (off: **45.6 cm**) | `PASS` | **21.7x** reduction on the capture odometry. |
 | **Gate 5: Photo-Tier Stitch** | Per-room stills, 0 overlaps, footprint within $\pm 8\%$ | **78%** footprint error | `FAIL` | Four synthetic rooms scaled from a 0.813 m door prior. Ground-truth sizes are not copied in. |
 | **Part 3: Head-to-Head** | Beat or tie Magicplan on $\ge 70\%$ of shared dimensions | **50%** (3 wins, 3 losses) | `FAIL` | Compared to the in-repo reference fixture, not a live Magicplan export. |

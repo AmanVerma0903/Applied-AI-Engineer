@@ -232,7 +232,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 
 | Input Tier | Captured Assets | Stitched Footprint | Ground Truth | Error % | Gate Threshold | Overlaps | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LiDAR Tier** | Real dToF + Odometry | **{g5['measured_footprint_sqm']:.2f} m²** | **{g5['gt_footprint_sqm']:.2f} m²** | **{g5['error_pct']}%** | $\le 8.0\%$ | None | `{g5['status']}` |
+| **Photo Tier** | Per-room stills | **{g5['measured_footprint_sqm']:.2f} m²** | **{g5['gt_footprint_sqm']:.2f} m²** | **{g5['error_pct']}%** | $\le 8.0\%$ | None | `{g5['status']}` |
 
 > **Evaluation Context on Gate 5:** {g5.get('context', 'Single room capture evaluated against matching room GT')}
 
@@ -240,13 +240,12 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 * **Extracted Room Envelope:** The pipeline synthesized the closed 4-wall Manhattan boundary of the scanned primary room:
   * North/South Wall: **{g3['wall_comparisons'][0]['run1_m']:.2f} m**
   * East/West Wall: **{g3['wall_comparisons'][1]['run1_m']:.2f} m**
-  * Synthesized Area: **{g5['measured_footprint_sqm']:.2f} m²** (Perimeter: **{2*(g3['wall_comparisons'][0]['run1_m']+g3['wall_comparisons'][1]['run1_m']):.2f} m**).
+  * LiDAR room area from those walls: **{g3['wall_comparisons'][0]['run1_m']*g3['wall_comparisons'][1]['run1_m']:.2f} m²**.
 * **Physical Root Cause of Footprint Discrepancy:**
-  * In `single_room/c00a170fe1`, the phone operator walked solely within the primary kitchen/dining room.
-  * The West wall at $X \\approx -1.07\\text{{ m}}$ is the physical partition wall separating the kitchen from the corridor. All 3 doorways sit directly on this partition.
-  * Sparse LiDAR points penetrate through the doorway into the corridor beyond ($X \\approx -4.08\\text{{ m}}$ and $-5.48\\text{{ m}}$), but lack closed wall scans or ceiling returns.
-  * The nominal architectural GT fixture modeled the entire suite as an unpartitioned 5.44m x 6.06m ({g5['gt_footprint_sqm']:.2f} m²) bounding box.
-  * Enforcing physical single-room extraction on dense walls yields {g5['measured_footprint_sqm']:.2f} m², resulting in an honest **Gate 5 footprint FAIL ({g5['error_pct']}% error vs $\\le 8.0\%$ tolerance)**. Fabricating GT coordinates or artificially stretching the room to 5.44m without physical wall evidence is prohibited.
+  * Gate 5 scores the photo-tier stitch ({g5['measured_footprint_sqm']:.2f} m²) against the whole-property reference ({g5['gt_footprint_sqm']:.2f} m²).
+  * The stills are repeated synthetic views. Scale comes from a 0.813 m residential door prior, not from a laser measurement and not from a ground-truth size table.
+  * The LiDAR capture itself never sees a closed 5.44 m x 6.06 m envelope or the ceiling, so those reference sizes are not written into the contract.
+  * Result: **Gate 5 FAIL ({g5['error_pct']}% vs $\\le 8.0\%$)**.
 
 ---
 
