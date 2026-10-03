@@ -1,0 +1,987 @@
+{
+  "capture_id": "c00a170fe1",
+  "tier": "lidar",
+  "timestamp": "2026-10-04T01:06:18.031138",
+  "units": "meters",
+  "rooms": [
+    {
+      "room_id": "room_c00a170fe1",
+      "name": "Primary Room",
+      "ceiling_height_m": {
+        "value": 2.438,
+        "ci95": 0.035,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 32.97,
+        "ci95": 0.18,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -2.926,
+          -1.14
+        ],
+        [
+          2.494,
+          -1.14
+        ],
+        [
+          2.494,
+          4.943
+        ],
+        [
+          -2.926,
+          4.943
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_c00a170fe1_W1_South",
+          "start_m": [
+            -2.926,
+            -1.14
+          ],
+          "end_m": [
+            2.494,
+            -1.14
+          ],
+          "length_m": {
+            "value": 5.42,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_c00a170fe1_W1_South_01",
+              "type": "door",
+              "offset_m": 1.897,
+              "width_m": {
+                "value": 0.86,
+                "ci95": 0.012,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.05,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.96
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W2_East",
+          "start_m": [
+            2.494,
+            -1.14
+          ],
+          "end_m": [
+            2.494,
+            4.943
+          ],
+          "length_m": {
+            "value": 6.083,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_c00a170fe1_W2_East_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.435,
+                "ci95": 0.035,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  1.1,
+                  0.05
+                ],
+                [
+                  2.05,
+                  0.05
+                ],
+                [
+                  1.95,
+                  0.55
+                ],
+                [
+                  1.15,
+                  0.5
+                ]
+              ],
+              "severity": "high",
+              "confidence": 0.94
+            },
+            {
+              "damage_id": "dmg_room_c00a170fe1_W2_East_crack_01",
+              "damage_class": "drywall_crack",
+              "metric_area_sqm": {
+                "value": 0.015,
+                "ci95": 0.004,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  0.35,
+                  1.85
+                ],
+                [
+                  0.92,
+                  2.38
+                ],
+                [
+                  0.94,
+                  2.36
+                ],
+                [
+                  0.37,
+                  1.83
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.91
+            }
+          ]
+        },
+        {
+          "wall_id": "room_c00a170fe1_W3_North",
+          "start_m": [
+            2.494,
+            4.943
+          ],
+          "end_m": [
+            -2.926,
+            4.943
+          ],
+          "length_m": {
+            "value": 5.42,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W4_West",
+          "start_m": [
+            -2.926,
+            4.943
+          ],
+          "end_m": [
+            -2.926,
+            -1.14
+          ],
+          "length_m": {
+            "value": 6.083,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [
+        {
+          "flag_id": "flag_room_c00a170fe1_W2_East_cd01",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "rule_id": "RULE-CD-01",
+          "rule_name": "Plumbing Wall Cavity Moisture Saturation",
+          "rationale": "Detected water damage measuring 0.43 m\u00b2 on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.",
+          "risk_level": "high",
+          "recommended_investigation": "Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%."
+        },
+        {
+          "flag_id": "flag_room_c00a170fe1_W2_East_cd02",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "rule_id": "RULE-CD-02",
+          "rule_name": "Subfloor Moisture Wicking & Microbial Hazard",
+          "rationale": "Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.",
+          "risk_level": "medium",
+          "recommended_investigation": "Baseboard detachment and subfloor moisture content logging."
+        },
+        {
+          "flag_id": "flag_room_c00a170fe1_W2_East_cd03",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "rule_id": "RULE-CD-03",
+          "rule_name": "Framing Settlement & Header Deflection",
+          "rationale": "Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.",
+          "risk_level": "high",
+          "recommended_investigation": "Laser level elevation survey of floor joists and header plumbness inspection."
+        }
+      ],
+      "scope_line_items": [
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_01",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Drywall",
+          "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 195.0,
+          "total_cost_usd": {
+            "value": 561.6,
+            "ci95": 44.93,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_02",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Water Remediation",
+          "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 128.0,
+          "total_cost_usd": {
+            "value": 368.64,
+            "ci95": 22.12,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_03",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Finish Carpentry",
+          "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
+          "quantity": 2.4,
+          "unit": "linear_m",
+          "unit_cost_usd": 22.0,
+          "total_cost_usd": {
+            "value": 52.8,
+            "ci95": 2.64,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_04",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Drywall",
+          "description": "V-groove stress crack, fiberglass mesh tape, 3-coat compound finish",
+          "quantity": 0.78,
+          "unit": "linear_m",
+          "unit_cost_usd": 42.5,
+          "total_cost_usd": {
+            "value": 33.15,
+            "ci95": 2.32,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_05",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Painting",
+          "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
+          "quantity": 14.83,
+          "unit": "sqm",
+          "unit_cost_usd": 46.0,
+          "total_cost_usd": {
+            "value": 682.18,
+            "ci95": 34.11,
+            "unit": "usd"
+          }
+        }
+      ]
+    },
+    {
+      "room_id": "room_suite",
+      "name": "Primary Bedroom",
+      "ceiling_height_m": {
+        "value": 2.438,
+        "ci95": 0.035,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 26.989,
+        "ci95": 0.16,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -2.487,
+          -0.825
+        ],
+        [
+          2.443,
+          -0.825
+        ],
+        [
+          2.443,
+          4.649
+        ],
+        [
+          -2.487,
+          4.649
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_suite_W1_South",
+          "start_m": [
+            -2.487,
+            -0.825
+          ],
+          "end_m": [
+            2.443,
+            -0.825
+          ],
+          "length_m": {
+            "value": 4.93,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_suite_W1_South_01",
+              "type": "door",
+              "offset_m": 1.726,
+              "width_m": {
+                "value": 0.86,
+                "ci95": 0.012,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.05,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.96
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_suite_W2_East",
+          "start_m": [
+            2.443,
+            -0.825
+          ],
+          "end_m": [
+            2.443,
+            4.649
+          ],
+          "length_m": {
+            "value": 5.474,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_suite_W2_East_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.435,
+                "ci95": 0.035,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  1.1,
+                  0.05
+                ],
+                [
+                  2.05,
+                  0.05
+                ],
+                [
+                  1.95,
+                  0.55
+                ],
+                [
+                  1.15,
+                  0.5
+                ]
+              ],
+              "severity": "high",
+              "confidence": 0.94
+            },
+            {
+              "damage_id": "dmg_room_suite_W2_East_crack_01",
+              "damage_class": "drywall_crack",
+              "metric_area_sqm": {
+                "value": 0.015,
+                "ci95": 0.004,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  0.35,
+                  1.85
+                ],
+                [
+                  0.92,
+                  2.38
+                ],
+                [
+                  0.94,
+                  2.36
+                ],
+                [
+                  0.37,
+                  1.83
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.91
+            }
+          ]
+        },
+        {
+          "wall_id": "room_suite_W3_North",
+          "start_m": [
+            2.443,
+            4.649
+          ],
+          "end_m": [
+            -2.487,
+            4.649
+          ],
+          "length_m": {
+            "value": 4.93,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_suite_W4_West",
+          "start_m": [
+            -2.487,
+            4.649
+          ],
+          "end_m": [
+            -2.487,
+            -0.825
+          ],
+          "length_m": {
+            "value": 5.474,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [
+        {
+          "flag_id": "flag_room_suite_W2_East_cd01",
+          "surface_id": "room_suite_W2_East",
+          "rule_id": "RULE-CD-01",
+          "rule_name": "Plumbing Wall Cavity Moisture Saturation",
+          "rationale": "Detected water damage measuring 0.43 m\u00b2 on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.",
+          "risk_level": "high",
+          "recommended_investigation": "Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%."
+        },
+        {
+          "flag_id": "flag_room_suite_W2_East_cd02",
+          "surface_id": "room_suite_W2_East",
+          "rule_id": "RULE-CD-02",
+          "rule_name": "Subfloor Moisture Wicking & Microbial Hazard",
+          "rationale": "Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.",
+          "risk_level": "medium",
+          "recommended_investigation": "Baseboard detachment and subfloor moisture content logging."
+        },
+        {
+          "flag_id": "flag_room_suite_W2_East_cd03",
+          "surface_id": "room_suite_W2_East",
+          "rule_id": "RULE-CD-03",
+          "rule_name": "Framing Settlement & Header Deflection",
+          "rationale": "Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.",
+          "risk_level": "high",
+          "recommended_investigation": "Laser level elevation survey of floor joists and header plumbness inspection."
+        }
+      ],
+      "scope_line_items": [
+        {
+          "item_id": "scope_room_suite_W2_East_01",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Drywall",
+          "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 195.0,
+          "total_cost_usd": {
+            "value": 561.6,
+            "ci95": 44.93,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_02",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Water Remediation",
+          "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 128.0,
+          "total_cost_usd": {
+            "value": 368.64,
+            "ci95": 22.12,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_03",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Finish Carpentry",
+          "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
+          "quantity": 2.4,
+          "unit": "linear_m",
+          "unit_cost_usd": 22.0,
+          "total_cost_usd": {
+            "value": 52.8,
+            "ci95": 2.64,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_04",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Drywall",
+          "description": "V-groove stress crack, fiberglass mesh tape, 3-coat compound finish",
+          "quantity": 0.78,
+          "unit": "linear_m",
+          "unit_cost_usd": 42.5,
+          "total_cost_usd": {
+            "value": 33.15,
+            "ci95": 2.32,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_05",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Painting",
+          "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
+          "quantity": 13.35,
+          "unit": "sqm",
+          "unit_cost_usd": 46.0,
+          "total_cost_usd": {
+            "value": 614.1,
+            "ci95": 30.71,
+            "unit": "usd"
+          }
+        }
+      ]
+    },
+    {
+      "room_id": "room_bath",
+      "name": "Full Bathroom",
+      "ceiling_height_m": {
+        "value": 2.438,
+        "ci95": 0.035,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 11.936,
+        "ci95": 0.11,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -2.273,
+          -1.184
+        ],
+        [
+          0.997,
+          -1.184
+        ],
+        [
+          0.997,
+          2.466
+        ],
+        [
+          -2.273,
+          2.466
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_bath_W1_South",
+          "start_m": [
+            -2.273,
+            -1.184
+          ],
+          "end_m": [
+            0.997,
+            -1.184
+          ],
+          "length_m": {
+            "value": 3.27,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_bath_W1_South_01",
+              "type": "door",
+              "offset_m": 1.144,
+              "width_m": {
+                "value": 0.86,
+                "ci95": 0.012,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.05,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.96
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_bath_W2_East",
+          "start_m": [
+            0.997,
+            -1.184
+          ],
+          "end_m": [
+            0.997,
+            2.466
+          ],
+          "length_m": {
+            "value": 3.65,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_bath_W2_East_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.435,
+                "ci95": 0.035,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  1.1,
+                  0.05
+                ],
+                [
+                  2.05,
+                  0.05
+                ],
+                [
+                  1.95,
+                  0.55
+                ],
+                [
+                  1.15,
+                  0.5
+                ]
+              ],
+              "severity": "high",
+              "confidence": 0.94
+            },
+            {
+              "damage_id": "dmg_room_bath_W2_East_crack_01",
+              "damage_class": "drywall_crack",
+              "metric_area_sqm": {
+                "value": 0.015,
+                "ci95": 0.004,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  0.35,
+                  1.85
+                ],
+                [
+                  0.92,
+                  2.38
+                ],
+                [
+                  0.94,
+                  2.36
+                ],
+                [
+                  0.37,
+                  1.83
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.91
+            }
+          ]
+        },
+        {
+          "wall_id": "room_bath_W3_North",
+          "start_m": [
+            0.997,
+            2.466
+          ],
+          "end_m": [
+            -2.273,
+            2.466
+          ],
+          "length_m": {
+            "value": 3.27,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_bath_W4_West",
+          "start_m": [
+            -2.273,
+            2.466
+          ],
+          "end_m": [
+            -2.273,
+            -1.184
+          ],
+          "length_m": {
+            "value": 3.65,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [
+        {
+          "flag_id": "flag_room_bath_W2_East_cd01",
+          "surface_id": "room_bath_W2_East",
+          "rule_id": "RULE-CD-01",
+          "rule_name": "Plumbing Wall Cavity Moisture Saturation",
+          "rationale": "Detected water damage measuring 0.43 m\u00b2 on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.",
+          "risk_level": "high",
+          "recommended_investigation": "Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%."
+        },
+        {
+          "flag_id": "flag_room_bath_W2_East_cd02",
+          "surface_id": "room_bath_W2_East",
+          "rule_id": "RULE-CD-02",
+          "rule_name": "Subfloor Moisture Wicking & Microbial Hazard",
+          "rationale": "Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.",
+          "risk_level": "medium",
+          "recommended_investigation": "Baseboard detachment and subfloor moisture content logging."
+        },
+        {
+          "flag_id": "flag_room_bath_W2_East_cd03",
+          "surface_id": "room_bath_W2_East",
+          "rule_id": "RULE-CD-03",
+          "rule_name": "Framing Settlement & Header Deflection",
+          "rationale": "Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.",
+          "risk_level": "high",
+          "recommended_investigation": "Laser level elevation survey of floor joists and header plumbness inspection."
+        }
+      ],
+      "scope_line_items": [
+        {
+          "item_id": "scope_room_bath_W2_East_01",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Drywall",
+          "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 195.0,
+          "total_cost_usd": {
+            "value": 561.6,
+            "ci95": 44.93,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_02",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Water Remediation",
+          "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 128.0,
+          "total_cost_usd": {
+            "value": 368.64,
+            "ci95": 22.12,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_03",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Finish Carpentry",
+          "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
+          "quantity": 2.4,
+          "unit": "linear_m",
+          "unit_cost_usd": 22.0,
+          "total_cost_usd": {
+            "value": 52.8,
+            "ci95": 2.64,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_04",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Drywall",
+          "description": "V-groove stress crack, fiberglass mesh tape, 3-coat compound finish",
+          "quantity": 0.78,
+          "unit": "linear_m",
+          "unit_cost_usd": 42.5,
+          "total_cost_usd": {
+            "value": 33.15,
+            "ci95": 2.32,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_05",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Painting",
+          "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
+          "quantity": 8.9,
+          "unit": "sqm",
+          "unit_cost_usd": 46.0,
+          "total_cost_usd": {
+            "value": 409.4,
+            "ci95": 20.47,
+            "unit": "usd"
+          }
+        }
+      ]
+    }
+  ],
+  "stitched_plan": {
+    "total_area_sqm": {
+      "value": 71.89,
+      "ci95": 1.08,
+      "unit": "sqm"
+    },
+    "rooms": [
+      {
+        "room_id": "room_c00a170fe1",
+        "position_m": [
+          0.0,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      },
+      {
+        "room_id": "room_suite",
+        "position_m": [
+          0.0,
+          5.063
+        ],
+        "rotation_deg": 0.0
+      },
+      {
+        "room_id": "room_bath",
+        "position_m": [
+          2.614,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      }
+    ],
+    "adjacencies": [
+      {
+        "room_a": "room_c00a170fe1",
+        "room_b": "room_suite",
+        "connector_type": "door",
+        "opening_width_m": 0.86
+      },
+      {
+        "room_a": "room_c00a170fe1",
+        "room_b": "room_bath",
+        "connector_type": "cased_opening",
+        "opening_width_m": 1.2
+      }
+    ],
+    "drift_correction_applied": true,
+    "drift_residual_m": 0.012
+  },
+  "metadata": {
+    "pipeline_version": "1.0.0",
+    "device_model": "iPhone 15 Pro",
+    "runtime_seconds": 11.26,
+    "hardware_tier": "LIDAR Pro Sensor Fusion"
+  }
+}

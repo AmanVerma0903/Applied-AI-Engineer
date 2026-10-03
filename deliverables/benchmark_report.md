@@ -11,20 +11,20 @@
 
 | Gate | Case Study Requirement | Measured Metric | Status | Verdict |
 | :--- | :--- | :--- | :---: | :---: |
-| **Gate 1: Opening Widths** | $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings | **100.0%** pass (Mean err: **0.0 cm**) | `PASS` | Sub-cm edge kernel achieves 100% compliance |
-| **Gate 2: Ceiling Height** | $\le 1.5\text{ cm}$ error; multi-capture spread $\le 1.0\text{ cm}$ | Max err: **0.2 cm**; Spread: **0.4 cm** | `PASS` | Vertical RANSAC satisfies metrology without bias |
-| **Gate 3: Repeatability** | Two captures of same room agree within $1\text{ cm}$ or $0.5\%$ | Max wall diff: **0.4 cm (0.07%)** | `PASS` | Deterministic pipeline reproduces identical floor plans |
+| **Gate 1: Opening Widths** | $\\le 2.0\\text{ cm}$ on $\\ge 85\\%$ of openings | **100.0%** pass (Mean err: **0.0 cm**) | `PASS` | Sub-cm edge kernel achieves 100% compliance |
+| **Gate 2: Ceiling Height** | $\\le 1.5\\text{ cm}$ error; multi-capture spread $\\le 1.0\\text{ cm}$ | Max err: **0.2 cm**; Spread: **0.4 cm** | `PASS` | Vertical RANSAC satisfies metrology without bias |
+| **Gate 3: Repeatability** | Two captures of same room agree within $1\\text{ cm}$ or $0.5\\%$ | Max wall diff: **0.4 cm (0.07%)** | `PASS` | Deterministic pipeline reproduces identical floor plans |
 | **Gate 4: Drift Accountability** | Loop closure / pose graph; 'Poses used as-is' is auto-fail | Residual drift: **1.2 cm** (Ablation: **28.5 cm** gap without) | `PASS` | **23.8x drift reduction** with closed loop graph |
-| **Gate 5: Photo-Tier Stitch** | Stitched per-room photos, 0 overlaps, footprint within $\pm 8\%$ | Footprint error: **2.79%**; Overlaps: **0** | `PASS` | Topological connector graph prevents overlap |
+| **Gate 5: Photo-Tier Stitch** | Stitched per-room photos, 0 overlaps, footprint within $\\pm 8\\%$ | Footprint error: **2.79%**; Overlaps: **0** | `PASS` | Topological connector graph prevents overlap |
 
 ---
 
 ## 2. Gate 1: Opening Widths Metrology
 
 - **Test Specification:** Every architectural opening (doors, cased openings, windows) is evaluated. A missed opening or phantom opening counts as a miss.
-- **Pass Threshold:** $\le 2.0\text{ cm}$ on $\ge 85\%$ of evaluated openings.
+- **Pass Threshold:** $\\le 2.0\\text{ cm}$ on $\\ge 85\\%$ of evaluated openings.
 
-| Opening ID | Type | Ground Truth | Measured Width | Absolute Error | Gate ($\le 2\text{ cm}$) |
+| Opening ID | Type | Ground Truth | Measured Width | Absolute Error | Gate ($\le 2\\text{ cm}$) |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | `door_main` (Kitchen Suite) | Interior Swing Door | 86.0 cm | 86.0 cm | **0.0 cm** | `PASS` |
 | `door_connector_suite` | Primary Suite Entry | 86.0 cm | 85.8 cm | **0.2 cm** | `PASS` |
@@ -32,7 +32,7 @@
 | `door_connector_bath` | Bathroom Pocket Door | 76.0 cm | 76.3 cm | **0.3 cm** | `PASS` |
 
 * **Total Openings Evaluated:** 4
-* **Openings within $\le 2\text{ cm}$:** 4 (100.0%)
+* **Openings within $\\le 2\\text{ cm}$:** 4 (100.0%)
 * **Missed Openings:** 0
 * **Phantom Openings:** 0
 * **Gate Verdict:** **PASS**
@@ -45,7 +45,7 @@
 - **Ground Truth:** 2.440 m
 - **Capture Run 1:** 2.438 m (Error: 0.2 cm)
 - **Capture Run 2:** 2.442 m (Error: 0.2 cm)
-- **Spread Across Captures:** **0.4 cm** (Gate: $\le 1.0\text{ cm}$)
+- **Spread Across Captures:** **0.4 cm** (Gate: $\\le 1.0\\text{ cm}$)
 - **Diagnosis:** **PASS: Metrology within <= 1.5 cm error and <= 1.0 cm spread**
 
 ### Wall-by-Wall Repeatability Audit (Run 1 vs Run 2)

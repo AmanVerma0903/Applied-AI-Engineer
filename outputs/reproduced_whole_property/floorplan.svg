@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" style="background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+          </pattern>
+          <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+          </filter>
+        </defs>
+        <rect width="100%" height="100%" fill="#0f172a"/>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+        
+
+        <g id="header">
+          <text x="50" y="55" fill="#f8fafc" font-size="24" font-weight="700">Whole Property Floor Plan</text>
+          <text x="50" y="80" fill="#94a3b8" font-size="13">Capture Tier: <tspan fill="#38bdf8" font-weight="600">LIDAR</tspan> | Total Area: <tspan fill="#f8fafc" font-weight="600">71.89 m²</tspan> (±1.08 m²) | Drift: <tspan fill="#4ade80" font-weight="600">1.2 cm</tspan></text>
+        </g>
+        
+
+            <g id="room_room_c00a170fe1">
+              <polygon points="144.2,745.8 434.3,745.8 434.3,420.2 144.2,420.2 144.2,745.8" fill="#1e293b" fill-opacity="0.85" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+              <polygon points="144.2,745.8 434.3,745.8 434.3,420.2 144.2,420.2 144.2,745.8" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            
+
+              <text x="289.3" y="575.0" fill="#f1f5f9" font-size="15" font-weight="600" text-anchor="middle">Primary Room</text>
+              <text x="289.3" y="595.0" fill="#38bdf8" font-size="12" font-weight="500" text-anchor="middle">32.97 m²</text>
+              <text x="289.3" y="611.0" fill="#94a3b8" font-size="10" text-anchor="middle">Ceil: 2.44m</text>
+            </g>
+            
+
+            <g id="room_room_suite">
+              <polygon points="178.5,447.2 442.4,447.2 442.4,154.2 178.5,154.2 178.5,447.2" fill="#1e293b" fill-opacity="0.85" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+              <polygon points="178.5,447.2 442.4,447.2 442.4,154.2 178.5,154.2 178.5,447.2" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            
+
+              <text x="310.4" y="292.7" fill="#f1f5f9" font-size="15" font-weight="600" text-anchor="middle">Primary Bedroom</text>
+              <text x="310.4" y="312.7" fill="#38bdf8" font-size="12" font-weight="500" text-anchor="middle">26.99 m²</text>
+              <text x="310.4" y="328.7" fill="#94a3b8" font-size="10" text-anchor="middle">Ceil: 2.44m</text>
+            </g>
+            
+
+            <g id="room_room_bath">
+              <polygon points="329.8,737.4 504.8,737.4 504.8,542.0 329.8,542.0 329.8,737.4" fill="#1e293b" fill-opacity="0.85" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+              <polygon points="329.8,737.4 504.8,737.4 504.8,542.0 329.8,542.0 329.8,737.4" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            
+
+              <text x="417.3" y="631.7" fill="#f1f5f9" font-size="15" font-weight="600" text-anchor="middle">Full Bathroom</text>
+              <text x="417.3" y="651.7" fill="#38bdf8" font-size="12" font-weight="500" text-anchor="middle">11.94 m²</text>
+              <text x="417.3" y="667.7" fill="#94a3b8" font-size="10" text-anchor="middle">Ceil: 2.44m</text>
+            </g>
+            
+
+                <text x="289.3" y="767.8" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.42m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                    <line x1="245.8" y1="745.8" x2="291.8" y2="745.8" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
+                    
+
+                        <line x1="245.8" y1="745.8" x2="291.8" y2="745.8" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="245.8" cy="745.8" r="3" fill="#38bdf8"/>
+                        <path d="M 291.8 745.8 A 46.0 46.0 0 0 1 245.8 791.8" 
+                              fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                        <text x="268.8" y="735.8" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">86cm door</text>
+                        
+
+                <text x="456.4" y="583.0" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  6.08m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                    <g id="damage_dmg_room_c00a170fe1_W2_East_water_01">
+                      <circle cx="459.4" cy="770.8" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
+                      <text x="459.4" y="774.8" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="478.4" y="773.8" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.43 m²)</text>
+                    </g>
+                    
+
+                    <g id="damage_dmg_room_c00a170fe1_W2_East_crack_01">
+                      <circle cx="459.4" cy="770.8" r="12" fill="#ef4444" fill-opacity="0.35" stroke="#ef4444" stroke-width="2"/>
+                      <text x="459.4" y="774.8" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="478.4" y="773.8" fill="#ef4444" font-size="10" font-weight="600">drywall crack (0.01 m²)</text>
+                    </g>
+                    
+
+                <text x="289.3" y="398.2" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.42m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                <text x="122.3" y="583.0" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  6.08m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                <text x="299.7" y="479.9" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  4.93m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                    <line x1="260.1" y1="457.9" x2="306.2" y2="457.9" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
+                    
+
+                        <line x1="260.1" y1="457.9" x2="306.2" y2="457.9" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="260.1" cy="457.9" r="3" fill="#38bdf8"/>
+                        <path d="M 306.2 457.9 A 46.0 46.0 0 0 1 260.1 504.0" 
+                              fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                        <text x="283.2" y="447.9" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">86cm door</text>
+                        
+
+                <text x="453.6" y="311.4" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.47m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                    <g id="damage_dmg_room_suite_W2_East_water_01">
+                      <circle cx="456.6" cy="482.9" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
+                      <text x="456.6" y="486.9" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="475.6" y="485.9" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.43 m²)</text>
+                    </g>
+                    
+
+                    <g id="damage_dmg_room_suite_W2_East_crack_01">
+                      <circle cx="456.6" cy="482.9" r="12" fill="#ef4444" fill-opacity="0.35" stroke="#ef4444" stroke-width="2"/>
+                      <text x="456.6" y="486.9" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="475.6" y="485.9" fill="#ef4444" font-size="10" font-weight="600">drywall crack (0.01 m²)</text>
+                    </g>
+                    
+
+                <text x="299.7" y="142.9" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  4.93m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                <text x="145.8" y="311.4" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.47m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                <text x="406.6" y="770.1" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.27m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                    <line x1="380.4" y1="748.1" x2="426.4" y2="748.1" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
+                    
+
+                        <line x1="380.4" y1="748.1" x2="426.4" y2="748.1" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="380.4" cy="748.1" r="3" fill="#38bdf8"/>
+                        <path d="M 426.4 748.1 A 46.0 46.0 0 0 1 380.4 794.2" 
+                              fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                        <text x="403.4" y="738.1" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">86cm door</text>
+                        
+
+                <text x="516.2" y="650.5" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.65m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                    <g id="damage_dmg_room_bath_W2_East_water_01">
+                      <circle cx="519.2" cy="773.1" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
+                      <text x="519.2" y="777.1" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="538.2" y="776.1" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.43 m²)</text>
+                    </g>
+                    
+
+                    <g id="damage_dmg_room_bath_W2_East_crack_01">
+                      <circle cx="519.2" cy="773.1" r="12" fill="#ef4444" fill-opacity="0.35" stroke="#ef4444" stroke-width="2"/>
+                      <text x="519.2" y="777.1" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="538.2" y="776.1" fill="#ef4444" font-size="10" font-weight="600">drywall crack (0.01 m²)</text>
+                    </g>
+                    
+
+                <text x="406.6" y="530.8" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.27m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                <text x="297.1" y="650.5" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.65m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+        <g id="legend" transform="translate(50, 840)">
+          <rect x="0" y="0" width="340" height="40" rx="8" fill="#1e293b" fill-opacity="0.9" stroke="#334155"/>
+          <line x1="20" y1="20" x2="60" y2="20" stroke="#cbd5e1" stroke-width="5"/>
+          <text x="70" y="24" fill="#94a3b8" font-size="11">Wall</text>
+          <line x1="120" y1="20" x2="150" y2="20" stroke="#38bdf8" stroke-width="2"/>
+          <text x="160" y="24" fill="#94a3b8" font-size="11">Door</text>
+          <circle cx="215" cy="20" r="6" fill="#ef4444"/>
+          <text x="230" y="24" fill="#94a3b8" font-size="11">Damage Region</text>
+        </g>
+        
+</svg>

@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpatialAI Product Surface | c00a170fe1</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #151d30;
+      --border: #23314f;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.2);
+      --danger: #f43f5e;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: #0f172a;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .stat-val {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .tier-badge {
+      background: #0369a1;
+      color: #e0f2fe;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #070a13;
+      position: relative;
+    }
+    .toolbar {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .tool-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tool-btn.active, .tool-btn:hover {
+      background: #1e293b;
+      color: var(--accent);
+    }
+    .svg-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      padding: 20px;
+    }
+    .svg-container svg {
+      width: 100%;
+      height: 100%;
+      max-height: 85vh;
+      border-radius: 12px;
+    }
+    .sidebar {
+      width: 440px;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .tabs {
+      display: flex;
+      background: #0f172a;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(56, 189, 248, 0.05);
+    }
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-pass { background: rgba(52, 211, 153, 0.2); color: var(--success); }
+    .badge-warn { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+    .badge-danger { background: rgba(244, 63, 94, 0.2); color: var(--danger); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    th {
+      text-align: left;
+      padding: 6px 8px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    td {
+      padding: 8px 8px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .scope-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #0284c7;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-logo">S</div>
+      <div>
+        <div class="brand-title">SpatialAI Product Surface</div>
+        <div style="font-size: 11px; color: var(--text-muted);">c00a170fe1</div>
+      </div>
+      <span class="tier-badge">LIDAR TIER</span>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-pill">
+        <span class="stat-label">Total Floor Area</span>
+        <span class="stat-val">71.89 m² <span style="font-size:11px;color:var(--text-muted);font-weight:400;">±1.08m²</span></span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-label">Scope Estimate</span>
+        <span class="stat-val" style="color:var(--success);">$4,754.25</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-label">Drift Status</span>
+        <span class="stat-val" style="color:var(--success);">1.2 cm</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="viewport">
+      <div class="toolbar">
+        <button class="tool-btn active">Whole Property</button>
+        <button class="tool-btn">Dimensions (±CI)</button>
+        <button class="tool-btn">Damage Overlays</button>
+      </div>
+      <div class="svg-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" style="background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+          </pattern>
+          <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+          </filter>
+        </defs>
+        <rect width="100%" height="100%" fill="#0f172a"/>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+        
+
+        <g id="header">
+          <text x="50" y="55" fill="#f8fafc" font-size="24" font-weight="700">Whole Property Floor Plan</text>
+          <text x="50" y="80" fill="#94a3b8" font-size="13">Capture Tier: <tspan fill="#38bdf8" font-weight="600">LIDAR</tspan> | Total Area: <tspan fill="#f8fafc" font-weight="600">71.89 m²</tspan> (±1.08 m²) | Drift: <tspan fill="#4ade80" font-weight="600">1.2 cm</tspan></text>
+        </g>
+        
+
+            <g id="room_room_c00a170fe1">
+              <polygon points="144.2,745.8 434.3,745.8 434.3,420.2 144.2,420.2 144.2,745.8" fill="#1e293b" fill-opacity="0.85" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+              <polygon points="144.2,745.8 434.3,745.8 434.3,420.2 144.2,420.2 144.2,745.8" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            
+
+              <text x="289.3" y="575.0" fill="#f1f5f9" font-size="15" font-weight="600" text-anchor="middle">Primary Room</text>
+              <text x="289.3" y="595.0" fill="#38bdf8" font-size="12" font-weight="500" text-anchor="middle">32.97 m²</text>
+              <text x="289.3" y="611.0" fill="#94a3b8" font-size="10" text-anchor="middle">Ceil: 2.44m</text>
+            </g>
+            
+
+            <g id="room_room_suite">
+              <polygon points="178.5,447.2 442.4,447.2 442.4,154.2 178.5,154.2 178.5,447.2" fill="#1e293b" fill-opacity="0.85" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+              <polygon points="178.5,447.2 442.4,447.2 442.4,154.2 178.5,154.2 178.5,447.2" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            
+
+              <text x="310.4" y="292.7" fill="#f1f5f9" font-size="15" font-weight="600" text-anchor="middle">Primary Bedroom</text>
+              <text x="310.4" y="312.7" fill="#38bdf8" font-size="12" font-weight="500" text-anchor="middle">26.99 m²</text>
+              <text x="310.4" y="328.7" fill="#94a3b8" font-size="10" text-anchor="middle">Ceil: 2.44m</text>
+            </g>
+            
+
+            <g id="room_room_bath">
+              <polygon points="329.8,737.4 504.8,737.4 504.8,542.0 329.8,542.0 329.8,737.4" fill="#1e293b" fill-opacity="0.85" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+              <polygon points="329.8,737.4 504.8,737.4 504.8,542.0 329.8,542.0 329.8,737.4" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            
+
+              <text x="417.3" y="631.7" fill="#f1f5f9" font-size="15" font-weight="600" text-anchor="middle">Full Bathroom</text>
+              <text x="417.3" y="651.7" fill="#38bdf8" font-size="12" font-weight="500" text-anchor="middle">11.94 m²</text>
+              <text x="417.3" y="667.7" fill="#94a3b8" font-size="10" text-anchor="middle">Ceil: 2.44m</text>
+            </g>
+            
+
+                <text x="289.3" y="767.8" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.42m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                    <line x1="245.8" y1="745.8" x2="291.8" y2="745.8" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
+                    
+
+                        <line x1="245.8" y1="745.8" x2="291.8" y2="745.8" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="245.8" cy="745.8" r="3" fill="#38bdf8"/>
+                        <path d="M 291.8 745.8 A 46.0 46.0 0 0 1 245.8 791.8" 
+                              fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                        <text x="268.8" y="735.8" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">86cm door</text>
+                        
+
+                <text x="456.4" y="583.0" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  6.08m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                    <g id="damage_dmg_room_c00a170fe1_W2_East_water_01">
+                      <circle cx="459.4" cy="770.8" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
+                      <text x="459.4" y="774.8" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="478.4" y="773.8" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.43 m²)</text>
+                    </g>
+                    
+
+                    <g id="damage_dmg_room_c00a170fe1_W2_East_crack_01">
+                      <circle cx="459.4" cy="770.8" r="12" fill="#ef4444" fill-opacity="0.35" stroke="#ef4444" stroke-width="2"/>
+                      <text x="459.4" y="774.8" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="478.4" y="773.8" fill="#ef4444" font-size="10" font-weight="600">drywall crack (0.01 m²)</text>
+                    </g>
+                    
+
+                <text x="289.3" y="398.2" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.42m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                <text x="122.3" y="583.0" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  6.08m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                <text x="299.7" y="479.9" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  4.93m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                    <line x1="260.1" y1="457.9" x2="306.2" y2="457.9" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
+                    
+
+                        <line x1="260.1" y1="457.9" x2="306.2" y2="457.9" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="260.1" cy="457.9" r="3" fill="#38bdf8"/>
+                        <path d="M 306.2 457.9 A 46.0 46.0 0 0 1 260.1 504.0" 
+                              fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                        <text x="283.2" y="447.9" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">86cm door</text>
+                        
+
+                <text x="453.6" y="311.4" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.47m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                    <g id="damage_dmg_room_suite_W2_East_water_01">
+                      <circle cx="456.6" cy="482.9" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
+                      <text x="456.6" y="486.9" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="475.6" y="485.9" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.43 m²)</text>
+                    </g>
+                    
+
+                    <g id="damage_dmg_room_suite_W2_East_crack_01">
+                      <circle cx="456.6" cy="482.9" r="12" fill="#ef4444" fill-opacity="0.35" stroke="#ef4444" stroke-width="2"/>
+                      <text x="456.6" y="486.9" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="475.6" y="485.9" fill="#ef4444" font-size="10" font-weight="600">drywall crack (0.01 m²)</text>
+                    </g>
+                    
+
+                <text x="299.7" y="142.9" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  4.93m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                <text x="145.8" y="311.4" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  5.47m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
+                </text>
+                
+
+                <text x="406.6" y="770.1" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.27m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                    <line x1="380.4" y1="748.1" x2="426.4" y2="748.1" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
+                    
+
+                        <line x1="380.4" y1="748.1" x2="426.4" y2="748.1" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="380.4" cy="748.1" r="3" fill="#38bdf8"/>
+                        <path d="M 426.4 748.1 A 46.0 46.0 0 0 1 380.4 794.2" 
+                              fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                        <text x="403.4" y="738.1" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">86cm door</text>
+                        
+
+                <text x="516.2" y="650.5" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.65m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                    <g id="damage_dmg_room_bath_W2_East_water_01">
+                      <circle cx="519.2" cy="773.1" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
+                      <text x="519.2" y="777.1" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="538.2" y="776.1" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.43 m²)</text>
+                    </g>
+                    
+
+                    <g id="damage_dmg_room_bath_W2_East_crack_01">
+                      <circle cx="519.2" cy="773.1" r="12" fill="#ef4444" fill-opacity="0.35" stroke="#ef4444" stroke-width="2"/>
+                      <text x="519.2" y="777.1" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="538.2" y="776.1" fill="#ef4444" font-size="10" font-weight="600">drywall crack (0.01 m²)</text>
+                    </g>
+                    
+
+                <text x="406.6" y="530.8" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.27m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+                <text x="297.1" y="650.5" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
+                  3.65m <tspan fill="#64748b" font-size="9">±1.2cm</tspan>
+                </text>
+                
+
+        <g id="legend" transform="translate(50, 840)">
+          <rect x="0" y="0" width="340" height="40" rx="8" fill="#1e293b" fill-opacity="0.9" stroke="#334155"/>
+          <line x1="20" y1="20" x2="60" y2="20" stroke="#cbd5e1" stroke-width="5"/>
+          <text x="70" y="24" fill="#94a3b8" font-size="11">Wall</text>
+          <line x1="120" y1="20" x2="150" y2="20" stroke="#38bdf8" stroke-width="2"/>
+          <text x="160" y="24" fill="#94a3b8" font-size="11">Door</text>
+          <circle cx="215" cy="20" r="6" fill="#ef4444"/>
+          <text x="230" y="24" fill="#94a3b8" font-size="11">Damage Region</text>
+        </g>
+        
+</svg>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('rooms')">Rooms</button>
+        <button class="tab-btn" onclick="switchTab('damage')">Damage & Risk</button>
+        <button class="tab-btn" onclick="switchTab('scope')">Scope of Work</button>
+        <button class="tab-btn" onclick="switchTab('json')">JSON Contract</button>
+      </div>
+
+      <div id="tab-rooms" class="tab-content active">
+        <h3 style="font-size:15px;margin-bottom:12px;">Dimensioned Rooms & Gates</h3>
+        
+            <div class="card">
+              <div class="card-title">
+                <span>Primary Room</span>
+                <span class="badge badge-pass">GATE: PASS</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
+                Ceiling Height: <b style="color:var(--text);">2.44 m</b> (±3.5 cm) | Floor Area: <b style="color:var(--text);">32.97 m²</b> (±0.18 m²)
+              </div>
+              <table>
+                <thead>
+                  <tr><th>Wall</th><th>Length</th><th>Openings</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>South</td>
+                    <td>5.42m <span style="color:#64748b;font-size:10px;">±1.3cm</span></td>
+                    <td>1 door (0.86m)</td>
+                  </tr>
+                  <tr>
+                    <td>East</td>
+                    <td>6.08m <span style="color:#64748b;font-size:10px;">±1.3cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                  <tr>
+                    <td>North</td>
+                    <td>5.42m <span style="color:#64748b;font-size:10px;">±1.3cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                  <tr>
+                    <td>West</td>
+                    <td>6.08m <span style="color:#64748b;font-size:10px;">±1.3cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <div class="card-title">
+                <span>Primary Bedroom</span>
+                <span class="badge badge-pass">GATE: PASS</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
+                Ceiling Height: <b style="color:var(--text);">2.44 m</b> (±3.5 cm) | Floor Area: <b style="color:var(--text);">26.99 m²</b> (±0.16 m²)
+              </div>
+              <table>
+                <thead>
+                  <tr><th>Wall</th><th>Length</th><th>Openings</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>South</td>
+                    <td>4.93m <span style="color:#64748b;font-size:10px;">±1.2cm</span></td>
+                    <td>1 door (0.86m)</td>
+                  </tr>
+                  <tr>
+                    <td>East</td>
+                    <td>5.47m <span style="color:#64748b;font-size:10px;">±1.3cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                  <tr>
+                    <td>North</td>
+                    <td>4.93m <span style="color:#64748b;font-size:10px;">±1.2cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                  <tr>
+                    <td>West</td>
+                    <td>5.47m <span style="color:#64748b;font-size:10px;">±1.3cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <div class="card-title">
+                <span>Full Bathroom</span>
+                <span class="badge badge-pass">GATE: PASS</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
+                Ceiling Height: <b style="color:var(--text);">2.44 m</b> (±3.5 cm) | Floor Area: <b style="color:var(--text);">11.94 m²</b> (±0.11 m²)
+              </div>
+              <table>
+                <thead>
+                  <tr><th>Wall</th><th>Length</th><th>Openings</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>South</td>
+                    <td>3.27m <span style="color:#64748b;font-size:10px;">±1.2cm</span></td>
+                    <td>1 door (0.86m)</td>
+                  </tr>
+                  <tr>
+                    <td>East</td>
+                    <td>3.65m <span style="color:#64748b;font-size:10px;">±1.2cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                  <tr>
+                    <td>North</td>
+                    <td>3.27m <span style="color:#64748b;font-size:10px;">±1.2cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                  <tr>
+                    <td>West</td>
+                    <td>3.65m <span style="color:#64748b;font-size:10px;">±1.2cm</span></td>
+                    <td>Solid</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+      </div>
+
+      <div id="tab-damage" class="tab-content">
+        <h3 style="font-size:15px;margin-bottom:12px;">Surface & Concealed Damage</h3>
+        <div class="card">
+          <div class="card-title">
+            <span>Detected Metric Damage</span>
+            <span class="badge badge-danger">6 REGIONS</span>
+          </div>
+          <table>
+            <thead><tr><th>Class</th><th>Extent</th><th>Severity</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Water Damage</b></td>
+                <td>0.43 m²</td>
+                <td><span class="badge badge-danger">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><b>Drywall Crack</b></td>
+                <td>0.01 m²</td>
+                <td><span class="badge badge-danger">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td><b>Water Damage</b></td>
+                <td>0.43 m²</td>
+                <td><span class="badge badge-danger">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><b>Drywall Crack</b></td>
+                <td>0.01 m²</td>
+                <td><span class="badge badge-danger">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td><b>Water Damage</b></td>
+                <td>0.43 m²</td>
+                <td><span class="badge badge-danger">HIGH</span></td>
+              </tr>
+              <tr>
+                <td><b>Drywall Crack</b></td>
+                <td>0.01 m²</td>
+                <td><span class="badge badge-danger">MEDIUM</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 style="font-size:13px;margin:16px 0 8px;">Concealed-Damage Rule Alerts</h4>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-01: Plumbing Wall Cavity Moisture Saturation</span>
+                <span class="badge badge-warn">HIGH RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Detected water damage measuring 0.43 m² on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-02: Subfloor Moisture Wicking & Microbial Hazard</span>
+                <span class="badge badge-warn">MEDIUM RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Baseboard detachment and subfloor moisture content logging.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-03: Framing Settlement & Header Deflection</span>
+                <span class="badge badge-warn">HIGH RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Laser level elevation survey of floor joists and header plumbness inspection.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-01: Plumbing Wall Cavity Moisture Saturation</span>
+                <span class="badge badge-warn">HIGH RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Detected water damage measuring 0.43 m² on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-02: Subfloor Moisture Wicking & Microbial Hazard</span>
+                <span class="badge badge-warn">MEDIUM RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Baseboard detachment and subfloor moisture content logging.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-03: Framing Settlement & Header Deflection</span>
+                <span class="badge badge-warn">HIGH RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Laser level elevation survey of floor joists and header plumbness inspection.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-01: Plumbing Wall Cavity Moisture Saturation</span>
+                <span class="badge badge-warn">HIGH RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Detected water damage measuring 0.43 m² on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-02: Subfloor Moisture Wicking & Microbial Hazard</span>
+                <span class="badge badge-warn">MEDIUM RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Baseboard detachment and subfloor moisture content logging.</div>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--warning);">
+              <div class="card-title">
+                <span style="color:var(--warning);">RULE-CD-03: Framing Settlement & Header Deflection</span>
+                <span class="badge badge-warn">HIGH RISK</span>
+              </div>
+              <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:8px;">Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.</p>
+              <div style="font-size:10px;color:var(--accent);"><b>Action:</b> Laser level elevation survey of floor joists and header plumbness inspection.</div>
+            </div>
+      </div>
+
+      <div id="tab-scope" class="tab-content">
+        <h3 style="font-size:15px;margin-bottom:12px;">Itemized Scope of Work</h3>
+        <table>
+          <thead>
+            <tr><th>Trade / Description</th><th>Qty</th><th>Unit Rate</th><th>Cost</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Drywall</div>
+                <div style="font-size:11px;">Cut out damaged gypsum board, hang new 5/8" sheetrock, tape, mud & sand (2.88 m² flood cut)</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_c00a170fe1_W2_East</div>
+              </td>
+              <td>2.9 sqm</td>
+              <td>$195.00</td>
+              <td style="font-weight:600;">$561.60</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Water Remediation</div>
+                <div style="font-size:11px;">HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_c00a170fe1_W2_East</div>
+              </td>
+              <td>2.9 sqm</td>
+              <td>$128.00</td>
+              <td style="font-weight:600;">$368.64</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Finish Carpentry</div>
+                <div style="font-size:11px;">Carefully detach 3-1/4" colonial baseboard, de-nail, prep and reinstall</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_c00a170fe1_W2_East</div>
+              </td>
+              <td>2.4 linear_m</td>
+              <td>$22.00</td>
+              <td style="font-weight:600;">$52.80</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Drywall</div>
+                <div style="font-size:11px;">V-groove stress crack, fiberglass mesh tape, 3-coat compound finish</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_c00a170fe1_W2_East</div>
+              </td>
+              <td>0.8 linear_m</td>
+              <td>$42.50</td>
+              <td style="font-weight:600;">$33.15</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Painting</div>
+                <div style="font-size:11px;">Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_c00a170fe1_W2_East</div>
+              </td>
+              <td>14.8 sqm</td>
+              <td>$46.00</td>
+              <td style="font-weight:600;">$682.18</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Drywall</div>
+                <div style="font-size:11px;">Cut out damaged gypsum board, hang new 5/8" sheetrock, tape, mud & sand (2.88 m² flood cut)</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_suite_W2_East</div>
+              </td>
+              <td>2.9 sqm</td>
+              <td>$195.00</td>
+              <td style="font-weight:600;">$561.60</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Water Remediation</div>
+                <div style="font-size:11px;">HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_suite_W2_East</div>
+              </td>
+              <td>2.9 sqm</td>
+              <td>$128.00</td>
+              <td style="font-weight:600;">$368.64</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Finish Carpentry</div>
+                <div style="font-size:11px;">Carefully detach 3-1/4" colonial baseboard, de-nail, prep and reinstall</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_suite_W2_East</div>
+              </td>
+              <td>2.4 linear_m</td>
+              <td>$22.00</td>
+              <td style="font-weight:600;">$52.80</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Drywall</div>
+                <div style="font-size:11px;">V-groove stress crack, fiberglass mesh tape, 3-coat compound finish</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_suite_W2_East</div>
+              </td>
+              <td>0.8 linear_m</td>
+              <td>$42.50</td>
+              <td style="font-weight:600;">$33.15</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Painting</div>
+                <div style="font-size:11px;">Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_suite_W2_East</div>
+              </td>
+              <td>13.3 sqm</td>
+              <td>$46.00</td>
+              <td style="font-weight:600;">$614.10</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Drywall</div>
+                <div style="font-size:11px;">Cut out damaged gypsum board, hang new 5/8" sheetrock, tape, mud & sand (2.88 m² flood cut)</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_bath_W2_East</div>
+              </td>
+              <td>2.9 sqm</td>
+              <td>$195.00</td>
+              <td style="font-weight:600;">$561.60</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Water Remediation</div>
+                <div style="font-size:11px;">HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_bath_W2_East</div>
+              </td>
+              <td>2.9 sqm</td>
+              <td>$128.00</td>
+              <td style="font-weight:600;">$368.64</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Finish Carpentry</div>
+                <div style="font-size:11px;">Carefully detach 3-1/4" colonial baseboard, de-nail, prep and reinstall</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_bath_W2_East</div>
+              </td>
+              <td>2.4 linear_m</td>
+              <td>$22.00</td>
+              <td style="font-weight:600;">$52.80</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Drywall</div>
+                <div style="font-size:11px;">V-groove stress crack, fiberglass mesh tape, 3-coat compound finish</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_bath_W2_East</div>
+              </td>
+              <td>0.8 linear_m</td>
+              <td>$42.50</td>
+              <td style="font-weight:600;">$33.15</td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:600;color:var(--accent);font-size:11px;">Painting</div>
+                <div style="font-size:11px;">Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)</div>
+                <div style="font-size:10px;color:#64748b;">Keyed to: room_bath_W2_East</div>
+              </td>
+              <td>8.9 sqm</td>
+              <td>$46.00</td>
+              <td style="font-weight:600;">$409.40</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="scope-total">
+          <span>Total Insurance Scope:</span>
+          <span>$4,754.25 USD</span>
+        </div>
+      </div>
+
+      <div id="tab-json" class="tab-content">
+        <h3 style="font-size:15px;margin-bottom:12px;">Published Schema JSON</h3>
+        <pre style="background:#0f172a;padding:12px;border-radius:8px;font-size:11px;overflow:auto;max-height:75vh;color:#38bdf8;"><code>{
+  "capture_id": "c00a170fe1",
+  "tier": "lidar",
+  "timestamp": "2026-10-04T01:06:18.031138",
+  "units": "meters",
+  "rooms": [
+    {
+      "room_id": "room_c00a170fe1",
+      "name": "Primary Room",
+      "ceiling_height_m": {
+        "value": 2.438,
+        "ci95": 0.035,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 32.97,
+        "ci95": 0.18,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -2.926,
+          -1.14
+        ],
+        [
+          2.494,
+          -1.14
+        ],
+        [
+          2.494,
+          4.943
+        ],
+        [
+          -2.926,
+          4.943
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_c00a170fe1_W1_South",
+          "start_m": [
+            -2.926,
+            -1.14
+          ],
+          "end_m": [
+            2.494,
+            -1.14
+          ],
+          "length_m": {
+            "value": 5.42,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_c00a170fe1_W1_South_01",
+              "type": "door",
+              "offset_m": 1.897,
+              "width_m": {
+                "value": 0.86,
+                "ci95": 0.012,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.05,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.96
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W2_East",
+          "start_m": [
+            2.494,
+            -1.14
+          ],
+          "end_m": [
+            2.494,
+            4.943
+          ],
+          "length_m": {
+            "value": 6.083,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_c00a170fe1_W2_East_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.435,
+                "ci95": 0.035,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  1.1,
+                  0.05
+                ],
+                [
+                  2.05,
+                  0.05
+                ],
+                [
+                  1.95,
+                  0.55
+                ],
+                [
+                  1.15,
+                  0.5
+                ]
+              ],
+              "severity": "high",
+              "confidence": 0.94
+            },
+            {
+              "damage_id": "dmg_room_c00a170fe1_W2_East_crack_01",
+              "damage_class": "drywall_crack",
+              "metric_area_sqm": {
+                "value": 0.015,
+                "ci95": 0.004,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  0.35,
+                  1.85
+                ],
+                [
+                  0.92,
+                  2.38
+                ],
+                [
+                  0.94,
+                  2.36
+                ],
+                [
+                  0.37,
+                  1.83
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.91
+            }
+          ]
+        },
+        {
+          "wall_id": "room_c00a170fe1_W3_North",
+          "start_m": [
+            2.494,
+            4.943
+          ],
+          "end_m": [
+            -2.926,
+            4.943
+          ],
+          "length_m": {
+            "value": 5.42,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W4_West",
+          "start_m": [
+            -2.926,
+            4.943
+          ],
+          "end_m": [
+            -2.926,
+            -1.14
+          ],
+          "length_m": {
+            "value": 6.083,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [
+        {
+          "flag_id": "flag_room_c00a170fe1_W2_East_cd01",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "rule_id": "RULE-CD-01",
+          "rule_name": "Plumbing Wall Cavity Moisture Saturation",
+          "rationale": "Detected water damage measuring 0.43 m\u00b2 on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.",
+          "risk_level": "high",
+          "recommended_investigation": "Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%."
+        },
+        {
+          "flag_id": "flag_room_c00a170fe1_W2_East_cd02",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "rule_id": "RULE-CD-02",
+          "rule_name": "Subfloor Moisture Wicking & Microbial Hazard",
+          "rationale": "Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.",
+          "risk_level": "medium",
+          "recommended_investigation": "Baseboard detachment and subfloor moisture content logging."
+        },
+        {
+          "flag_id": "flag_room_c00a170fe1_W2_East_cd03",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "rule_id": "RULE-CD-03",
+          "rule_name": "Framing Settlement & Header Deflection",
+          "rationale": "Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.",
+          "risk_level": "high",
+          "recommended_investigation": "Laser level elevation survey of floor joists and header plumbness inspection."
+        }
+      ],
+      "scope_line_items": [
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_01",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Drywall",
+          "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 195.0,
+          "total_cost_usd": {
+            "value": 561.6,
+            "ci95": 44.93,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_02",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Water Remediation",
+          "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 128.0,
+          "total_cost_usd": {
+            "value": 368.64,
+            "ci95": 22.12,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_03",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Finish Carpentry",
+          "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
+          "quantity": 2.4,
+          "unit": "linear_m",
+          "unit_cost_usd": 22.0,
+          "total_cost_usd": {
+            "value": 52.8,
+            "ci95": 2.64,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_04",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Drywall",
+          "description": "V-groove stress crack, fiberglass mesh tape, 3-coat compound finish",
+          "quantity": 0.78,
+          "unit": "linear_m",
+          "unit_cost_usd": 42.5,
+          "total_cost_usd": {
+            "value": 33.15,
+            "ci95": 2.32,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_c00a170fe1_W2_East_05",
+          "surface_id": "room_c00a170fe1_W2_East",
+          "trade": "Painting",
+          "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
+          "quantity": 14.83,
+          "unit": "sqm",
+          "unit_cost_usd": 46.0,
+          "total_cost_usd": {
+            "value": 682.18,
+            "ci95": 34.11,
+            "unit": "usd"
+          }
+        }
+      ]
+    },
+    {
+      "room_id": "room_suite",
+      "name": "Primary Bedroom",
+      "ceiling_height_m": {
+        "value": 2.438,
+        "ci95": 0.035,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 26.989,
+        "ci95": 0.16,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -2.487,
+          -0.825
+        ],
+        [
+          2.443,
+          -0.825
+        ],
+        [
+          2.443,
+          4.649
+        ],
+        [
+          -2.487,
+          4.649
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_suite_W1_South",
+          "start_m": [
+            -2.487,
+            -0.825
+          ],
+          "end_m": [
+            2.443,
+            -0.825
+          ],
+          "length_m": {
+            "value": 4.93,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_suite_W1_South_01",
+              "type": "door",
+              "offset_m": 1.726,
+              "width_m": {
+                "value": 0.86,
+                "ci95": 0.012,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.05,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.96
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_suite_W2_East",
+          "start_m": [
+            2.443,
+            -0.825
+          ],
+          "end_m": [
+            2.443,
+            4.649
+          ],
+          "length_m": {
+            "value": 5.474,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_suite_W2_East_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.435,
+                "ci95": 0.035,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  1.1,
+                  0.05
+                ],
+                [
+                  2.05,
+                  0.05
+                ],
+                [
+                  1.95,
+                  0.55
+                ],
+                [
+                  1.15,
+                  0.5
+                ]
+              ],
+              "severity": "high",
+              "confidence": 0.94
+            },
+            {
+              "damage_id": "dmg_room_suite_W2_East_crack_01",
+              "damage_class": "drywall_crack",
+              "metric_area_sqm": {
+                "value": 0.015,
+                "ci95": 0.004,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  0.35,
+                  1.85
+                ],
+                [
+                  0.92,
+                  2.38
+                ],
+                [
+                  0.94,
+                  2.36
+                ],
+                [
+                  0.37,
+                  1.83
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.91
+            }
+          ]
+        },
+        {
+          "wall_id": "room_suite_W3_North",
+          "start_m": [
+            2.443,
+            4.649
+          ],
+          "end_m": [
+            -2.487,
+            4.649
+          ],
+          "length_m": {
+            "value": 4.93,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_suite_W4_West",
+          "start_m": [
+            -2.487,
+            4.649
+          ],
+          "end_m": [
+            -2.487,
+            -0.825
+          ],
+          "length_m": {
+            "value": 5.474,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [
+        {
+          "flag_id": "flag_room_suite_W2_East_cd01",
+          "surface_id": "room_suite_W2_East",
+          "rule_id": "RULE-CD-01",
+          "rule_name": "Plumbing Wall Cavity Moisture Saturation",
+          "rationale": "Detected water damage measuring 0.43 m\u00b2 on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.",
+          "risk_level": "high",
+          "recommended_investigation": "Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%."
+        },
+        {
+          "flag_id": "flag_room_suite_W2_East_cd02",
+          "surface_id": "room_suite_W2_East",
+          "rule_id": "RULE-CD-02",
+          "rule_name": "Subfloor Moisture Wicking & Microbial Hazard",
+          "rationale": "Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.",
+          "risk_level": "medium",
+          "recommended_investigation": "Baseboard detachment and subfloor moisture content logging."
+        },
+        {
+          "flag_id": "flag_room_suite_W2_East_cd03",
+          "surface_id": "room_suite_W2_East",
+          "rule_id": "RULE-CD-03",
+          "rule_name": "Framing Settlement & Header Deflection",
+          "rationale": "Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.",
+          "risk_level": "high",
+          "recommended_investigation": "Laser level elevation survey of floor joists and header plumbness inspection."
+        }
+      ],
+      "scope_line_items": [
+        {
+          "item_id": "scope_room_suite_W2_East_01",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Drywall",
+          "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 195.0,
+          "total_cost_usd": {
+            "value": 561.6,
+            "ci95": 44.93,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_02",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Water Remediation",
+          "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 128.0,
+          "total_cost_usd": {
+            "value": 368.64,
+            "ci95": 22.12,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_03",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Finish Carpentry",
+          "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
+          "quantity": 2.4,
+          "unit": "linear_m",
+          "unit_cost_usd": 22.0,
+          "total_cost_usd": {
+            "value": 52.8,
+            "ci95": 2.64,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_04",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Drywall",
+          "description": "V-groove stress crack, fiberglass mesh tape, 3-coat compound finish",
+          "quantity": 0.78,
+          "unit": "linear_m",
+          "unit_cost_usd": 42.5,
+          "total_cost_usd": {
+            "value": 33.15,
+            "ci95": 2.32,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_suite_W2_East_05",
+          "surface_id": "room_suite_W2_East",
+          "trade": "Painting",
+          "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
+          "quantity": 13.35,
+          "unit": "sqm",
+          "unit_cost_usd": 46.0,
+          "total_cost_usd": {
+            "value": 614.1,
+            "ci95": 30.71,
+            "unit": "usd"
+          }
+        }
+      ]
+    },
+    {
+      "room_id": "room_bath",
+      "name": "Full Bathroom",
+      "ceiling_height_m": {
+        "value": 2.438,
+        "ci95": 0.035,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 11.936,
+        "ci95": 0.11,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -2.273,
+          -1.184
+        ],
+        [
+          0.997,
+          -1.184
+        ],
+        [
+          0.997,
+          2.466
+        ],
+        [
+          -2.273,
+          2.466
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_bath_W1_South",
+          "start_m": [
+            -2.273,
+            -1.184
+          ],
+          "end_m": [
+            0.997,
+            -1.184
+          ],
+          "length_m": {
+            "value": 3.27,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_bath_W1_South_01",
+              "type": "door",
+              "offset_m": 1.144,
+              "width_m": {
+                "value": 0.86,
+                "ci95": 0.012,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.05,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.96
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_bath_W2_East",
+          "start_m": [
+            0.997,
+            -1.184
+          ],
+          "end_m": [
+            0.997,
+            2.466
+          ],
+          "length_m": {
+            "value": 3.65,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_bath_W2_East_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.435,
+                "ci95": 0.035,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  1.1,
+                  0.05
+                ],
+                [
+                  2.05,
+                  0.05
+                ],
+                [
+                  1.95,
+                  0.55
+                ],
+                [
+                  1.15,
+                  0.5
+                ]
+              ],
+              "severity": "high",
+              "confidence": 0.94
+            },
+            {
+              "damage_id": "dmg_room_bath_W2_East_crack_01",
+              "damage_class": "drywall_crack",
+              "metric_area_sqm": {
+                "value": 0.015,
+                "ci95": 0.004,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  0.35,
+                  1.85
+                ],
+                [
+                  0.92,
+                  2.38
+                ],
+                [
+                  0.94,
+                  2.36
+                ],
+                [
+                  0.37,
+                  1.83
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.91
+            }
+          ]
+        },
+        {
+          "wall_id": "room_bath_W3_North",
+          "start_m": [
+            0.997,
+            2.466
+          ],
+          "end_m": [
+            -2.273,
+            2.466
+          ],
+          "length_m": {
+            "value": 3.27,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_bath_W4_West",
+          "start_m": [
+            -2.273,
+            2.466
+          ],
+          "end_m": [
+            -2.273,
+            -1.184
+          ],
+          "length_m": {
+            "value": 3.65,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.438,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [
+        {
+          "flag_id": "flag_room_bath_W2_East_cd01",
+          "surface_id": "room_bath_W2_East",
+          "rule_id": "RULE-CD-01",
+          "rule_name": "Plumbing Wall Cavity Moisture Saturation",
+          "rationale": "Detected water damage measuring 0.43 m\u00b2 on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.",
+          "risk_level": "high",
+          "recommended_investigation": "Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%."
+        },
+        {
+          "flag_id": "flag_room_bath_W2_East_cd02",
+          "surface_id": "room_bath_W2_East",
+          "rule_id": "RULE-CD-02",
+          "rule_name": "Subfloor Moisture Wicking & Microbial Hazard",
+          "rationale": "Prolonged surface water contact at floor-wall junction indicates potential capillary wicking into bottom plate, subfloor wood decking, and concealed mold propagation behind baseboards.",
+          "risk_level": "medium",
+          "recommended_investigation": "Baseboard detachment and subfloor moisture content logging."
+        },
+        {
+          "flag_id": "flag_room_bath_W2_East_cd03",
+          "surface_id": "room_bath_W2_East",
+          "rule_id": "RULE-CD-03",
+          "rule_name": "Framing Settlement & Header Deflection",
+          "rationale": "Diagonal drywall shear crack of length 0.78 m propagating from upper wall/opening junction indicates differential framing settlement, trimmer stud shrinkage, or structural header overload.",
+          "risk_level": "high",
+          "recommended_investigation": "Laser level elevation survey of floor joists and header plumbness inspection."
+        }
+      ],
+      "scope_line_items": [
+        {
+          "item_id": "scope_room_bath_W2_East_01",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Drywall",
+          "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 195.0,
+          "total_cost_usd": {
+            "value": 561.6,
+            "ci95": 44.93,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_02",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Water Remediation",
+          "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 128.0,
+          "total_cost_usd": {
+            "value": 368.64,
+            "ci95": 22.12,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_03",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Finish Carpentry",
+          "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
+          "quantity": 2.4,
+          "unit": "linear_m",
+          "unit_cost_usd": 22.0,
+          "total_cost_usd": {
+            "value": 52.8,
+            "ci95": 2.64,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_04",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Drywall",
+          "description": "V-groove stress crack, fiberglass mesh tape, 3-coat compound finish",
+          "quantity": 0.78,
+          "unit": "linear_m",
+          "unit_cost_usd": 42.5,
+          "total_cost_usd": {
+            "value": 33.15,
+            "ci95": 2.32,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_bath_W2_East_05",
+          "surface_id": "room_bath_W2_East",
+          "trade": "Painting",
+          "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
+          "quantity": 8.9,
+          "unit": "sqm",
+          "unit_cost_usd": 46.0,
+          "total_cost_usd": {
+            "value": 409.4,
+            "ci95": 20.47,
+            "unit": "usd"
+          }
+        }
+      ]
+    }
+  ],
+  "stitched_plan": {
+    "total_area_sqm": {
+      "value": 71.89,
+      "ci95": 1.08,
+      "unit": "sqm"
+    },
+    "rooms": [
+      {
+        "room_id": "room_c00a170fe1",
+        "position_m": [
+          0.0,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      },
+      {
+        "room_id": "room_suite",
+        "position_m": [
+          0.0,
+          5.063
+        ],
+        "rotation_deg": 0.0
+      },
+      {
+        "room_id": "room_bath",
+        "position_m": [
+          2.614,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      }
+    ],
+    "adjacencies": [
+      {
+        "room_a": "room_c00a170fe1",
+        "room_b": "room_suite",
+        "connector_type": "door",
+        "opening_width_m": 0.86
+      },
+      {
+        "room_a": "room_c00a170fe1",
+        "room_b": "room_bath",
+        "connector_type": "cased_opening",
+        "opening_width_m": 1.2
+      }
+    ],
+    "drift_correction_applied": true,
+    "drift_residual_m": 0.012
+  },
+  "metadata": {
+    "pipeline_version": "1.0.0",
+    "device_model": "iPhone 15 Pro",
+    "runtime_seconds": 11.26,
+    "hardware_tier": "LIDAR Pro Sensor Fusion"
+  }
+}</code></pre>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('tab-' + name).classList.add('active');
+    }
+  </script>
+</body>
+</html>
