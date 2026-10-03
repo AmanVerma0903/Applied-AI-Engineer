@@ -25,9 +25,6 @@ class PhotoRoomReconstructor:
         room_dir: str,
         room_id: str,
         room_name: str,
-        default_length_m: float = 4.20,
-        default_width_m: float = 3.80,
-        default_ceiling_m: float = 2.44
     ) -> RoomGeometry:
         """
         Analyzes 2-8 still photos for a single room:
@@ -45,6 +42,7 @@ class PhotoRoomReconstructor:
         vertical_spans = []
         horizontal_spans = []
         detected_door_features = []
+        door_center_fractions = []
 
         for p_path in photo_files[:8]:
             img = cv2.imread(p_path)
@@ -92,6 +90,9 @@ class PhotoRoomReconstructor:
                             # Door width typically ~15% to 35% of frame width in typical wide photo
                             if 0.12 * w < x_dist < 0.38 * w:
                                 detected_door_features.append(x_dist / w)
+                                door_center_fractions.append(
+                                    0.5 * (vert_lines[i_v][0] + vert_lines[j_v][0]) / w
+                                )
 
         # Scale from a standard 32-inch interior door (0.813 m). This is a
         # stated residential prior, not this benchmark's laser door width.
@@ -116,6 +117,31 @@ class PhotoRoomReconstructor:
         polygon_vertices = [v0, v1, v2, v3]
 
         door_width = float(round(door_prior_m, 3))
+        door_height = float(round(min(2.03, max(0.50, ceil_h - 0.05)), 3))
+        openings_west: List[Dict[str, Any]] = []
+        if detected_door_features and door_center_fractions:
+            # Offset is the door's position in the frame, not a fixed fraction of the wall.
+            center = float(np.median(door_center_fractions)) * room_w
+            offset = float(np.clip(center - door_width / 2.0, 0.05, max(0.05, room_w - door_width - 0.05)))
+            openings_west = [
+                {
+                    "opening_id": f"op_{room_id}_door",
+                    "type": "door",
+                    "offset_m": round(offset, 3),
+                    "width_m": {
+                        "value": round(door_width, 3),
+                        "ci95": 0.12,
+                        "unit": "m"
+                    },
+                    "height_m": {
+                        "value": door_height,
+                        "ci95": 0.15,
+                        "unit": "m"
+                    },
+                    "elevation_m": 0.0,
+                    "confidence": 0.45
+                }
+            ]
 
         # Build walls
         walls = [
@@ -153,25 +179,7 @@ class PhotoRoomReconstructor:
                 length_m=room_w,
                 height_m=ceil_h,
                 normal_2d=(-1.0, 0.0),
-                openings=[
-                    {
-                        "opening_id": f"op_{room_id}_door",
-                        "type": "door",
-                        "offset_m": round(room_w * 0.35, 2),
-                        "width_m": {
-                            "value": round(door_width, 3),
-                            "ci95": 0.065,  # Photo-tier calibrated CI
-                            "unit": "m"
-                        },
-                        "height_m": {
-                            "value": 2.05,
-                            "ci95": 0.050,
-                            "unit": "m"
-                        },
-                        "elevation_m": 0.0,
-                        "confidence": 0.82
-                    }
-                ]
+                openings=openings_west
             )
         ]
 
