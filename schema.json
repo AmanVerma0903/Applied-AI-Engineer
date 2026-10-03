@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SpatialAIOutputContract",
+  "description": "Output schema for end-to-end spatial reconstruction, dimensioning, damage assessment, and scope of work per Part 2 of Applied AI Case Study.",
+  "type": "object",
+  "required": [
+    "capture_id",
+    "tier",
+    "units",
+    "rooms",
+    "stitched_plan",
+    "metadata"
+  ],
+  "properties": {
+    "capture_id": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["lidar", "video", "photos"]
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "units": {
+      "type": "string",
+      "enum": ["meters"]
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Room"
+      }
+    },
+    "stitched_plan": {
+      "type": "object",
+      "required": [
+        "total_area_sqm",
+        "adjacencies",
+        "drift_correction_applied"
+      ],
+      "properties": {
+        "total_area_sqm": {
+          "$ref": "#/definitions/Measurement"
+        },
+        "rooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["room_id", "position_m", "rotation_deg"],
+            "properties": {
+              "room_id": { "type": "string" },
+              "position_m": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "rotation_deg": { "type": "number" }
+            }
+          }
+        },
+        "adjacencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["room_a", "room_b", "connector_type"],
+            "properties": {
+              "room_a": { "type": "string" },
+              "room_b": { "type": "string" },
+              "connector_type": { "type": "string" },
+              "opening_width_m": { "type": "number" }
+            }
+          }
+        },
+        "drift_correction_applied": {
+          "type": "boolean"
+        },
+        "drift_residual_m": {
+          "type": "number"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "pipeline_version",
+        "device_model",
+        "runtime_seconds"
+      ],
+      "properties": {
+        "pipeline_version": { "type": "string" },
+        "device_model": { "type": "string" },
+        "runtime_seconds": { "type": "number" },
+        "hardware_tier": { "type": "string" }
+      }
+    }
+  },
+  "definitions": {
+    "Measurement": {
+      "type": "object",
+      "required": ["value", "ci95"],
+      "properties": {
+        "value": { "type": "number" },
+        "ci95": { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+    "Opening": {
+      "type": "object",
+      "required": [
+        "opening_id",
+        "type",
+        "offset_m",
+        "width_m",
+        "height_m"
+      ],
+      "properties": {
+        "opening_id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["door", "window", "cased_opening", "opening"]
+        },
+        "offset_m": { "type": "number" },
+        "width_m": { "$ref": "#/definitions/Measurement" },
+        "height_m": { "$ref": "#/definitions/Measurement" },
+        "elevation_m": { "type": "number" },
+        "confidence": { "type": "number" }
+      }
+    },
+    "DamageRegion": {
+      "type": "object",
+      "required": [
+        "damage_id",
+        "damage_class",
+        "metric_area_sqm",
+        "severity"
+      ],
+      "properties": {
+        "damage_id": { "type": "string" },
+        "damage_class": {
+          "type": "string",
+          "enum": ["water_damage", "drywall_crack", "mold_spores", "impact_puncture"]
+        },
+        "metric_area_sqm": { "$ref": "#/definitions/Measurement" },
+        "bounding_polygon_m": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "confidence": { "type": "number" }
+      }
+    },
+    "ConcealedDamageFlag": {
+      "type": "object",
+      "required": [
+        "flag_id",
+        "surface_id",
+        "rule_id",
+        "rule_name",
+        "rationale",
+        "risk_level"
+      ],
+      "properties": {
+        "flag_id": { "type": "string" },
+        "surface_id": { "type": "string" },
+        "rule_id": { "type": "string" },
+        "rule_name": { "type": "string" },
+        "rationale": { "type": "string" },
+        "risk_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "recommended_investigation": { "type": "string" }
+      }
+    },
+    "ScopeLineItem": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "surface_id",
+        "trade",
+        "description",
+        "quantity",
+        "unit",
+        "unit_cost_usd",
+        "total_cost_usd"
+      ],
+      "properties": {
+        "item_id": { "type": "string" },
+        "surface_id": { "type": "string" },
+        "trade": { "type": "string" },
+        "description": { "type": "string" },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "unit_cost_usd": { "type": "number" },
+        "total_cost_usd": { "$ref": "#/definitions/Measurement" }
+      }
+    },
+    "Wall": {
+      "type": "object",
+      "required": [
+        "wall_id",
+        "start_m",
+        "end_m",
+        "length_m",
+        "height_m",
+        "openings",
+        "damage_regions"
+      ],
+      "properties": {
+        "wall_id": { "type": "string" },
+        "start_m": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "end_m": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "length_m": { "$ref": "#/definitions/Measurement" },
+        "height_m": { "$ref": "#/definitions/Measurement" },
+        "thickness_m": { "type": "number" },
+        "openings": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Opening" }
+        },
+        "damage_regions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/DamageRegion" }
+        }
+      }
+    },
+    "Room": {
+      "type": "object",
+      "required": [
+        "room_id",
+        "name",
+        "ceiling_height_m",
+        "floor_area_sqm",
+        "walls",
+        "concealed_damage_flags",
+        "scope_line_items"
+      ],
+      "properties": {
+        "room_id": { "type": "string" },
+        "name": { "type": "string" },
+        "ceiling_height_m": { "$ref": "#/definitions/Measurement" },
+        "floor_area_sqm": { "$ref": "#/definitions/Measurement" },
+        "polygon_2d_m": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "walls": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Wall" }
+        },
+        "concealed_damage_flags": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ConcealedDamageFlag" }
+        },
+        "scope_line_items": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ScopeLineItem" }
+        }
+      }
+    }
+  }
+}
