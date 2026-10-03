@@ -319,14 +319,14 @@
                 </text>
                 
 
-                    <line x1="182.3" y1="313.8" x2="182.3" y2="384.5" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
+                    <line x1="182.3" y1="317.1" x2="182.3" y2="381.2" stroke="#0f172a" stroke-width="8" stroke-linecap="butt"/>
                     
 
-                        <line x1="182.3" y1="313.8" x2="182.3" y2="384.5" stroke="#38bdf8" stroke-width="2"/>
-                        <circle cx="182.3" cy="313.8" r="3" fill="#38bdf8"/>
-                        <path d="M 182.3 384.5 A 70.7 70.7 0 0 1 111.6 313.8" 
+                        <line x1="182.3" y1="317.1" x2="182.3" y2="381.2" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="182.3" cy="317.1" r="3" fill="#38bdf8"/>
+                        <path d="M 182.3 381.2 A 64.1 64.1 0 0 1 118.2 317.1" 
                               fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
-                        <text x="182.3" y="339.1" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">83cm door</text>
+                        <text x="182.3" y="339.1" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">75cm door</text>
                         
 
         <g id="legend" transform="translate(50, 840)">
@@ -385,7 +385,7 @@
                   <tr>
                     <td>West</td>
                     <td>6.05m <span style="color:#64748b;font-size:10px;">±1.3cm</span></td>
-                    <td>1 door (0.83m)</td>
+                    <td>1 door (0.75m)</td>
                   </tr>
                 </tbody>
               </table>
@@ -429,7 +429,7 @@
         <pre style="background:#0f172a;padding:12px;border-radius:8px;font-size:11px;overflow:auto;max-height:75vh;color:#38bdf8;"><code>{
   "capture_id": "c00a170fe1",
   "tier": "lidar",
-  "timestamp": "2026-10-04T03:38:59.759359",
+  "timestamp": "2026-10-04T04:10:44.151222",
   "units": "meters",
   "rooms": [
     {
@@ -561,9 +561,9 @@
             {
               "opening_id": "op_room_c00a170fe1_W4_West_1",
               "type": "door",
-              "offset_m": 1.425,
+              "offset_m": 1.463,
               "width_m": {
-                "value": 0.829,
+                "value": 0.752,
                 "ci95": 0.024,
                 "unit": "m"
               },
@@ -573,7 +573,7 @@
                 "unit": "m"
               },
               "elevation_m": 0.0,
-              "confidence": 0.9
+              "confidence": 0.75
             }
           ],
           "damage_regions": []
@@ -606,8 +606,10 @@
   "metadata": {
     "pipeline_version": "1.0.0",
     "device_model": "iPhone 15 Pro",
-    "runtime_seconds": 1.13,
-    "hardware_tier": "LIDAR Pro Sensor Fusion"
+    "runtime_seconds": 7.26,
+    "hardware_tier": "LIDAR Pro Sensor Fusion",
+    "scale_source": "lidar_depth",
+    "scale_quality": "metric"
   }
 }</code></pre>
       </div>

@@ -1,7 +1,7 @@
 {
   "capture_id": "c00a170fe1",
   "tier": "lidar",
-  "timestamp": "2026-10-04T03:38:59.759359",
+  "timestamp": "2026-10-04T04:10:44.151222",
   "units": "meters",
   "rooms": [
     {
@@ -133,9 +133,9 @@
             {
               "opening_id": "op_room_c00a170fe1_W4_West_1",
               "type": "door",
-              "offset_m": 1.425,
+              "offset_m": 1.463,
               "width_m": {
-                "value": 0.829,
+                "value": 0.752,
                 "ci95": 0.024,
                 "unit": "m"
               },
@@ -145,7 +145,7 @@
                 "unit": "m"
               },
               "elevation_m": 0.0,
-              "confidence": 0.9
+              "confidence": 0.75
             }
           ],
           "damage_regions": []
@@ -178,7 +178,9 @@
   "metadata": {
     "pipeline_version": "1.0.0",
     "device_model": "iPhone 15 Pro",
-    "runtime_seconds": 1.13,
-    "hardware_tier": "LIDAR Pro Sensor Fusion"
+    "runtime_seconds": 7.26,
+    "hardware_tier": "LIDAR Pro Sensor Fusion",
+    "scale_source": "lidar_depth",
+    "scale_quality": "metric"
   }
 }
