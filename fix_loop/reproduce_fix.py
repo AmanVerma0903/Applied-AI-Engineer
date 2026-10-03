@@ -133,7 +133,7 @@ def run_after_fix() -> dict:
 
     result = {
         "run": "AFTER_FIX",
-        "implementation": "5cm Binning + Sub-centimeter Jamb Edge Kernel Refinement (_refine_jamb_edge)",
+        "implementation": "5cm occupancy plus density-drop jambs (last solid return to first solid return)",
         "ground_truth_width_cm": round(gt_width_m * 100, 2),
         "measured_width_cm": round(measured_m * 100, 2),
         "absolute_error_cm": error_cm,

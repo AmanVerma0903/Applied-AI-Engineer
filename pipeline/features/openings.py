@@ -64,21 +64,22 @@ class OpeningDetector:
         d_perp = np.abs(diff @ n_dir)
         h_coords = wall_points_3d[:, 1] - floor_elev
 
-        # Filter points within wall span, wall proximity, and height
-        in_bounds = (
-            (d_perp <= 0.20) &
-            (s_coords >= 0.10) & (s_coords <= wall_length - 0.10) &
-            (h_coords >= 0.20) & (h_coords <= min(ceiling_height, 2.30))
+        # Wall returns used for the occupancy profile: 12 cm of the plane,
+        # door-band heights 0.40-1.60 m. A wider height set is kept only to
+        # test whether anything exists above the opening.
+        near_wall = (
+            (d_perp <= 0.12) &
+            (s_coords >= 0.05) & (s_coords <= wall_length - 0.05) &
+            (h_coords >= 0.05) & (h_coords <= min(ceiling_height, 2.30))
         )
-        s_in = s_coords[in_bounds]
-        h_in = h_coords[in_bounds]
+        s_in = s_coords[near_wall]
+        h_in = h_coords[near_wall]
 
         if len(s_in) < 40:
             return []
 
-        # Create 1D histogram along wall length for door height zone (adaptive to ceiling height)
-        max_door_h = min(ceiling_height - 0.05, 1.80)
-        door_zone = (h_in >= 0.20) & (h_in <= max_door_h) if max_door_h > 0.25 else (h_in >= 0.10)
+        door_hi = min(1.60, max(0.45, ceiling_height - 0.02))
+        door_zone = (h_in >= 0.40) & (h_in <= door_hi)
         s_door = s_in[door_zone]
 
         if len(s_door) < 20:
@@ -113,9 +114,17 @@ class OpeningDetector:
                 raw_width = raw_end - raw_start
 
                 if min_door_width_m <= raw_width <= max_door_width_m:
-                    if use_refinement:
-                        refined_start = OpeningDetector._refine_jamb_edge(s_door, raw_start, direction="left")
-                        refined_end = OpeningDetector._refine_jamb_edge(s_door, raw_end, direction="right")
+                    if use_refinement and gap_start_bin > 0 and b < len(bin_edges) - 1:
+                        # Jambs are the last solid return before the void and the
+                        # first solid return after it. The percentile is taken
+                        # inside the solid bin, so the edge is not pulled back
+                        # into the wall.
+                        refined_start = OpeningDetector._solid_bin_edge(
+                            s_door, bin_edges[gap_start_bin - 1], bin_edges[gap_start_bin], side="left"
+                        )
+                        refined_end = OpeningDetector._solid_bin_edge(
+                            s_door, bin_edges[b], bin_edges[min(b + 1, len(bin_edges) - 1)], side="right"
+                        )
                     else:
                         refined_start = raw_start
                         refined_end = raw_end
@@ -151,14 +160,13 @@ class OpeningDetector:
         return openings
 
     @staticmethod
-    def _refine_jamb_edge(s_points: np.ndarray, coarse_edge: float, direction: str = "left", window: float = 0.08) -> float:
-        """Sub-centimeter edge refinement using 1D point gradient."""
-        local = s_points[(s_points >= coarse_edge - window) & (s_points <= coarse_edge + window)]
-        if len(local) < 5:
-            return coarse_edge
-        if direction == "left":
-            # Edge is where points end (percentile)
-            return float(np.percentile(local, 25))
-        else:
-            # Edge is where points resume
-            return float(np.percentile(local, 75))
+    def _solid_bin_edge(s_points: np.ndarray, bin_lo: float, bin_hi: float, side: str) -> float:
+        """Edge of a solid occupancy bin at the density drop into a void."""
+        if bin_hi < bin_lo:
+            bin_lo, bin_hi = bin_hi, bin_lo
+        local = s_points[(s_points >= bin_lo) & (s_points <= bin_hi)]
+        if len(local) < 4:
+            return float(bin_hi if side == "left" else bin_lo)
+        if side == "left":
+            return float(np.percentile(local, 98))
+        return float(np.percentile(local, 8))
