@@ -1,0 +1,186 @@
+{
+  "capture_id": "c00a170fe1",
+  "tier": "video",
+  "timestamp": "2026-10-04T04:11:38.819225",
+  "units": "meters",
+  "rooms": [
+    {
+      "room_id": "room_c00a170fe1",
+      "name": "Primary Room",
+      "ceiling_height_m": {
+        "value": 2.109,
+        "ci95": 0.18,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 5.664,
+        "ci95": 0.29,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -0.285,
+          0.858
+        ],
+        [
+          2.233,
+          0.858
+        ],
+        [
+          2.233,
+          3.107
+        ],
+        [
+          -0.285,
+          3.107
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_c00a170fe1_W1_South",
+          "start_m": [
+            -0.285,
+            0.858
+          ],
+          "end_m": [
+            2.233,
+            0.858
+          ],
+          "length_m": {
+            "value": 2.518,
+            "ci95": 0.068,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.109,
+            "ci95": 0.18,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_c00a170fe1_W1_South_1",
+              "type": "door",
+              "offset_m": 1.475,
+              "width_m": {
+                "value": 0.626,
+                "ci95": 0.08,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 2.05,
+                "ci95": 0.1,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.9
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W2_East",
+          "start_m": [
+            2.233,
+            0.858
+          ],
+          "end_m": [
+            2.233,
+            3.107
+          ],
+          "length_m": {
+            "value": 2.249,
+            "ci95": 0.067,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.109,
+            "ci95": 0.18,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W3_North",
+          "start_m": [
+            2.233,
+            3.107
+          ],
+          "end_m": [
+            -0.285,
+            3.107
+          ],
+          "length_m": {
+            "value": 2.518,
+            "ci95": 0.068,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.109,
+            "ci95": 0.18,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W4_West",
+          "start_m": [
+            -0.285,
+            3.107
+          ],
+          "end_m": [
+            -0.285,
+            0.858
+          ],
+          "length_m": {
+            "value": 2.249,
+            "ci95": 0.067,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 2.109,
+            "ci95": 0.18,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [],
+      "scope_line_items": []
+    }
+  ],
+  "stitched_plan": {
+    "total_area_sqm": {
+      "value": 5.66,
+      "ci95": 0.17,
+      "unit": "sqm"
+    },
+    "rooms": [
+      {
+        "room_id": "room_c00a170fe1",
+        "position_m": [
+          0.0,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      }
+    ],
+    "adjacencies": [],
+    "drift_correction_applied": true,
+    "drift_residual_m": 0.021
+  },
+  "metadata": {
+    "pipeline_version": "1.0.0",
+    "device_model": "iPhone 15 Pro",
+    "runtime_seconds": 35.93,
+    "hardware_tier": "VIDEO Pro Sensor Fusion",
+    "scale_source": "odometry_prior_triangulation",
+    "scale_quality": "approximate"
+  }
+}
