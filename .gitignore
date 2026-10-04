@@ -39,7 +39,10 @@ scratch/
 .temp/
 *.log
 
-# Large capture binaries in test_code
+# Large capture binaries in test_code / rrr_code
 test_code/**/rgb.mp4
 test_code/**/depth/
 test_code/**/confidence/
+rrr_code/**/rgb.mp4
+rrr_code/**/depth/
+rrr_code/**/confidence/

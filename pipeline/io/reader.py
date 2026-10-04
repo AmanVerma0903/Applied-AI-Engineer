@@ -54,6 +54,10 @@ class SensorReader:
         if os.path.exists(capture_path):
             return capture_path
         candidates = [
+            os.path.join("rrr_code", capture_path),
+            os.path.join("rrr_code", "single_room", capture_path),
+            os.path.join("rrr_code", "single_scan_floor_only", capture_path),
+            os.path.join("rrr_code", "single_scan_with_ceiling", capture_path),
             os.path.join("test_code", capture_path),
             os.path.join("test_code", "single_room", capture_path),
             os.path.join("test_code", "single_scan_floor_only", capture_path),

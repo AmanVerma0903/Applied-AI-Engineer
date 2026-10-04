@@ -290,9 +290,11 @@ def generate_markdown_report(audits: List[Dict[str, Any]], cross_analysis: Dict[
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run Spatial AI Pipeline Test Suite across test_code/ captures")
-    parser.add_argument("--base-dir", default="test_code", help="Base test code directory")
-    parser.add_argument("--output-dir", default="outputs/test_code_runs", help="Output directory for test runs")
+    default_dir = "rrr_code" if os.path.exists("rrr_code") else "test_code"
+    default_out = f"outputs/{default_dir}_runs"
+    parser = argparse.ArgumentParser(description="Run Spatial AI Pipeline Test Suite across test captures")
+    parser.add_argument("--base-dir", default=default_dir, help="Base test code directory")
+    parser.add_argument("--output-dir", default=default_out, help="Output directory for test runs")
     parser.add_argument("--scan", default=None, help="Filter to run specific scan ID or substring")
     args = parser.parse_args()
 

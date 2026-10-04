@@ -1,0 +1,343 @@
+{
+  "capture_id": "1a8384c3f6",
+  "tier": "lidar",
+  "timestamp": "2026-10-04T05:39:15.465484",
+  "units": "meters",
+  "rooms": [
+    {
+      "room_id": "room_1a8384c3f6",
+      "name": "Primary Room",
+      "ceiling_height_m": {
+        "value": 1.466,
+        "ci95": 0.15,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 53.297,
+        "ci95": 0.24,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          0.04,
+          -2.735
+        ],
+        [
+          5.632,
+          -2.735
+        ],
+        [
+          5.632,
+          6.796
+        ],
+        [
+          0.04,
+          6.796
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_1a8384c3f6_W1_South",
+          "start_m": [
+            0.04,
+            -2.735
+          ],
+          "end_m": [
+            5.632,
+            -2.735
+          ],
+          "length_m": {
+            "value": 5.592,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.466,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_1a8384c3f6_W2_East",
+          "start_m": [
+            5.632,
+            -2.735
+          ],
+          "end_m": [
+            5.632,
+            6.796
+          ],
+          "length_m": {
+            "value": 9.53,
+            "ci95": 0.015,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.466,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_1a8384c3f6_W2_East_1",
+              "type": "door",
+              "offset_m": 5.711,
+              "width_m": {
+                "value": 1.005,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.416,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.75
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_1a8384c3f6_W3_North",
+          "start_m": [
+            5.632,
+            6.796
+          ],
+          "end_m": [
+            0.04,
+            6.796
+          ],
+          "length_m": {
+            "value": 5.592,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.466,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_1a8384c3f6_W3_North_1",
+              "type": "door",
+              "offset_m": 2.965,
+              "width_m": {
+                "value": 0.712,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.416,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.9
+            },
+            {
+              "opening_id": "op_room_1a8384c3f6_W3_North_2",
+              "type": "door",
+              "offset_m": 4.02,
+              "width_m": {
+                "value": 0.64,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.416,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.75
+            }
+          ],
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_1a8384c3f6_W3_North_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.104,
+                "ci95": 0.026,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  2.89,
+                  0.4
+                ],
+                [
+                  3.21,
+                  0.4
+                ],
+                [
+                  3.21,
+                  0.72
+                ],
+                [
+                  2.89,
+                  0.72
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.72
+            }
+          ]
+        },
+        {
+          "wall_id": "room_1a8384c3f6_W4_West",
+          "start_m": [
+            0.04,
+            6.796
+          ],
+          "end_m": [
+            0.04,
+            -2.735
+          ],
+          "length_m": {
+            "value": 9.53,
+            "ci95": 0.015,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.466,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_1a8384c3f6_W4_West_1",
+              "type": "door",
+              "offset_m": 3.84,
+              "width_m": {
+                "value": 0.657,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.416,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.9
+            },
+            {
+              "opening_id": "op_room_1a8384c3f6_W4_West_2",
+              "type": "door",
+              "offset_m": 4.809,
+              "width_m": {
+                "value": 0.808,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.416,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.75
+            }
+          ],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [],
+      "scope_line_items": [
+        {
+          "item_id": "scope_room_1a8384c3f6_W3_North_01",
+          "surface_id": "room_1a8384c3f6_W3_North",
+          "trade": "Drywall",
+          "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 195.0,
+          "total_cost_usd": {
+            "value": 561.6,
+            "ci95": 44.93,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_1a8384c3f6_W3_North_02",
+          "surface_id": "room_1a8384c3f6_W3_North",
+          "trade": "Water Remediation",
+          "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
+          "quantity": 2.88,
+          "unit": "sqm",
+          "unit_cost_usd": 128.0,
+          "total_cost_usd": {
+            "value": 368.64,
+            "ci95": 22.12,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_1a8384c3f6_W3_North_03",
+          "surface_id": "room_1a8384c3f6_W3_North",
+          "trade": "Finish Carpentry",
+          "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
+          "quantity": 2.4,
+          "unit": "linear_m",
+          "unit_cost_usd": 22.0,
+          "total_cost_usd": {
+            "value": 52.8,
+            "ci95": 2.64,
+            "unit": "usd"
+          }
+        },
+        {
+          "item_id": "scope_room_1a8384c3f6_W3_North_04",
+          "surface_id": "room_1a8384c3f6_W3_North",
+          "trade": "Painting",
+          "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
+          "quantity": 8.2,
+          "unit": "sqm",
+          "unit_cost_usd": 46.0,
+          "total_cost_usd": {
+            "value": 377.2,
+            "ci95": 18.86,
+            "unit": "usd"
+          }
+        }
+      ]
+    }
+  ],
+  "stitched_plan": {
+    "total_area_sqm": {
+      "value": 53.3,
+      "ci95": 0.8,
+      "unit": "sqm"
+    },
+    "rooms": [
+      {
+        "room_id": "room_1a8384c3f6",
+        "position_m": [
+          0.0,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      }
+    ],
+    "adjacencies": [],
+    "drift_correction_applied": true,
+    "drift_residual_m": 0.005
+  },
+  "metadata": {
+    "pipeline_version": "1.0.0",
+    "device_model": "iPhone 15 Pro",
+    "runtime_seconds": 11.29,
+    "hardware_tier": "LIDAR Pro Sensor Fusion",
+    "scale_source": "lidar_depth",
+    "scale_quality": "metric"
+  }
+}
