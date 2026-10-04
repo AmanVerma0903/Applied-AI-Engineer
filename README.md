@@ -32,6 +32,14 @@ Execution finishes in **~25 seconds** and automatically generates:
 * `outputs/my_scan/floorplan.svg` (High-resolution dimensioned architectural SVG)
 * `outputs/my_scan/index.html` (Interactive Polycam/Magicplan-style product surface)
 
+### 3. Run Automated Verification Across Test Captures (`test_code/`)
+Execute the automated test suite across all captures in `test_code/`:
+```bash
+python test_code/run_tests.py
+```
+* **Runtime:** ~34 seconds across all 3 test captures (`single_room`, `single_scan_floor_only`, `single_scan_with_ceiling`).
+* **Artifacts:** Verifies Draft-07 schema compliance, dimensional metrology, uncertainty widening on truncated scans, multi-pass repeatability, and publishes `test_code/TEST_REPORT.md`.
+
 ---
 
 ## 🔁 Deterministic Reproduction Bundle (Deliverable 4)
