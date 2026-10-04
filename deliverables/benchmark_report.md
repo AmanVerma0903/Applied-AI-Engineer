@@ -72,13 +72,21 @@
 | **Detected Loop Closures** | 1 | 1 | Anchored loop closures |
 | **Gate Row Compliance** | **FAIL ('Poses used as-is' is an automatic fail)** | **PASS** | Full marks earned |
 
+### Reconstructed Floorplan Footprint Ablation (Room Geometry ON vs OFF)
+
+| Footprint Metric | Drift Correction OFF (Raw Odometry) | Drift Correction ON (Pose Graph Optimized) | Physical Geometric Delta |
+| :--- | :---: | :---: | :---: |
+| **Reconstructed Floorplan Area** | **9.162 m²** | **9.356 m²** | **+0.194 m² correction** |
+| **Reconstructed Perimeter** | 12.322 m | 12.382 m | +0.060 m |
+| **Loop Boundary Gap** | **45.6 cm** | **2.1 cm** | **43.5 cm reduction** |
+
 ---
 
 ## 5. Gate 5: Whole-Property / Multi-Room Stitching
 
 | Input Tier | Captured Assets | Stitched Footprint | Ground Truth | Error % | Gate Threshold | Overlaps | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Photo Tier** | Per-room stills | **13.04 m²** | **60.13 m²** | **78.31%** | $\le 8.0%$ | None | `FAIL` |
+| **Photo Tier** | Per-room stills | **13.04 m²** | **60.13 m²** | **78.31%** | $\le 8.0%$ | 0 (Verified Shapely No Overlaps) | `FAIL` |
 
 > **Evaluation Context on Gate 5:** Photo-tier stitch of 4 rooms from stills (door-scale prior 0.813 m, no ground-truth lookup)
 

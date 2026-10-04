@@ -99,14 +99,16 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
     measured_footprint = contract["stitched_plan"]["total_area_sqm"]["value"] if isinstance(contract["stitched_plan"].get("total_area_sqm"), dict) else float(contract["stitched_plan"]["total_area_sqm"])
     gt_footprint = gt_r1.get("floor_area_sqm", 32.966)
     gate5_context = "Single-room LiDAR footprint versus the surveyed room area"
+    photo_polygons = None
     if os.path.isdir(photo_root):
         from pipeline.stitching.photo_tier import PhotoRoomReconstructor
         photo_rooms, photo_plan = PhotoRoomReconstructor.reconstruct_property_from_photos(photo_root)
         measured_footprint = photo_plan.total_floor_area_sqm
         gt_footprint = gt_data["rooms"]["multi_room_property"]["total_footprint_sqm"]
         gate5_context = f"Photo-tier stitch of {len(photo_rooms)} rooms from stills (door-scale prior 0.813 m, no ground-truth lookup)"
+        photo_polygons = [p.polygon for p in photo_plan.placements]
 
-    gate5_res = evaluator.evaluate_photo_stitching_gate(measured_footprint, gt_footprint_sqm=gt_footprint)
+    gate5_res = evaluator.evaluate_photo_stitching_gate(measured_footprint, gt_footprint_sqm=gt_footprint, room_polygons=photo_polygons)
     gate5_res["context"] = gate5_context
     print(f"  Result: {gate5_res['status']} | Footprint Error: {gate5_res['error_pct']}% (Gate: <= 8.0%)")
 
@@ -266,13 +268,21 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 | **Detected Loop Closures** | {abl['drift_correction_off']['num_loop_closures']} | {abl['drift_correction_on']['num_loop_closures']} | Anchored loop closures |
 | **Gate Row Compliance** | **{abl['drift_correction_off']['gate_compliance']}** | **{abl['drift_correction_on']['gate_compliance']}** | {'Full marks earned' if abl['drift_correction_on']['gate_compliance'] == 'PASS' else 'Ablation evaluated'} |
 
+### Reconstructed Floorplan Footprint Ablation (Room Geometry ON vs OFF)
+
+| Footprint Metric | Drift Correction OFF (Raw Odometry) | Drift Correction ON (Pose Graph Optimized) | Physical Geometric Delta |
+| :--- | :---: | :---: | :---: |
+| **Reconstructed Floorplan Area** | **{abl['footprint_ablation']['drift_off_footprint']['reconstructed_area_sqm']:.3f} m²** | **{abl['footprint_ablation']['drift_on_footprint']['reconstructed_area_sqm']:.3f} m²** | **{abl['footprint_ablation']['area_delta_sqm']:+.3f} m² correction** |
+| **Reconstructed Perimeter** | {abl['footprint_ablation']['drift_off_footprint']['reconstructed_perimeter_m']:.3f} m | {abl['footprint_ablation']['drift_on_footprint']['reconstructed_perimeter_m']:.3f} m | {abl['footprint_ablation']['drift_on_footprint']['reconstructed_perimeter_m'] - abl['footprint_ablation']['drift_off_footprint']['reconstructed_perimeter_m']:+.3f} m |
+| **Loop Boundary Gap** | **{abl['footprint_ablation']['drift_off_footprint']['loop_closing_gap_cm']:.1f} cm** | **{abl['footprint_ablation']['drift_on_footprint']['loop_closing_gap_cm']:.1f} cm** | **{abl['footprint_ablation']['loop_gap_reduction_cm']:.1f} cm reduction** |
+
 ---
 
 ## 5. Gate 5: Whole-Property / Multi-Room Stitching
 
 | Input Tier | Captured Assets | Stitched Footprint | Ground Truth | Error % | Gate Threshold | Overlaps | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Photo Tier** | Per-room stills | **{g5['measured_footprint_sqm']:.2f} m²** | **{g5['gt_footprint_sqm']:.2f} m²** | **{g5['error_pct']}%** | $\le 8.0%$ | None | `{g5['status']}` |
+| **Photo Tier** | Per-room stills | **{g5['measured_footprint_sqm']:.2f} m²** | **{g5['gt_footprint_sqm']:.2f} m²** | **{g5['error_pct']}%** | $\le 8.0%$ | {'Yes (FAIL)' if g5.get('has_overlaps') else '0 (Verified Shapely No Overlaps)'} | `{g5['status']}` |
 
 > **Evaluation Context on Gate 5:** {g5.get('context', 'Single room capture evaluated against matching room GT')}
 

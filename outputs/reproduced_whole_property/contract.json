@@ -1,7 +1,7 @@
 {
   "capture_id": "photos",
   "tier": "photos",
-  "timestamp": "2026-10-04T06:45:49.877837",
+  "timestamp": "2026-10-04T06:52:07.680291",
   "units": "meters",
   "rooms": [
     {
@@ -671,7 +671,7 @@
   "metadata": {
     "pipeline_version": "1.0.0",
     "device_model": "iPhone 15 Pro",
-    "runtime_seconds": 1.65,
+    "runtime_seconds": 1.58,
     "hardware_tier": "PHOTOS Pro Sensor Fusion",
     "scale_source": "residential_door_prior_0.813m",
     "scale_quality": "approximate"
