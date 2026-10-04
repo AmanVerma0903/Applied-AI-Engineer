@@ -1,0 +1,186 @@
+{
+  "capture_id": "c00a170fe1",
+  "tier": "lidar",
+  "timestamp": "2026-10-04T06:25:36.732139",
+  "units": "meters",
+  "rooms": [
+    {
+      "room_id": "room_c00a170fe1",
+      "name": "Primary Room",
+      "ceiling_height_m": {
+        "value": 1.236,
+        "ci95": 0.15,
+        "unit": "m"
+      },
+      "floor_area_sqm": {
+        "value": 20.748,
+        "ci95": 0.15,
+        "unit": "sqm"
+      },
+      "polygon_2d_m": [
+        [
+          -1.074,
+          -1.137
+        ],
+        [
+          2.358,
+          -1.137
+        ],
+        [
+          2.358,
+          4.908
+        ],
+        [
+          -1.074,
+          4.908
+        ]
+      ],
+      "walls": [
+        {
+          "wall_id": "room_c00a170fe1_W1_South",
+          "start_m": [
+            -1.074,
+            -1.137
+          ],
+          "end_m": [
+            2.358,
+            -1.137
+          ],
+          "length_m": {
+            "value": 3.432,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.236,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W2_East",
+          "start_m": [
+            2.358,
+            -1.137
+          ],
+          "end_m": [
+            2.358,
+            4.908
+          ],
+          "length_m": {
+            "value": 6.046,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.236,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W3_North",
+          "start_m": [
+            2.358,
+            4.908
+          ],
+          "end_m": [
+            -1.074,
+            4.908
+          ],
+          "length_m": {
+            "value": 3.432,
+            "ci95": 0.012,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.236,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_c00a170fe1_W4_West",
+          "start_m": [
+            -1.074,
+            4.908
+          ],
+          "end_m": [
+            -1.074,
+            -1.137
+          ],
+          "length_m": {
+            "value": 6.046,
+            "ci95": 0.013,
+            "unit": "m"
+          },
+          "height_m": {
+            "value": 1.236,
+            "ci95": 0.01,
+            "unit": "m"
+          },
+          "thickness_m": 0.12,
+          "openings": [
+            {
+              "opening_id": "op_room_c00a170fe1_W4_West_1",
+              "type": "door",
+              "offset_m": 1.463,
+              "width_m": {
+                "value": 0.752,
+                "ci95": 0.024,
+                "unit": "m"
+              },
+              "height_m": {
+                "value": 1.186,
+                "ci95": 0.02,
+                "unit": "m"
+              },
+              "elevation_m": 0.0,
+              "confidence": 0.75
+            }
+          ],
+          "damage_regions": []
+        }
+      ],
+      "concealed_damage_flags": [],
+      "scope_line_items": []
+    }
+  ],
+  "stitched_plan": {
+    "total_area_sqm": {
+      "value": 20.75,
+      "ci95": 0.31,
+      "unit": "sqm"
+    },
+    "rooms": [
+      {
+        "room_id": "room_c00a170fe1",
+        "position_m": [
+          0.0,
+          0.0
+        ],
+        "rotation_deg": 0.0
+      }
+    ],
+    "adjacencies": [],
+    "drift_correction_applied": true,
+    "drift_residual_m": 0.021
+  },
+  "metadata": {
+    "pipeline_version": "1.0.0",
+    "device_model": "iPhone 15 Pro",
+    "runtime_seconds": 7.87,
+    "hardware_tier": "LIDAR Pro Sensor Fusion",
+    "scale_source": "lidar_depth",
+    "scale_quality": "metric"
+  }
+}

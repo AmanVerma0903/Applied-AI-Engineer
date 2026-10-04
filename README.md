@@ -40,6 +40,14 @@ python rrr_code/run_tests.py
 * **Runtime:** ~35 seconds across all 3 test captures (`single_room`, `single_scan_floor_only`, `single_scan_with_ceiling`).
 * **Artifacts:** Verifies Draft-07 schema compliance, dimensional metrology, uncertainty widening on truncated scans, multi-pass repeatability, and publishes `rrr_code/TEST_REPORT.md`.
 
+### 4. Run Dedicated Single Room Test Suite
+Execute the formal test suite across all metrology gates, schema validation, and artifacts specifically on `single_room`:
+```bash
+python test_single_room.py
+```
+* **Runtime:** ~10 seconds.
+* **Coverage:** 9 formal unit test cases covering raw sensor loading, Draft-07 schema compliance, wall geometry, ceiling height with CI, door opening detection, clean room zero damage, Gate 4 drift loop closure (21.7x reduction), Part 4 fix loop delta, and SVG/HTML product surfaces.
+
 ---
 
 ## 🔁 Deterministic Reproduction Bundle (Deliverable 4)
