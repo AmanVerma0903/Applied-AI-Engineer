@@ -1,7 +1,7 @@
 {
   "capture_id": "c00a170fe1",
   "tier": "lidar",
-  "timestamp": "2026-10-04T05:25:35.015121",
+  "timestamp": "2026-10-04T05:34:12.844525",
   "units": "meters",
   "rooms": [
     {
@@ -178,7 +178,7 @@
   "metadata": {
     "pipeline_version": "1.0.0",
     "device_model": "iPhone 15 Pro",
-    "runtime_seconds": 6.93,
+    "runtime_seconds": 6.89,
     "hardware_tier": "LIDAR Pro Sensor Fusion",
     "scale_source": "lidar_depth",
     "scale_quality": "metric"
