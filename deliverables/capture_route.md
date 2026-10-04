@@ -54,10 +54,10 @@
    * `depth/` (16-bit millimeter depth maps)
    * `confidence/` (ARKit confidence buffers)
    * `rgb.mp4` (Handheld color video stream)
-4. Place the folder into the workspace directory (e.g. `single_room/c00a170fe1`).
+4. Place the folder into the workspace directory (e.g. `rrr_code/single_room/c00a170fe1`).
 5. Execute the single pipeline command:
    ```bash
-   python -m pipeline.run --input single_room/c00a170fe1 --output outputs/my_scan --tier lidar
+   python -m pipeline.run --input rrr_code/single_room/c00a170fe1 --output outputs/my_scan --tier lidar
    ```
 
 ---

@@ -7,7 +7,7 @@
   "coordinate_convention": "Right-handed metric frame; CCW wall ordering [South, East, North, West]",
   "rooms": {
     "room_01_kitchen_suite": {
-      "name": "Kitchen & Suite (single_room/c00a170fe1)",
+      "name": "Kitchen & Suite (rrr_code/single_room/c00a170fe1)",
       "ceiling_height_m": 2.44,
       "floor_area_sqm": 32.966,
       "perimeter_m": 23.0,

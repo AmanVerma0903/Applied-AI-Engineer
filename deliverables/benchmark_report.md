@@ -129,4 +129,4 @@
 ---
 
 ## 8. Performance & Honesty Summary
-All reported metrics are computed live from active pipeline outputs and sensor data (`single_room/c00a170fe1`, `benchmark_data/repeat_run`, `benchmark_data/multi_room/photos`). Zero hardcoded constants or simulated passes exist in this evaluation.
+All reported metrics are computed live from active pipeline outputs and sensor data (`rrr_code/single_room/c00a170fe1`, `benchmark_data/repeat_run`, `benchmark_data/multi_room/photos`). Zero hardcoded constants or simulated passes exist in this evaluation.

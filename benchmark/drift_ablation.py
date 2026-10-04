@@ -10,7 +10,7 @@ class DriftAblationStudy:
     """Executes comparative ablation on trajectory odometry with drift correction ON vs OFF."""
 
     @staticmethod
-    def run_ablation(capture_path: str = "single_room/c00a170fe1") -> Dict[str, Any]:
+    def run_ablation(capture_path: str = "rrr_code/single_room/c00a170fe1") -> Dict[str, Any]:
         """
         Evaluates loop closure and drift on real odometry poses.
         Records closing gap error and gate compliance dynamically from sensor data.

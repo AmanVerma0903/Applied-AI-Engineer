@@ -11,7 +11,7 @@
 * **Target Gate:** **Gate 1 — Opening Widths Metrology**
 * **Case Study Gate Standard:** Opening width error $\le 2.0\text{ cm}$ on $\ge 85\%$ of openings; missed and phantom openings count as a miss
 * **Baseline (Pre-Fix) Performance:**
-  * **Measured Door Width:** $70.0\text{ cm}$ on coarse 5cm binning without jamb refinement (`single_room/c00a170fe1`).
+  * **Measured Door Width:** $70.0\text{ cm}$ on coarse 5cm binning without jamb refinement (`rrr_code/single_room/c00a170fe1`).
   * **Absolute Error vs GT (86.0 cm):** **$16.0\text{ cm}$**.
   * **Failing Number:** **0.0% Pass Rate** (error exceeds the $2.0\text{ cm}$ gate).
   * **Gate Status:** **FAIL**.
@@ -43,7 +43,7 @@ The prediction was that a sub-bin edge on this gap would land within 2 cm of 86 
 
 ## 4. Empirical After-Run Results
 
-Executing `python -m fix_loop.reproduce_fix` produces live verification on `single_room/c00a170fe1`:
+Executing `python -m fix_loop.reproduce_fix` produces live verification on `rrr_code/single_room/c00a170fe1`:
 
 ```text
 ==================================================================

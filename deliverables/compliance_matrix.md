@@ -3,7 +3,7 @@
 **Project:** Spatial AI Multi-Tier Floorplan & Damage Pipeline  
 **Standard:** Applied AI Case Study (Deliverable 1 Specification)  
 **Schema Mapping:** `requirement -> file path -> artifact -> status`  
-**Pipeline Verification:** All 8 Case Study Deliverables implemented & verified live against sensor data (`single_room/c00a170fe1`) and test suite captures in `rrr_code/` (`single_scan_floor_only/1a8384c3f6`, `single_scan_with_ceiling/c7d28f72c6`).
+**Pipeline Verification:** All 8 Case Study Deliverables implemented & verified live against sensor data (`rrr_code/single_room/c00a170fe1`) and test suite captures in `rrr_code/` (`single_scan_floor_only/1a8384c3f6`, `single_scan_with_ceiling/c7d28f72c6`).
 
 ---
 
@@ -37,5 +37,5 @@
 | **Deliverable 5: Benchmark Report** | `deliverables/benchmark_report.md` | `deliverables/benchmark_report.md` | `PASS` | Live tables for all 5 gates, repeatability, head-to-head, and drift ablation. |
 | **Deliverable 6: Fix Loop Bundle** | `fix_loop/`<br>`deliverables/fix_loop_declaration.md` | `fix_loop/` directory | `PASS` | Live before run, after run, readable diff, and declaration. |
 | **Deliverable 7: 6-Page Technical Report** | `deliverables/technical_report.md` | `deliverables/technical_report.md` | `PASS` | Covers Architecture, Tier Design, Drift Ablation, Error Budget, Calibration, Fix Loop, Failure Modes. |
-| **Deliverable 8: Raw Benchmark Data** | `benchmark_data/`<br>`single_room/c00a170fe1/` | `benchmark_data/ground_truth.json`<br>`benchmark_data/magicplan_export.json` | `PASS` | Benchmark reference fixture, sensor logs, and live app exports. |
+| **Deliverable 8: Raw Benchmark Data** | `benchmark_data/`<br>`rrr_code/single_room/c00a170fe1/` | `benchmark_data/ground_truth.json`<br>`benchmark_data/magicplan_export.json` | `PASS` | Benchmark reference fixture, sensor logs, and live app exports. |
 | **The Walk-in Test Readiness** | `pipeline/run.py` | Live test CLI | `PASS` | Live path ready to execute on unseen defense capture cold on the spot. |

@@ -49,6 +49,13 @@
                         <text x="489.9" y="352.6" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">100cm door</text>
                         
 
+                    <g id="damage_dmg_room_1a8384c3f6_W2_East_water_01">
+                      <circle cx="514.9" cy="762.6" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
+                      <text x="514.9" y="766.6" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
+                      <text x="533.9" y="765.6" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.10 m²)</text>
+                    </g>
+                    
+
                 <text x="321.2" y="140.4" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
                   5.59m <tspan fill="#64748b" font-size="9">±1.3cm</tspan>
                 </text>
@@ -73,13 +80,6 @@
                               fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3"/>
                         <text x="228.0" y="152.4" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">64cm door</text>
                         
-
-                    <g id="damage_dmg_room_1a8384c3f6_W3_North_water_01">
-                      <circle cx="514.9" cy="187.4" r="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2"/>
-                      <text x="514.9" y="191.4" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">!</text>
-                      <text x="533.9" y="190.4" fill="#38bdf8" font-size="10" font-weight="600">water damage (0.10 m²)</text>
-                    </g>
-                    
 
                 <text x="130.4" y="450.0" fill="#94a3b8" font-size="11" font-weight="500" text-anchor="middle">
                   9.53m <tspan fill="#64748b" font-size="9">±1.5cm</tspan>

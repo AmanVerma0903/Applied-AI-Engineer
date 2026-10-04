@@ -88,7 +88,7 @@ def run_full_benchmark_suite(contract_path: str = "outputs/audit_room/contract.j
 
     # 4. Gate 4: Drift Accountability & Loop Closure Ablation (live odometry)
     print("\n[Gate 4/5] Evaluating Drift Accountability & Ablation on Sensor Odometry...")
-    ablation_res = DriftAblationStudy.run_ablation(capture_path="single_room/c00a170fe1")
+    ablation_res = DriftAblationStudy.run_ablation(capture_path="rrr_code/single_room/c00a170fe1")
     print(f"  Drift OFF: {ablation_res['drift_correction_off']['loop_closing_gap_m']*100:.1f} cm gap ({ablation_res['drift_correction_off']['gate_compliance']})")
     print(f"  Drift ON:  {ablation_res['drift_correction_on']['loop_closing_gap_m']*100:.1f} cm residual ({ablation_res['drift_correction_on']['gate_compliance']})")
     print(f"  Factor:    {ablation_res['drift_reduction_factor']}")
@@ -318,7 +318,7 @@ def generate_benchmark_report_md(g1, g2, g3, abl, g5, h2h, detected_ops) -> str:
 ---
 
 ## 8. Performance & Honesty Summary
-All reported metrics are computed live from active pipeline outputs and sensor data (`single_room/c00a170fe1`, `benchmark_data/repeat_run`, `benchmark_data/multi_room/photos`). Zero hardcoded constants or simulated passes exist in this evaluation.
+All reported metrics are computed live from active pipeline outputs and sensor data (`rrr_code/single_room/c00a170fe1`, `benchmark_data/repeat_run`, `benchmark_data/multi_room/photos`). Zero hardcoded constants or simulated passes exist in this evaluation.
 """
     return md
 

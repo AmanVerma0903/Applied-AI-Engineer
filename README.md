@@ -23,9 +23,9 @@ pip install -r requirements.txt
 ```
 
 ### 2. Run Single Command on a Fresh Capture
-Execute the pipeline on any raw capture directory (e.g. `single_room/c00a170fe1`):
+Execute the pipeline on any raw capture directory (e.g. `rrr_code/single_room/c00a170fe1`):
 ```bash
-python -m pipeline.run --input single_room/c00a170fe1 --output outputs/my_scan --tier lidar
+python -m pipeline.run --input rrr_code/single_room/c00a170fe1 --output outputs/my_scan --tier lidar
 ```
 Execution finishes in **~25 seconds** and automatically generates:
 * `outputs/my_scan/contract.json` (Validated against published `schema.json`)

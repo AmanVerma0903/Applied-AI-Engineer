@@ -25,9 +25,9 @@ def main():
     print("==================================================================")
 
     # 1. Run live pipeline on benchmark room c00a170fe1
-    print("\n[Step 1/4] Running live pipeline on raw LiDAR capture single_room/c00a170fe1...")
+    print("\n[Step 1/4] Running live pipeline on raw LiDAR capture rrr_code/single_room/c00a170fe1...")
     contract_path = run_pipeline(
-        input_path="single_room/c00a170fe1",
+        input_path="rrr_code/single_room/c00a170fe1",
         output_dir="outputs/reproduced_room_01",
         tier="lidar",
         enable_drift_correction=True,
@@ -38,7 +38,7 @@ def main():
     # 2. Run multi-room stitched whole-property pipeline
     print("\n[Step 2/4] Running whole-property multi-room pipeline...")
     multi_contract_path = run_pipeline(
-        input_path="single_room/c00a170fe1",
+        input_path="rrr_code/single_room/c00a170fe1",
         output_dir="outputs/reproduced_whole_property",
         tier="lidar",
         enable_drift_correction=True,

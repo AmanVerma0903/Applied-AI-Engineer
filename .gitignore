@@ -39,10 +39,10 @@ scratch/
 .temp/
 *.log
 
-# Large capture binaries in test_code / rrr_code
-test_code/**/rgb.mp4
-test_code/**/depth/
-test_code/**/confidence/
-rrr_code/**/rgb.mp4
-rrr_code/**/depth/
-rrr_code/**/confidence/
+# Large capture binaries in rrr_code (>100MB video and uncompressed depth)
+rrr_code/single_scan_floor_only/**/rgb.mp4
+rrr_code/single_scan_floor_only/**/depth/
+rrr_code/single_scan_floor_only/**/confidence/
+rrr_code/single_scan_with_ceiling/**/rgb.mp4
+rrr_code/single_scan_with_ceiling/**/depth/
+rrr_code/single_scan_with_ceiling/**/confidence/

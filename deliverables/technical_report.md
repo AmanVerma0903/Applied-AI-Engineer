@@ -18,7 +18,7 @@ This technical report presents an end-to-end spatial AI pipeline developed to fu
 5. Itemized insurance restoration scope of work keyed directly to surfaces.
 6. Calibrated 95% confidence intervals on every single measurement.
 
-Every reported number derives directly from live sensor unprojections, robust RANSAC plane fitting, and pose graph optimization on actual raw captures (`single_room/c00a170fe1`). Zero hardcoded fallbacks or simulated passes are used: where sensor coverage is physically limited (such as truncated camera pitch omitting ceiling mouldings), the pipeline honestly widens its uncertainty bounds and reports failing gates accurately. Across live odometry, loop closure reduces trajectory drift by **21.7x** via pose graph optimization.
+Every reported number derives directly from live sensor unprojections, robust RANSAC plane fitting, and pose graph optimization on actual raw captures (`rrr_code/single_room/c00a170fe1`). Zero hardcoded fallbacks or simulated passes are used: where sensor coverage is physically limited (such as truncated camera pitch omitting ceiling mouldings), the pipeline honestly widens its uncertainty bounds and reports failing gates accurately. Across live odometry, loop closure reduces trajectory drift by **21.7x** via pose graph optimization.
 
 ---
 
@@ -133,7 +133,7 @@ Confidence intervals widen monotonically and honestly as sensor constraints loos
 ## 6. The Fix Loop Story (Part 4 — 25% of Score)
 
 ### 1. Worst-Performing Gate & Baseline
-During initial benchmarking of the baseline unrefined pipeline on `single_room/c00a170fe1`, **Gate 1 (Opening Widths $\le 2.0\text{ cm}$)** suffered complete failure:
+During initial benchmarking of the baseline unrefined pipeline on `rrr_code/single_room/c00a170fe1`, **Gate 1 (Opening Widths $\le 2.0\text{ cm}$)** suffered complete failure:
 * **Ground Truth Door Width:** $86.0\text{ cm}$
 * **Measured Pre-Fix Width:** $70.0\text{ cm}$ (Coarse 5cm histogram binning)
 * **Absolute Error:** **$16.0\text{ cm}$**
@@ -146,7 +146,7 @@ The baseline implementation used coarse $5.0\text{ cm}$ 1D occupancy grid binnin
 The shipped detector keeps the 5 cm bins and replaces the old percentile window, which started the opening inside the wall, with the last solid return before the void and the first solid return after it. The prediction was that this edge would fall within 2 cm of 86 cm. That prediction is wrong: the empty span in the cloud is shorter than 86 cm.
 
 ### 4. Verification & Delta
-Running live `python -m fix_loop.reproduce_fix` on `single_room/c00a170fe1`:
+Running live `python -m fix_loop.reproduce_fix` on `rrr_code/single_room/c00a170fe1`:
 * **Shipped measured width:** **75.2 cm** on the walked-room west wall (`outputs/audit_room/contract.json` and `fix_loop/after_fix/metrics.json`)
 * **Absolute error vs the 86.0 cm reference:** **10.8 cm** (Gate 1 threshold is 2.0 cm, so this opening **FAILS**)
 * **Why it fell short:** Coarse bins measure 70.0 cm (16.0 cm error). The density drop moves that to 75.2 cm (10.8 cm error). The points do not support 86 cm, so the width is not assigned to 0.860.

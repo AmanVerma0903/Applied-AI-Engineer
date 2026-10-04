@@ -26,7 +26,7 @@ def _get_live_door_wall():
     if _CACHED_DOOR_WALL is not None:
         return _CACHED_DOOR_WALL
 
-    capture_path = "single_room/c00a170fe1"
+    capture_path = "rrr_code/single_room/c00a170fe1"
     capture = SensorReader.load(capture_path, tier="lidar")
     pcd = PointCloudBuilder.from_capture(capture, capture_path, frame_stride=20, voxel_size=0.03)
     from pipeline.geometry.planes import RansacPlaneDetector
@@ -66,7 +66,7 @@ def _get_live_door_wall():
 def run_before_fix() -> dict:
     """
     Before fix: Coarse 5cm histogram door width estimation without jamb edge refinement.
-    Executes actual OpeningDetector on single_room/c00a170fe1.
+    Executes actual OpeningDetector on rrr_code/single_room/c00a170fe1.
     """
     door_wall, ceil_h, floor_elev = _get_live_door_wall()
     gt_width_m = 0.860
@@ -107,7 +107,7 @@ def run_before_fix() -> dict:
 def run_after_fix() -> dict:
     """
     After fix: 5cm binning + bilateral gradient edge kernel refinement (_refine_jamb_edge).
-    Executes live refined OpeningDetector on single_room/c00a170fe1.
+    Executes live refined OpeningDetector on rrr_code/single_room/c00a170fe1.
     """
     door_wall, ceil_h, floor_elev = _get_live_door_wall()
     gt_width_m = 0.860

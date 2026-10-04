@@ -1,7 +1,7 @@
 {
   "capture_id": "1a8384c3f6",
   "tier": "lidar",
-  "timestamp": "2026-10-04T05:46:53.263851",
+  "timestamp": "2026-10-04T05:53:01.006880",
   "units": "meters",
   "rooms": [
     {
@@ -100,7 +100,37 @@
               "confidence": 0.75
             }
           ],
-          "damage_regions": []
+          "damage_regions": [
+            {
+              "damage_id": "dmg_room_1a8384c3f6_W2_East_water_01",
+              "damage_class": "water_damage",
+              "metric_area_sqm": {
+                "value": 0.104,
+                "ci95": 0.026,
+                "unit": "sqm"
+              },
+              "bounding_polygon_m": [
+                [
+                  5.59,
+                  0.4
+                ],
+                [
+                  5.92,
+                  0.4
+                ],
+                [
+                  5.92,
+                  0.72
+                ],
+                [
+                  5.59,
+                  0.72
+                ]
+              ],
+              "severity": "medium",
+              "confidence": 0.72
+            }
+          ]
         },
         {
           "wall_id": "room_1a8384c3f6_W3_North",
@@ -159,37 +189,7 @@
               "confidence": 0.75
             }
           ],
-          "damage_regions": [
-            {
-              "damage_id": "dmg_room_1a8384c3f6_W3_North_water_01",
-              "damage_class": "water_damage",
-              "metric_area_sqm": {
-                "value": 0.104,
-                "ci95": 0.026,
-                "unit": "sqm"
-              },
-              "bounding_polygon_m": [
-                [
-                  2.89,
-                  0.4
-                ],
-                [
-                  3.21,
-                  0.4
-                ],
-                [
-                  3.21,
-                  0.72
-                ],
-                [
-                  2.89,
-                  0.72
-                ]
-              ],
-              "severity": "medium",
-              "confidence": 0.72
-            }
-          ]
+          "damage_regions": []
         },
         {
           "wall_id": "room_1a8384c3f6_W4_West",
@@ -251,11 +251,21 @@
           "damage_regions": []
         }
       ],
-      "concealed_damage_flags": [],
+      "concealed_damage_flags": [
+        {
+          "flag_id": "flag_room_1a8384c3f6_W2_East_cd01",
+          "surface_id": "room_1a8384c3f6_W2_East",
+          "rule_id": "RULE-CD-01",
+          "rule_name": "Plumbing Wall Cavity Moisture Saturation",
+          "rationale": "Detected water damage measuring 0.10 m\u00b2 on plumbing-adjacent partition. Moisture likely penetrated gypsum core into stud cavity, saturating insulation batts and compromising wall framing plate.",
+          "risk_level": "high",
+          "recommended_investigation": "Thermal imaging probe and non-destructive pinless moisture meter scan across 1.2m radius; invasive cavity inspection cut recommended if moisture >18%."
+        }
+      ],
       "scope_line_items": [
         {
-          "item_id": "scope_room_1a8384c3f6_W3_North_01",
-          "surface_id": "room_1a8384c3f6_W3_North",
+          "item_id": "scope_room_1a8384c3f6_W2_East_01",
+          "surface_id": "room_1a8384c3f6_W2_East",
           "trade": "Drywall",
           "description": "Cut out damaged gypsum board, hang new 5/8\" sheetrock, tape, mud & sand (2.88 m\u00b2 flood cut)",
           "quantity": 2.88,
@@ -268,8 +278,8 @@
           }
         },
         {
-          "item_id": "scope_room_1a8384c3f6_W3_North_02",
-          "surface_id": "room_1a8384c3f6_W3_North",
+          "item_id": "scope_room_1a8384c3f6_W2_East_02",
+          "surface_id": "room_1a8384c3f6_W2_East",
           "trade": "Water Remediation",
           "description": "HEPA vacuum, apply EPA-registered antimicrobial disinfectant spray & wipe",
           "quantity": 2.88,
@@ -282,8 +292,8 @@
           }
         },
         {
-          "item_id": "scope_room_1a8384c3f6_W3_North_03",
-          "surface_id": "room_1a8384c3f6_W3_North",
+          "item_id": "scope_room_1a8384c3f6_W2_East_03",
+          "surface_id": "room_1a8384c3f6_W2_East",
           "trade": "Finish Carpentry",
           "description": "Carefully detach 3-1/4\" colonial baseboard, de-nail, prep and reinstall",
           "quantity": 2.4,
@@ -296,16 +306,16 @@
           }
         },
         {
-          "item_id": "scope_room_1a8384c3f6_W3_North_04",
-          "surface_id": "room_1a8384c3f6_W3_North",
+          "item_id": "scope_room_1a8384c3f6_W2_East_04",
+          "surface_id": "room_1a8384c3f6_W2_East",
           "trade": "Painting",
           "description": "Stain-blocking primer coat plus two coats low-VOC latex finish paint (full wall finish)",
-          "quantity": 8.2,
+          "quantity": 13.97,
           "unit": "sqm",
           "unit_cost_usd": 46.0,
           "total_cost_usd": {
-            "value": 377.2,
-            "ci95": 18.86,
+            "value": 642.62,
+            "ci95": 32.13,
             "unit": "usd"
           }
         }
@@ -335,7 +345,7 @@
   "metadata": {
     "pipeline_version": "1.0.0",
     "device_model": "iPhone 15 Pro",
-    "runtime_seconds": 10.99,
+    "runtime_seconds": 11.44,
     "hardware_tier": "LIDAR Pro Sensor Fusion",
     "scale_source": "lidar_depth",
     "scale_quality": "metric"

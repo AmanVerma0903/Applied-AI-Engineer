@@ -2,7 +2,7 @@
 pipeline.run
 Single-command CLI pipeline execution matching Part 2 & Deliverable 3 requirements.
 Usage:
-    python -m pipeline.run --input single_room/c00a170fe1 --output outputs/room_01 --tier lidar
+    python -m pipeline.run --input rrr_code/single_room/c00a170fe1 --output outputs/room_01 --tier lidar
 """
 
 import os
