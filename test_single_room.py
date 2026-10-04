@@ -115,14 +115,16 @@ class TestSingleRoom(unittest.TestCase):
         print(f"  [PASS] Test Case 5: Opening detected ({door.get('opening_id')}) with width {width_val*100:.1f} cm.")
 
     def test_06_clean_room_zero_damage(self):
-        """Test Case 6: Verify clean room capture produces 0 false-positive surface damage."""
+        """Test Case 6: Verify clean room capture produces 0 false-positive surface damage across all walls."""
         room = self.contract["rooms"][0]
-        damage_regions = room.get("surface_damage_regions", [])
-        self.assertEqual(len(damage_regions), 0, "Clean room must not hallucinate damage regions")
-        print("  [PASS] Test Case 6: Clean room confirmed (0 phantom damage regions).")
+        all_damage = []
+        for w in room.get("walls", []):
+            all_damage.extend(w.get("damage_regions", []))
+        self.assertEqual(len(all_damage), 0, f"Clean room must not hallucinate damage regions; found {len(all_damage)}")
+        print("  [PASS] Test Case 6: Clean room confirmed (0 damage regions across all 4 walls).")
 
     def test_07_drift_pose_graph_optimization(self):
-        """Test Case 7: Gate 4 Drift loop closure achieves >20x error reduction."""
+        """Test Case 7: Gate 4 Drift loop closure and footprint ablation (ON vs OFF)."""
         from benchmark.drift_ablation import DriftAblationStudy
         ablation = DriftAblationStudy.run_ablation(capture_path=self.capture_path)
 
@@ -132,7 +134,13 @@ class TestSingleRoom(unittest.TestCase):
 
         self.assertGreater(factor, 20.0, "Loop closure should reduce drift by >20x")
         self.assertEqual(ablation["drift_correction_on"]["gate_compliance"], "PASS")
-        print(f"  [PASS] Test Case 7: Gate 4 Drift Loop Closure passed ({factor:.1f}x reduction: {gap_off*100:.1f}cm -> {gap_on*100:.1f}cm).")
+
+        # Verify footprint ablation exists with ON vs OFF bounding boxes
+        self.assertIn("footprint_ablation", ablation)
+        fp_on = ablation["footprint_ablation"]["correction_on"]
+        fp_off = ablation["footprint_ablation"]["correction_off"]
+        self.assertGreater(fp_off["loop_closing_gap_cm"], fp_on["loop_closing_gap_cm"])
+        print(f"  [PASS] Test Case 7: Gate 4 Drift Footprint Ablation passed ({factor:.1f}x reduction: {gap_off*100:.1f}cm -> {gap_on*100:.1f}cm).")
 
     def test_08_fix_loop_before_after(self):
         """Test Case 8: Part 4 Fix Loop before vs after verification."""
@@ -156,6 +164,24 @@ class TestSingleRoom(unittest.TestCase):
         self.assertTrue(os.path.exists(html_file), "index.html must exist")
         self.assertGreater(os.path.getsize(html_file), 1000, "index.html must contain full viewer UI")
         print(f"  [PASS] Test Case 9: Rendered artifacts generated (floorplan.svg: {os.path.getsize(svg_file)} bytes, index.html: {os.path.getsize(html_file)} bytes).")
+
+    def test_10_ground_truth_accuracy_gates_honest_evaluation(self):
+        """Test Case 10: Evaluate against Leica ground truth and assert honest gate reporting (FAIL for Gates 1 & 2)."""
+        from benchmark.evaluate_gates import GateEvaluator
+        evaluator = GateEvaluator()
+
+        # Gate 1: West wall door vs Ground Truth (86.0 cm)
+        west_wall_openings = self.contract["rooms"][0]["walls"][3]["openings"]
+        g1 = evaluator.evaluate_opening_widths_gate(west_wall_openings)
+        self.assertEqual(g1["status"], "FAIL", "Gate 1 must honestly report FAIL on 75.2cm vs 86.0cm reference")
+        self.assertAlmostEqual(g1["mean_error_cm"], 10.8, places=1)
+
+        # Gate 2: Ceiling height vs Ground Truth (2.440 m)
+        g2 = evaluator.evaluate_ceiling_height_gate([1.236], gt_height=2.440)
+        self.assertIn("FAIL", g2["status"], "Gate 2 must honestly report FAIL on truncated floor scan")
+        self.assertAlmostEqual(g2["max_error_cm"], 120.4, delta=5.0)
+
+        print(f"  [PASS] Test Case 10: Ground truth accuracy gates honestly verified (Gate 1 error: {g1['mean_error_cm']}cm, Gate 2 error: {g2['max_error_cm']}cm - strictly reported as FAIL).")
 
 
 if __name__ == "__main__":

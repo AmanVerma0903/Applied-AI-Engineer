@@ -38,12 +38,11 @@ def main():
     # 2. Run multi-room stitched whole-property pipeline
     print("\n[Step 2/4] Running whole-property multi-room pipeline...")
     multi_contract_path = run_pipeline(
-        input_path="rrr_code/single_room/c00a170fe1",
+        input_path="benchmark_data/multi_room/photos",
         output_dir="outputs/reproduced_whole_property",
-        tier="lidar",
+        tier="photos",
         enable_drift_correction=True,
-        device_model="iPhone 15 Pro",
-        is_multi_room=True
+        device_model="iPhone 15 Pro"
     )
 
     # 3. Run full benchmark suite & gate audit
