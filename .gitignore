@@ -38,3 +38,8 @@ htmlcov/
 scratch/
 .temp/
 *.log
+
+# Large capture binaries in test_code
+test_code/**/rgb.mp4
+test_code/**/depth/
+test_code/**/confidence/

@@ -41,6 +41,7 @@ def run_pipeline(
 ) -> str:
     """Executes spatial reconstruction, dimensioning, damage assessment, and plan generation."""
     start_time = time.time()
+    input_path = SensorReader.resolve_path(input_path)
     os.makedirs(output_dir, exist_ok=True)
 
     print(f"\n==================================================================")

@@ -49,8 +49,26 @@ class SensorReader:
     """Robust loader for multi-tier spatial captures."""
 
     @staticmethod
+    def resolve_path(capture_path: str) -> str:
+        """Resolves capture path checking current directory, test_code/, and benchmark_data/."""
+        if os.path.exists(capture_path):
+            return capture_path
+        candidates = [
+            os.path.join("test_code", capture_path),
+            os.path.join("test_code", "single_room", capture_path),
+            os.path.join("test_code", "single_scan_floor_only", capture_path),
+            os.path.join("test_code", "single_scan_with_ceiling", capture_path),
+            os.path.join("benchmark_data", capture_path),
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                return c
+        return capture_path
+
+    @staticmethod
     def load(capture_path: str, tier: str = "lidar") -> CaptureData:
         """Auto-detects format and loads capture data for the given tier."""
+        capture_path = SensorReader.resolve_path(capture_path)
         capture_id = os.path.basename(os.path.normpath(capture_path))
         if tier == "lidar":
             return SensorReader.load_lidar(capture_path, capture_id)
