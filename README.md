@@ -32,13 +32,13 @@ Execution finishes in **~25 seconds** and automatically generates:
 * `outputs/my_scan/floorplan.svg` (High-resolution dimensioned architectural SVG)
 * `outputs/my_scan/index.html` (Interactive Polycam/Magicplan-style product surface)
 
-### 3. Run Automated Verification Across Test Captures (`test_code/`)
-Execute the automated test suite across all captures in `test_code/`:
+### 3. Run Automated Verification Across Test Captures (`rrr_code/`)
+Execute the automated test suite across all captures in `rrr_code/`:
 ```bash
-python test_code/run_tests.py
+python rrr_code/run_tests.py
 ```
-* **Runtime:** ~34 seconds across all 3 test captures (`single_room`, `single_scan_floor_only`, `single_scan_with_ceiling`).
-* **Artifacts:** Verifies Draft-07 schema compliance, dimensional metrology, uncertainty widening on truncated scans, multi-pass repeatability, and publishes `test_code/TEST_REPORT.md`.
+* **Runtime:** ~35 seconds across all 3 test captures (`single_room`, `single_scan_floor_only`, `single_scan_with_ceiling`).
+* **Artifacts:** Verifies Draft-07 schema compliance, dimensional metrology, uncertainty widening on truncated scans, multi-pass repeatability, and publishes `rrr_code/TEST_REPORT.md`.
 
 ---
 
@@ -120,6 +120,13 @@ python -m fix_loop.reproduce_fix
 │   ├── ground_truth.json              # Leica DISTO D2 laser ground truth
 │   ├── magicplan_export.json          # Magicplan v12.4.2 export
 │   └── polycam_export.json            # Polycam reference export
+│
+├── rrr_code/                          # Automated Verification Suite on Test Captures
+│   ├── run_tests.py                   # Master test runner (`python rrr_code/run_tests.py`)
+│   ├── TEST_REPORT.md                 # Full metrology & multi-pass repeatability audit report
+│   ├── single_room/                   # Primary kitchen & suite LiDAR capture
+│   ├── single_scan_floor_only/        # Truncated floor-only scan (calibrated CI widening)
+│   └── single_scan_with_ceiling/      # Full-envelope scan observing 3.069m ceiling plane
 │
 └── reproduction/                      # Reproduction Bundle
     └── reproduce_all.py               # Master script regenerating all numbers

@@ -3,7 +3,7 @@
 **Project:** Spatial AI Multi-Tier Floorplan & Damage Pipeline  
 **Standard:** Applied AI Case Study (Deliverable 1 Specification)  
 **Schema Mapping:** `requirement -> file path -> artifact -> status`  
-**Pipeline Verification:** All 8 Case Study Deliverables implemented & verified live against sensor data (`single_room/c00a170fe1`) and test suite captures in `test_code/` (`single_scan_floor_only/1a8384c3f6`, `single_scan_with_ceiling/c7d28f72c6`).
+**Pipeline Verification:** All 8 Case Study Deliverables implemented & verified live against sensor data (`single_room/c00a170fe1`) and test suite captures in `rrr_code/` (`single_scan_floor_only/1a8384c3f6`, `single_scan_with_ceiling/c7d28f72c6`).
 
 ---
 
