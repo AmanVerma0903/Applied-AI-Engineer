@@ -79,10 +79,10 @@ python -m fix_loop.reproduce_fix
 | Gate | Specification | Live Shipped Pipeline Metric | Gate Verdict | Notes |
 | :--- | :--- | :---: | :---: | :--- |
 | **Opening width** | Error $\le 2.0$ cm on $\ge 85\%$ of openings | Supplied `single_room` LiDAR door error: **10.8 cm** | `FAIL` | 75.2 cm estimated vs 86.0 cm reference. |
-| **Ceiling height** | Error $\le 1.5$ cm; repeat spread $\le 1.0$ cm | `single_room`: LiDAR error **120.4 cm**; Video error **36.7 cm** | `FAIL` | Both estimates are compared with the matching in-repo reference. |
+| **Ceiling height** | Error $\le 1.5$ cm; repeat spread $\le 1.0$ cm | Raw `single_room` estimates: LiDAR error **120.4 cm**; Video error **36.7 cm** | `NOT EVALUABLE` | The supplied primary capture does not observe the ceiling; raw differences from the reference are not valid ceiling measurements. |
 | **Repeatability** | Same-room repeat within PDF tolerance | No verified full-envelope repeat comparison | `NOT EVALUABLE` | Available repeat data do not establish complete room coverage. |
-| **Multi-room drift** | ON/OFF ablation on a multi-room capture | Only single-room LiDAR ablation is available | `NOT EVALUABLE` | The photo property input has no pose/odometry stream. |
-| **Photo-tier stitch** | Correct room grouping/topology, no overlap, footprint within $\pm 8\%$ | Five identities/topology emitted; no metric footprint | `FAIL` | RGB-only photos have no calibrated scale; diagram is schematic, not a physical overlap test. |
+| **Multi-room drift** | ON/OFF ablation on a multi-room capture | Only single-room LiDAR ablation is available | `NOT EVALUABLE` | No supplied multi-room LiDAR capture supports the required ON/OFF ablation; photo input has no pose/odometry stream. |
+| **Photo-tier stitch** | Correct room grouping/topology, no overlap, footprint within $\pm 8\%$ | Five identities and user-provided topology emitted; no metric footprint | `NOT EVALUABLE` | RGB-only photos provide no calibrated scale; physical overlap and footprint accuracy cannot be measured from the schematic. |
 | **Consumer-app comparison** | Tie/beat a consumer app on $\ge 70\%$ of shared dimensions | No paired official app export | `NOT EVALUABLE` | In-repo fixtures are not a substitute for same-room app captures. |
 
 ## 📁 Repository Structure & Deliverables Index
