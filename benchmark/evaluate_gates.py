@@ -6,7 +6,7 @@ Generates audit scores, errors, and pass/fail verdicts against laser ground trut
 
 import json
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import numpy as np
 
 
@@ -32,9 +32,19 @@ class GateEvaluator:
 
         for gt_op in gt_openings:
             gt_w = gt_op["width_m"]
+            gt_wall = gt_op.get("wall_id", "")
+
+            # Filter candidates by matching wall location if available
+            candidates = [
+                d for d in detected_openings
+                if not gt_wall or gt_wall.lower() in d.get("wall_id", "").lower() or ("west" in gt_wall.lower() and "west" in d.get("wall_id", "").lower())
+            ]
+            if not candidates:
+                candidates = detected_openings
+
             # Find best match
             best_diff = float("inf")
-            for det_op in detected_openings:
+            for det_op in candidates:
                 det_w = det_op.get("width_m", {}).get("value", 0.0) if isinstance(det_op.get("width_m"), dict) else det_op.get("width_m", 0.0)
                 diff = abs(det_w - gt_w)
                 if diff < best_diff:
@@ -138,13 +148,26 @@ class GateEvaluator:
             "status": "PASS" if all_passed else "FAIL"
         }
 
-    def evaluate_photo_stitching_gate(self, measured_footprint_sqm: float, gt_footprint_sqm: float = 60.126) -> Dict[str, Any]:
+    def evaluate_photo_stitching_gate(self, measured_footprint_sqm: float, gt_footprint_sqm: float = 60.126, room_polygons: Optional[List[Any]] = None) -> Dict[str, Any]:
         """
         Gate 5: Photo-tier whole-property stitch: correct adjacency, no overlaps, footprint within +-8%.
         """
         err_sqm = abs(measured_footprint_sqm - gt_footprint_sqm)
         err_pct = (err_sqm / gt_footprint_sqm) * 100
-        passed = (err_pct <= 8.0)
+
+        has_overlaps = False
+        if room_polygons and len(room_polygons) > 1:
+            from shapely.geometry import Polygon
+            polys = [Polygon(p) if not isinstance(p, Polygon) else p for p in room_polygons]
+            for i in range(len(polys)):
+                for j in range(i + 1, len(polys)):
+                    if polys[i].intersects(polys[j]):
+                        inter = polys[i].intersection(polys[j])
+                        if inter.area > 0.01:
+                            has_overlaps = True
+                            break
+
+        passed = (err_pct <= 8.0) and not has_overlaps
 
         return {
             "gate_name": "Photo-tier Whole-Property Stitch",
@@ -152,7 +175,7 @@ class GateEvaluator:
             "measured_footprint_sqm": round(measured_footprint_sqm, 2),
             "gt_footprint_sqm": round(gt_footprint_sqm, 2),
             "error_pct": round(err_pct, 2),
-            "has_overlaps": False,
+            "has_overlaps": has_overlaps,
             "gate_passed": passed,
             "status": "PASS" if passed else "FAIL"
         }
