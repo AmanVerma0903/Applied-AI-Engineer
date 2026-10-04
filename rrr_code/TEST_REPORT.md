@@ -1,16 +1,16 @@
 # Test Code Execution & Metrology Verification Report
 
 **Case Study Standard:** Applied AI Engineer Case Study (Aug 2026)
-**Generated:** 2026-10-04 00:09:32 UTC
+**Generated:** 2026-10-04 00:17:07 UTC
 **Test Suite Location:** `test_code/`
 
 ## 1. Test Captures Execution Matrix
 
 | Capture Category | Capture ID | Runtime | Schema Valid | SVG Rendered | HTML Viewer | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| `single_room` | `c00a170fe1` | 8.29s | `True` | `True` | `True` | **`PASS`** |
-| `single_scan_floor_only` | `1a8384c3f6` | 11.32s | `True` | `True` | `True` | **`PASS`** |
-| `single_scan_with_ceiling` | `c7d28f72c6` | 16.62s | `True` | `True` | `True` | **`PASS`** |
+| `single_room` | `c00a170fe1` | 7.39s | `True` | `True` | `True` | **`PASS`** |
+| `single_scan_floor_only` | `1a8384c3f6` | 11.0s | `True` | `True` | `True` | **`PASS`** |
+| `single_scan_with_ceiling` | `c7d28f72c6` | 14.16s | `True` | `True` | `True` | **`PASS`** |
 
 ---
 
